@@ -1,0 +1,10 @@
+##### OpenStack packages for Ubuntu #####
+
+----> Wallaby for Ubuntu 20.04 LTS <----
+add-apt-repository cloud-archive:wallaby
+
+----> victoria for Ubuntu 20.04 LTS <----
+add-apt-repository cloud-archive:victoria
+
+sudo apt install nova-compute
+sudo apt install python3-openstackclient
