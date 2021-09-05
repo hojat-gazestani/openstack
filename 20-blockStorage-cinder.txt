@@ -48,3 +48,18 @@ openstack volume service list
 
 sudo service tgt restart
 sudo service cinder-volume restart
+
+## Block storage 
+. demo-openrc
+
+openstack volume create --size 1 volume1
+
+openstack volume list
+
+openstack server add volume INSTANCE_NAME VOLUME_NAME
+openstack server add volume provider-instance volume1
+
+openstack volume list
+
+ssh provider-instance
+sudo fdisk -l
