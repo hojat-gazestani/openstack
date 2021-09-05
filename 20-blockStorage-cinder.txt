@@ -41,5 +41,10 @@ target_helper = tgtadm
 [oslo_concurrency]
 lock_path = /var/lib/cinder/tmp
 
+----> controller <----
+. admin-openrc
+openstack volume service list
+
+
 sudo service tgt restart
 sudo service cinder-volume restart
