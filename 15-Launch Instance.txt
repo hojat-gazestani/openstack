@@ -65,6 +65,8 @@ openstack server add floating ip selfservice-instance 203.0.113.104
 
 openstack server list
 
+------------------------openstack server create --flavor m1.nano --image cirros --nic net-id=3d7b6090-ce13-4598-80c5-edb92e01d198  --security-group 7332400f-b17f-469b-b4fd-c65a54b5e53f --key-name mykey --availability-zone nova:compute01 selfservice-instance
+
 ping -c 4 203.0.113.104
 
 ssh cirros@203.0.113.104
