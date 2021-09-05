@@ -12,7 +12,7 @@ sudo systemctl start chronyd.service
 ----> Other nodes <----
 sudo apt install chrony -y
 
-sudo vim /etc/chrony.conf
+sudo vim /etc/chrony/chrony.conf
 server controller01 iburst
 
 sudo systemctl enable chronyd.service
