@@ -73,6 +73,18 @@ password = openstack
 enabled = true
 server_listen = $my_ip
 server_proxyclient_address = $my_ip
+## OR
+[vnc]
+enabled = false
+[spice]
+agent_enabled = False
+enabled = True
+html5proxy_base_url = http://controller01:6082/spice_auto.html
+html5proxy_host = 0.0.0.0
+html5proxy_port = 6082
+keymap = en-us
+server_listen = 127.0.0.1
+server_proxyclient_address = 127.0.0.1
 
 [glance]
 api_servers = http://controller01:9292
