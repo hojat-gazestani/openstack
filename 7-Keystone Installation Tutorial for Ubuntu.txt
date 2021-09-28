@@ -23,7 +23,7 @@ provider = fernet
 
 # sudo mysql
 # USE keystone;
-# SHOW DATABASES;
+# SHOW TABLES;
 sudo su -s /bin/sh -c "keystone-manage db_sync" keystone
 
 sudo keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone
