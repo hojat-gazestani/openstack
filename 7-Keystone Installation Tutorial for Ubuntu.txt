@@ -10,6 +10,8 @@ IDENTIFIED BY 'openstack';
 GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'%' \
 IDENTIFIED BY 'openstack';
 
+# SHOW GRANTS FOR 'keystone'@'localhost';
+
 sudo apt install keystone -y
 
 sudo vim /etc/keystone/keystone.conf
