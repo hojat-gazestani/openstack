@@ -19,7 +19,9 @@ connection = mysql+pymysql://keystone:openstack@controller01/keystone
 [token]
 provider = fernet
 
-
+# sudo mysql
+# USE keystone;
+# SHOW DATABASES;
 sudo su -s /bin/sh -c "keystone-manage db_sync" keystone
 
 sudo keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone
