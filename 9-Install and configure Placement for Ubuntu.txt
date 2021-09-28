@@ -1,4 +1,4 @@
-*** it doesn't work, Use another manual ****
+*** it has some bug on Wallaby, use PyPi for Wallaby****
 
 ##### Install and configure Placement for Ubuntu #####
 ----> controller <----
