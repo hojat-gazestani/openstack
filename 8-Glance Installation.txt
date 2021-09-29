@@ -21,7 +21,7 @@ openstack service create --name glance \
   --description "OpenStack Image" image
 
 openstack endpoint create --region RegionOne \
-  image public http://controlle01:9292
+  image public http://controller01:9292
 openstack endpoint create --region RegionOne \
   image internal http://controller01:9292
 openstack endpoint create --region RegionOne \
