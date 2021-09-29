@@ -3,7 +3,7 @@
 sudo apt install chrony -y
 
 sudo vim /etc/chrony/chrony.conf
-server NTP_SERVER iburst
+server **NTP_SERVER** iburst
 allow 172.16.50.0/24
 
 sudo systemctl enable chronyd.service
@@ -13,7 +13,7 @@ sudo systemctl start chronyd.service
 sudo apt install chrony -y
 
 sudo vim /etc/chrony/chrony.conf
-server controller01 iburst
+server **controller01** iburst
 
 sudo systemctl enable chronyd.service
 sudo systemctl start chronyd.service
