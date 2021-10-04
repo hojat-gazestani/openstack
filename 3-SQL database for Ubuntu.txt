@@ -3,7 +3,7 @@ sudo apt install mariadb-server python3-pymysql
 
 sudo vim /etc/mysql/mariadb.conf.d/99-openstack.cnf
 [mysqld]
-bind-address = 172.16.50.51
+bind-address = 172.16.50.41
 
 default-storage-engine = innodb
 innodb_file_per_table = on
