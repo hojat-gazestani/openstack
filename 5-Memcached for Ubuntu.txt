@@ -4,7 +4,7 @@
 sudo apt install memcached python3-memcache -y 
 
 sudo vim /etc/memcached.conf
--l 172.16.50.51
+-l 172.16.50.41
 
 ----> Finalize installation <----
 sudo service memcached restart
