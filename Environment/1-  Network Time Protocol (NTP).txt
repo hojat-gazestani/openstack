@@ -1,0 +1,22 @@
+##### Network Time Protocol (NTP) #####
+---->  Controller node  <----
+sudo apt install chrony -y
+
+sudo vim /etc/chrony/chrony.conf
+server _NTP_SERVER_ iburst
+allow 172.16.50.0/24
+
+sudo systemctl enable chronyd.service
+sudo systemctl start chronyd.service
+
+----> Other nodes <----
+sudo apt install chrony -y
+
+sudo vim /etc/chrony/chrony.conf
+server _controller01_ iburst
+
+sudo systemctl enable chronyd.service
+sudo systemctl start chronyd.service
+
+----> Verify operation <----
+sudo chronyc sources

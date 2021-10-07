@@ -1,0 +1,51 @@
+https://docs.openstack.org/neutron/pike/admin/deploy-ovs-selfservice.html
+
+
+
+sudo apt install 
+
+sudo vim openvswitch_agent.ini
+[ovs]
+local_ip = 172.16.52.52
+
+[agent]
+tunnel_types = vxlan
+l2_population = True
+arp_responder = true
+vxlan_udp_port = 8472
+enable_distributed_routing =
+
+[vxlan]
+local_ip = 172.16.52.52
+[ovs]
+integration_bridge =
+tunnel_bridge =
+local_ip
+bridge_mapping= provider:br-ens192
+
+[security_group]
+firewall_driber = iptables_hybrid
+
+sudo ovs-vsctl add-br br-ens192
+sudo ovs-vsctl add-port br-ens192 ens192
+
+sudo systemctl restart neutron-OpenvSwitch-agent neutron-server
+
+@ Create initial networks
+openstack network set --external provider1
+openstack network create selfservice1
+
+openstack subnet create --subnet-range 192.0.2.0/24 \
+  --network selfservice1 --dns-nameserver 8.8.4.4 selfservice1-v4
+
+openstack subnet create --subnet-range fd00:192:0:2::/64 --ip-version 6 \
+  --ipv6-ra-mode slaac --ipv6-address-mode slaac --network selfservice1 \
+  --dns-nameserver 2001:4860:4860::8844 selfservice1-v6
+
+openstack router create router1
+
+$ openstack router add subnet router1 selfservice1-v4
+$ openstack router add subnet router1 selfservice1-v6
+
+neutron router-gateway-set router1 provider1
+
