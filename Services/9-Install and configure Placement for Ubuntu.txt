@@ -28,7 +28,7 @@ openstack endpoint create --region RegionOne \
 openstack endpoint create --region RegionOne \
   placement admin http://controller01:8778
 
-sudo apt install placement-api -y
+sudo apt install placement-api
 
 sudo vim /etc/placement/placement.conf
 [placement_database]
