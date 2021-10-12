@@ -1,0 +1,37 @@
+Understanding Ceph components
+============================
+ODSs: The storage unit where data is kept, as well as a daemon that interacts with the storage. Thousands of ODSs can exist in a cluster.
+MONs: Provides access to ODSs.
+MDS: Metadata server that manages the file system namespace.
+Block device: rdb.
+Gateway: rgw; RESTful interface to Ceph.
+CephFS
+
+Understanding ODSs
+------------------
+- The starage backend (hard disk) is made smart by OSD daemons
+	Any block device with a file system that supports User Extended Attribute can be an OSD
+
+- Every disk is an OSD and the number of OSDs is unlimited
+- Note that the OSD is the block device, as well as the daemon that runs on top of it
+
+Understanding MONs
+------------------
+- MONs handls cluster quorum to avoid split brain situations, using the PAXOS algorithm.
+	Use on at least, 3-5 is recomended
+- MONs keep track of all existing MONs and OSDs
+- MONs are the initial point of contact for Ceph clients
+	Clients upload to a primary OSD and the OSD calculates target OSDs for replicas, using the CRUSH algorithm
+
+Understanding CURSH
+-------------------
+- CRUSH is Controlled Replication Under Scalable Hashing
+- It is a pseudo-random algorithm that nesures that identical objects will always end up on the same OSDs if the topology of the cluster has not changed.
+- Placement groups are used to write data to the OSDs.
+- Administrators can manipulate CRUSH to determine where objects are written.
+
+Authentication
+-------------
+- CephX is used as the authentication algorithm allowing users to access specific OSDs.
+- Pools can be used to segregate the cluster into regions
+
