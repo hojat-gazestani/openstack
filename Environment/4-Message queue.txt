@@ -1,6 +1,6 @@
 ##### Message queue #####
 ----> controller <----
-sudo apt install rabbitmq-server
+sudo apt install -y rabbitmq-server
 
 sudo rabbitmqctl add_user openstack openstack
 

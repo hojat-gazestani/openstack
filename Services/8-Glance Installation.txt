@@ -21,22 +21,22 @@ openstack service create --name glance \
   --description "OpenStack Image" image
 
 openstack endpoint create --region RegionOne \
-  image public http://controller01:9292
+  image public http://controller2:9292
 openstack endpoint create --region RegionOne \
-  image internal http://controller01:9292
+  image internal http://controller2:9292
 openstack endpoint create --region RegionOne \
-  image admin http://controller01:9292
+  image admin http://controller2:9292
 
-sudo apt install glance
+sudo apt install -y glance
 
 sudo vim /etc/glance/glance-api.conf
 [database]
-connection = mysql+pymysql://glance:openstack@controller01/glance
+connection = mysql+pymysql://glance:openstack@controller2/glance
 
 [keystone_authtoken]
-www_authenticate_uri = http://controller01:5000
-auth_url = http://controller01:5000
-memcached_servers = controller01:11211
+www_authenticate_uri = http://controller2:5000
+auth_url = http://controller2:5000
+memcached_servers = controller2:11211
 auth_type = password
 project_domain_name = Default
 user_domain_name = Default

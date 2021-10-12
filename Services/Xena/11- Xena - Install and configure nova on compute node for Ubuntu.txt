@@ -1,22 +1,20 @@
-https://docs.openstack.org/nova/victoria/install/compute-install-ubuntu.html
-
-##### compute service ######
-----> compute node <----
+Xena - Install and configure nova on compute node for Ubuntu
+============================================================
 
 sudo apt install nova-compute -y
 
 sudo vim /etc/nova/nova.conf
 [DEFAULT]
-transport_url = rabbit://openstack:openstack@controller011
-my_ip = 192.168.57.51
+transport_url = rabbit://openstack:openstack@controller
+my_ip = 192.168.1.1
 
 [api]
 auth_strategy = keystone
 
 [keystone_authtoken]
-www_authenticate_uri = http://controller011:5000/
-auth_url = http://controller011:5000/
-memcached_servers = controller011:11211
+www_authenticate_uri = http://controller:5000/
+auth_url = http://controller:5000/
+memcached_servers = controller:11211
 auth_type = password
 project_domain_name = Default
 user_domain_name = Default
@@ -28,10 +26,10 @@ password = openstack
 enabled = true
 server_listen = 0.0.0.0
 server_proxyclient_address = $my_ip
-novncproxy_base_url = http://controller011:6080/vnc_auto.html
+novncproxy_base_url = http://controller:6080/vnc_auto.html
 
 [glance]
-api_servers = http://controller011:9292
+api_servers = http://controller:9292
 
 [oslo_concurrency]
 lock_path = /var/lib/nova/tmp
@@ -42,27 +40,21 @@ project_domain_name = Default
 project_name = service
 auth_type = password
 user_domain_name = Default
-auth_url = http://controller011:5000/v3
+auth_url = http://controller:5000/v3
 username = placement
 password = openstack
 
-[scheduler]
-discover_hosts_in_cells_interval = 300
-
-----> Finalize installation <----
 egrep -c '(vmx|svm)' /proc/cpuinfo
-
-sudo vim /etc/nova/nova-compute.conf 
+0
+sudo vim /etc/nova/nova-compute.conf
 [libvirt]
 virt_type = qemu
 
 sudo service nova-compute restart
 
-----> Add the compute node to the cell database <----
+on
 . admin-openrc
 openstack compute service list --service nova-compute
 
 sudo su -s /bin/sh -c "nova-manage cell_v2 discover_hosts --verbose" nova
 
-----> Tshout <----
- mysql -u nova -h controller011 -popenstack

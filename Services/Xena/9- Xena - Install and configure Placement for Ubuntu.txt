@@ -1,7 +1,5 @@
-*** it has some bug on Wallaby, use PyPi for Wallaby****
-
-##### Install and configure Placement for Ubuntu #####
-----> controller <----
+Xena - Install and configure Placement for Ubuntu
+=================================================
 
 sudo mysql
 
@@ -22,24 +20,24 @@ openstack service create --name placement \
   --description "Placement API" placement
 
 openstack endpoint create --region RegionOne \
-  placement public http://controller2:8778
+  placement public http://controller:8778
 openstack endpoint create --region RegionOne \
-  placement internal http://controller2:8778
+  placement internal http://controller:8778
 openstack endpoint create --region RegionOne \
-  placement admin http://controller2:8778
+  placement admin http://controller:8778
 
-sudo apt install placement-api -y
+sudo apt install placement-api
 
 sudo vim /etc/placement/placement.conf
 [placement_database]
-connection = mysql+pymysql://placement:openstack@controller2/placement
+connection = mysql+pymysql://placement:openstack@controller/placement
 
 [api]
 auth_strategy = keystone
 
 [keystone_authtoken]
-auth_url = http://controller2:5000/v3
-memcached_servers = controller2:11211
+auth_url = http://controller:5000/v3
+memcached_servers = controller:11211
 auth_type = password
 project_domain_name = Default
 user_domain_name = Default
@@ -47,17 +45,19 @@ project_name = service
 username = placement
 password = openstack
 
-sudo  su -s /bin/sh -c "placement-manage db sync" placement
+sudo su -s /bin/sh -c "placement-manage db sync" placement
 
 sudo service apache2 restart
 
+Verify Installation
+-------------------
 
-
-----> Verify Installation <----
 . admin-openrc
+
 placement-status upgrade check
 
-pip3 install osc-placement 
+pip3 install osc-placement
 
 openstack --os-placement-api-version 1.2 resource class list --sort-column name
+
 openstack --os-placement-api-version 1.6 trait list --sort-column name
