@@ -1,0 +1,54 @@
+Understanding Ceph components
+============================
+ODSs (Object-storage device node): Provides raw data storage, as well as a daemon that interacts with the storage. Thousands of ODSs can exist in a cluster, 
+MONs (Monitor node): Provides access to ODSs, Maintains a master copy of the storage cluster data map.
+MDS  (Metadata server node): Stores all the filesystem metadata (directories, file ownership, access mode, and so on)
+Block device: rdb.
+Gateway: rgw; RESTful interface to Ceph.
+CephFS
+
+Ceph pools: like a tenant in Openstack, is a user defined grouping of storage
+			Pools of storage is created wiht specific parameters, including resilience type, placement groups, CRUSH rules, ownership
+	Resilience type: Specifies how you want to data loss, along with the degree to which you're willing to ensure loass doesn't occcur.
+					 Two type of resilience are replication and erasure coding.
+					 The default resilience level for replication is two copies.
+	Placement group: Are defined aggregations of data objects used for tracking data accross OSDs.
+					 Simply put, this specifies the number of groups in which you want to place your data, across OSDs.
+	CRUSH ruls	   : These rules are used to determine where and how to place distributed data.
+					 Different rules exist based on the appropriateness of placement.
+					 For example, rules used in the placement of data across a single rack of hardware might not be optimal for a pool across geographic boundaries, so different rules could be used.
+	Ownership	   : This define the owner of a particular pool through user ID.
+
+Understanding ODSs
+------------------
+- The starage backend (hard disk) is made smart by OSD daemons
+	Any block device with a file system that supports User Extended Attribute can be an OSD
+
+- Every disk is an OSD and the number of OSDs is unlimited
+- Note that the OSD is the block device, as well as the daemon that runs on top of it
+
+Understanding MONs
+------------------
+- MONs handls cluster quorum to avoid split brain situations, using the PAXOS algorithm.
+	Use on at least, 3-5 is recomended
+- MONs keep track of all existing MONs and OSDs
+- MONs are the initial point of contact for Ceph clients
+	Clients upload to a primary OSD and the OSD calculates target OSDs for replicas, using the CRUSH algorithm
+
+Understanding CURSH
+-------------------
+- CRUSH is Controlled Replication Under Scalable Hashing
+- It is a pseudo-random algorithm that nesures that identical objects will always end up on the same OSDs if the topology of the cluster has not changed.
+- Placement groups are used to write data to the OSDs.
+- Administrators can manipulate CRUSH to determine where objects are written.
+
+Authentication
+-------------
+- CephX is used as the authentication algorithm allowing users to access specific OSDs.
+- Pools can be used to segregate the cluster into regions
+
+Know your MTU
+-------------
+- Ceph node communicate using the IP
+- Small MTU 1500 bytes, create more small packet, leading to increased network overhead.
+- Jumbo frame 9000 bytes, the payload could be transmitted in a single packet. 
