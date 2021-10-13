@@ -8,6 +8,11 @@ $ rados put try-1 /tmp/test.txt --pool test	# Add the object to the store
 $ rados -p test ls try-1		# Verify success
 $ rados get try-1 /tmp/somefile --pool=test	# Get the file
 
+Create Ceph pool
+---------------
+ceph osd pool create {pool-name} {pg-num} [{pgp-num}] [replicated] [crush-ruleset-name]
+ceph osd pool create mypool 2000 2000 pool 'mypool' created
+
 Installing Ceph on the Client
 ----------------------------
 - You'll need a ceph client to run the RADOS Block Device (RBD)
