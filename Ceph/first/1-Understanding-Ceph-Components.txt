@@ -1,11 +1,36 @@
 Understanding Ceph components
 ============================
-ODSs (Object-storage device node): Provides raw data storage, as well as a daemon that interacts with the storage. Thousands of ODSs can exist in a cluster, 
-MONs (Monitor node): Provides access to ODSs, Maintains a master copy of the storage cluster data map.
+ODSs (Object-storage device node): 
+	Storage unit where data is kept.
+	daemon that interacts with the storage.
+	Thousands of os OSDs can exist in a cluster.
+	
+	OSD daemon: made storage smart
+		Any block device with a file system that supports User Extended Attributes can be an OSD.
+	Every disk is an OSD and the number of OSDs is unlimited
+	OSD is the block device.
+	OSD daemon is the block device.
+
+MONs (Monitor node): 
+	Maintains a master copy of the storage cluster data map.
+	Provide access to OSDs.
+	
+	Handle cluster quorum to avoid split brain situations, using the PAXOS algorithm.
+		Use one at least, 3-5 is recommended.
+	Keep tack of all existing MONs and OSDs.
+	Are the initial point of contact for Ceph clients.
+		Client upload to a primary OSD and the OSD calculates target OSDs for replicas, using the CRUSH algorithm
+	
+	CRUSH: 
+		Controlled Replication Under Scalable Hashing.
+		It is a pseudo-random algorithm that ensure that identical objects will always end up on the same OSDs if the topology of the cluster has not changed.
+		Placement groups are used to write data to the OSDs.
+		Administrators can manipulate CRUSH to determine where objects are written.
+
 MDS  (Metadata server node): Stores all the filesystem metadata (directories, file ownership, access mode, and so on)
 Block device: rdb.
 Gateway: rgw; RESTful interface to Ceph.
-CephFS
+CephFS: file system
 
 Ceph pools: like a tenant in Openstack, is a user defined grouping of storage
 			Pools of storage is created wiht specific parameters, including resilience type, placement groups, CRUSH rules, ownership
