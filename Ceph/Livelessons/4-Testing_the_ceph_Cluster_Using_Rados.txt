@@ -1,0 +1,8 @@
+Perform the pre-installation Steps on the Client-node
+====================================================
+
+ceph@admin-node$ /Working-Directory/ ceph-deploy install -rgw <gateway-node>
+ceph@admin-node$ ceph-deploy rgw create 					# Create an instance of the Ceph Object gateway
+ceph@admin-node$ sudo systemctl status ceph-radosgw.service # Make sure is running
+ceph@		   $ curl http://<client-node>/7480				# You should now be able to make an unauthenticated request to the gateway on its default port
+
