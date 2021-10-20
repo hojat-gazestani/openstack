@@ -100,7 +100,7 @@ firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
 sudo sysctl net.bridge.bridge-nf-call-iptables
 sudo sysctl net.bridge.bridge-nf-call-ip6tables
 
-sduo vim /etc/neutron/dhcp_agent.ini
+sudo vim /etc/neutron/dhcp_agent.ini
 [DEFAULT]
 interface_driver = linuxbridge
 dhcp_driver = neutron.agent.linux.dhcp.Dnsmasq
