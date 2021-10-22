@@ -1,5 +1,5 @@
-##### ODL Installation #####
-----> controller <----
+ODL Installation - Contrller
+============================
 
 sudo pip install networking-odl
 
@@ -31,7 +31,8 @@ sudo vim /etc/neutron/neutron.conf
 	port_binding_controller = pseudo-agentdb-binding
 	enable_dhcp_service = True
 
-----> Compute/network <----
+Compute/network
+===============
 
 sudo apt install openvswitch
 sudo systemctl start openvswitch

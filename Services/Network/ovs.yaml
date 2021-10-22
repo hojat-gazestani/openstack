@@ -1,4 +1,5 @@
-@ Controller node
+Controller node
+===============
 # vim /etc/neutron/neutron.conf 
 	[DEFAULT]
 	service_plugins = router
@@ -16,7 +17,8 @@
 
 # systemctcl restart neutron.service openvswitch.agent
 
-@ Network node
+Network node
+============
 # apt install  ovs ovs.l2.agent ovs.l3.agnet
 # vim /etc/neutron/neutron.conf 
 	[DEFAULT]
@@ -58,7 +60,8 @@ $ ovs-vsctl add-port br-provider PROVIDER_INTERFACE
 
 # systemctl start openvswitch.agent l3.agent
 
-@ Compute nodes
+Compute nodes
+=============
 # vim /etc/neutron/plugins/ml2/openvswitch_agent.ini
 	[ovs]
 	local_ip = OVERLAY_INTERFACE_IP_ADDRESS
@@ -69,5 +72,6 @@ $ ovs-vsctl add-port br-provider PROVIDER_INTERFACE
 
 # systemctl restart openvswitch.agent
 
-@ Verify service operation
+Verify service operation
+========================
 $ openstack network agent list
