@@ -46,15 +46,9 @@ which karaf
 
 sudo -E karaf
 
-opendaylight-user@root>feature:install odl-l2switch-switch
-opendaylight-user@root>feature:install odl-mdsal-apidocs
-opendaylight-user@root>feature:install odl-dlux-core
-opendaylight-user@root>feature:install odl-dluxapps-topology
-opendaylight-user@root>feature:install odl-dluxapps-nodes
-
-opendaylight-user@root>feature:install odl-dlux-core odl-dluxapps-nodes odl-dluxapps-topology odl-dluxapps-yangui odl-dluxapps-yangvisualizer odl-dluxapps-yangman
-
-opendaylight-user@root>feature:install odl-l2switch-switch-ui
+opendaylight-user@root>feature:install odl-base-all odl-aaa-authn odl-restconf-all odl-nsf-all odl-adsal-northbound odl-ovsdb-northbound odl-ovsdb-openstack 
+opendaylight-user@root>feature:install odl-dlux-core odl-dluxapps-nodes odl-dluxapps-topology odl-dluxapps-yangui odl-dluxapps-yangvisualizer odl-dluxapps-yangman odl-mdsal-apidocs
+opendaylight-user@root>feature:install odl-l2switch-switch-ui odl-l2switch-switch
 sudo netstat -an | grep 8181
 
 http://8.7.6.5:8181/index.html#/logi
