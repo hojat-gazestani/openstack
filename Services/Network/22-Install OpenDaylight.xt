@@ -1,15 +1,14 @@
 Install OpenDaylight on Ubuntu 20.04 LTS
 ========================================
 
-sudo apt-get -y update
-sudo apt-get -y upgrade
+sudo apt-get -y update && sudo apt-get -y upgrade
 
-sudo apt-get -y install unzip
+sudo apt-get -y install unzip openjdk-8-jre
 
-sudo apt-get -y install openjdk-8-jre
 sudo update-alternatives --config java
 ls -l /etc/alternatives/java
 lrwxrwxrwx 1 root root 46 Sep 27 20:24 /etc/alternatives/java -> /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
+
 echo 'export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre' >> ~/.bashrc
 source ~/.bashrc
 echo $JAVA_HOME
@@ -53,6 +52,8 @@ opendaylight-user@root>feature:install odl-dlux-core
 opendaylight-user@root>feature:install odl-dluxapps-topology
 opendaylight-user@root>feature:install odl-dluxapps-nodes
 
+opendaylight-user@root>feature:install odl-dlux-core odl-dluxapps-nodes odl-dluxapps-topology odl-dluxapps-yangui odl-dluxapps-yangvisualizer odl-dluxapps-yangman
+
 opendaylight-user@root>feature:install odl-l2switch-switch-ui
 sudo netstat -an | grep 8181
 
@@ -93,7 +94,6 @@ ps -ef | grep karaf
 Mininet
 =======
 mininet$ ./start-mininet-network.sh
-
 
 Other
 ====
