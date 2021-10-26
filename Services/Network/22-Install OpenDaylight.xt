@@ -1,15 +1,14 @@
 Install OpenDaylight on Ubuntu 20.04 LTS
 ========================================
 
-sudo apt-get -y update
-sudo apt-get -y upgrade
+sudo apt-get -y update && sudo apt-get -y upgrade
 
-sudo apt-get -y install unzip
+sudo apt-get -y install unzip openjdk-8-jre
 
-sudo apt-get -y install openjdk-8-jre
 sudo update-alternatives --config java
 ls -l /etc/alternatives/java
 lrwxrwxrwx 1 root root 46 Sep 27 20:24 /etc/alternatives/java -> /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
+
 echo 'export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre' >> ~/.bashrc
 source ~/.bashrc
 echo $JAVA_HOME
@@ -47,6 +46,7 @@ which karaf
 
 sudo -E karaf
 
+<<<<<<< HEAD
 opendaylight-user@root>feature:install odl-l2switch-switch
 opendaylight-user@root>feature:install odl-mdsal-apidocs
 opendaylight-user@root>feature:install odl-dlux-core
@@ -60,6 +60,11 @@ opendaylight-user@root>feature:install odl-dlux-core odl-dluxapps-nodes odl-dlux
 
 
 opendaylight-user@root>feature:install odl-l2switch-switch-ui
+=======
+opendaylight-user@root>feature:install odl-base-all odl-aaa-authn odl-restconf-all odl-nsf-all odl-adsal-northbound odl-ovsdb-northbound odl-ovsdb-openstack 
+opendaylight-user@root>feature:install odl-dlux-core odl-dluxapps-nodes odl-dluxapps-topology odl-dluxapps-yangui odl-dluxapps-yangvisualizer odl-dluxapps-yangman odl-mdsal-apidocs
+opendaylight-user@root>feature:install odl-l2switch-switch-ui odl-l2switch-switch
+>>>>>>> 6b3885d7700435d35a6677154a0f01809b3aa860
 sudo netstat -an | grep 8181
 
 http://8.7.6.5:8181/index.html#/logi
@@ -99,7 +104,6 @@ ps -ef | grep karaf
 Mininet
 =======
 mininet$ ./start-mininet-network.sh
-
 
 Other
 ====
