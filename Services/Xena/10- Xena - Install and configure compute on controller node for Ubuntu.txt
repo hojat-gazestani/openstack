@@ -40,7 +40,7 @@ openstack endpoint create --region RegionOne \
 
 sudo apt install nova-api nova-conductor nova-novncproxy nova-scheduler
 
-sudo /etc/nova/nova.conf
+sudo vim /etc/nova/nova.conf
 [DEFAULT]
 transport_url = rabbit://openstack:openstack@controller:5672/
 my_ip = 10.0.0.11

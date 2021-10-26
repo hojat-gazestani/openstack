@@ -72,16 +72,16 @@ default_store = file
 filesystem_store_datadir = /var/lib/glance/images/
 
 [oslo_limit]
-auth_url = http://controller:5000
+auth_url = http://controller3:5000
 auth_type = password
 user_domain_id = default
-username = MY_SERVICE
+username = glance_limit
 system_scope = all
-password = MY_PASSWORD
+password = openstack
 endpoint_id = ENDPOINT_ID
 region_name = RegionOne
 
-openstack role add --user MY_SERVICE --user-domain Default --system all reader
+openstack role add --user glance --user-domain Default --system all reader
 
 sudo su -s /bin/sh -c "glance-manage db_sync" glance
 

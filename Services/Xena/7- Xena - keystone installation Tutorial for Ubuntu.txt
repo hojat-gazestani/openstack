@@ -15,12 +15,12 @@ GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'%' \
 IDENTIFIED BY 'openstack';
 
 
-sudo apt install keystone
+sudo apt install -y keystone
 
 
 sudo vim  /etc/keystone/keystone.conf
 [database]
-connection = mysql+pymysql://keystone:openstack@controller/keystone
+connection = mysql+pymysql://keystone:openstack@controller3/keystone
 
 [token]
 provider = fernet
@@ -30,19 +30,19 @@ sudo su -s /bin/sh -c "keystone-manage db_sync" keystone
 sudo keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone
 sudo keystone-manage credential_setup --keystone-user keystone --keystone-group keystone
 
-sudo keystone-manage bootstrap --bootstrap-password ADMIN_PASS \
+sudo keystone-manage bootstrap --bootstrap-password openstack \
   --bootstrap-admin-url http://controller:5000/v3/ \
   --bootstrap-internal-url http://controller:5000/v3/ \
   --bootstrap-public-url http://controller:5000/v3/ \
   --bootstrap-region-id RegionOne
 
-sudo /etc/apache2/apache2.conf
+sudo vim  /etc/apache2/apache2.conf
 ServerName controller
 
 sudo service apache2 restart
 
 export OS_USERNAME=admin
-export OS_PASSWORD=ADMIN_PASS
+export OS_PASSWORD=openstack
 export OS_PROJECT_NAME=admin
 export OS_USER_DOMAIN_NAME=Default
 export OS_PROJECT_DOMAIN_NAME=Default
@@ -87,7 +87,7 @@ export OS_PROJECT_DOMAIN_NAME=Default
 export OS_USER_DOMAIN_NAME=Default
 export OS_PROJECT_NAME=admin
 export OS_USERNAME=admin
-export OS_PASSWORD=ADMIN_PASS
+export OS_PASSWORD=openstack
 export OS_AUTH_URL=http://controller:5000/v3
 export OS_IDENTITY_API_VERSION=3
 export OS_IMAGE_API_VERSION=2
@@ -97,7 +97,7 @@ export OS_PROJECT_DOMAIN_NAME=Default
 export OS_USER_DOMAIN_NAME=Default
 export OS_PROJECT_NAME=myproject
 export OS_USERNAME=myuser
-export OS_PASSWORD=DEMO_PASS
+export OS_PASSWORD=openstack
 export OS_AUTH_URL=http://controller:5000/v3
 export OS_IDENTITY_API_VERSION=3
 export OS_IMAGE_API_VERSION=2
