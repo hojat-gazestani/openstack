@@ -53,6 +53,12 @@ opendaylight-user@root>feature:install odl-dlux-core
 opendaylight-user@root>feature:install odl-dluxapps-topology
 opendaylight-user@root>feature:install odl-dluxapps-nodes
 
+
+
+opendaylight-user@root>feature:install odl-dlux-core odl-dluxapps-nodes odl-dluxapps-topology odl-dluxapps-yangui odl-dluxapps-yangvisualizer odl-dluxapps-yangman
+
+
+
 opendaylight-user@root>feature:install odl-l2switch-switch-ui
 sudo netstat -an | grep 8181
 

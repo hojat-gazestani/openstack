@@ -1,5 +1,7 @@
 ##### OpenStack packages for Ubuntu #####
 
+sudo add-apt-repository cloud-archive:xena
+
 ----> Wallaby for Ubuntu 20.04 LTS <----
 sudo add-apt-repository cloud-archive:wallaby
 
