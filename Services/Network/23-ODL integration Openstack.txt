@@ -9,14 +9,15 @@ for Obj in "${Object[@]}"; do
 done
 
 sudo service neutron-server stop
+sudo apt purge neutron-openvswitch-agent
 sudo apt-get purge neutron-plugin-openvswitch-agent
 sudo service openvswitch-switch stop
 
 sudo rm -rf /var/log/openvswitch/*
-rm -rf /etc/openvswitch/conf.db
+sudo rm -rf /etc/openvswitch/conf.db
 
 sudo service openvswitch-switch start
-ovs-vsctl show #This command must return the empty set except OpenVswitch
+sudo ovs-vsctl show #This command must return the empty set except OpenVswitch
 
 sudo pip install networking-odl
 pip install networking_odl
@@ -49,7 +50,7 @@ sudo vim /etc/neutron/plugins/ml2/ml2_conf.ini
 	[ml2_odl]
 	username = <ODL_USERNAME>
 	password = <ODL_PASSWORD>
-	url = http://<ODL_IP_ADDRESS>:<ODL_PORT>/controller/nb/v2/neutron
+	url = http://controller01:8080/controller/nb/v2/neutron
 	port_binding_controller = pseudo-agentdb-binding
 	enable_dhcp_service = True
 
