@@ -32,7 +32,7 @@ sudo vim /etc/neutron/neutron.conf
 
 sudo vim /etc/neutron/plugins/ml2/ml2_conf.ini
 	[ml2]
-	mechanism_drivers = opendaylight_v2
+	mechanism_drivers = opendaylight
 	type_drivers = local,flat,vlan,vxlan
 	tenant_network_types = vxlan
 	extension_drivers = port_security, qos
