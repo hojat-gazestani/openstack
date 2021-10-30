@@ -1,17 +1,18 @@
 ODL Installation - Contrller
 ============================
 
-Object=("server" "subnet" "router" "router-port" "port" "router-interface" "network")
+openstack router remove subnet router1 subnet1ID
+openstack router delete router1
+
+Object=("server" "subnet" "router"  "port"  "network")
 for Obj in "${Object[@]}"; do
     for HashID in `openstack $Obj list -c ID | head -n -1 | tail -n +4 | cut -d ' ' -f 2`; do
         openstack $Obj delete $HashID
     done
 done
 
-sudo service neutron-server stop
-sudo apt purge neutron-openvswitch-agent
-sudo apt-get purge neutron-plugin-openvswitch-agent
-sudo service openvswitch-switch stop
+sudo systemctl stop neutron-server openvswitch-switch
+sudo apt purge neutron-openvswitch-agent -y     # OpenDaylight will be controlling the nodes, Delete it on every nodes
 
 sudo rm -rf /var/log/openvswitch/*
 sudo rm -rf /etc/openvswitch/conf.db
@@ -19,7 +20,6 @@ sudo rm -rf /etc/openvswitch/conf.db
 sudo service openvswitch-switch start
 sudo ovs-vsctl show #This command must return the empty set except OpenVswitch
 
-sudo pip install networking-odl
 pip install networking_odl
 
 sudo vim /etc/neutron/neutron.conf
