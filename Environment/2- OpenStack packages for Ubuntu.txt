@@ -11,5 +11,5 @@ sudo add-apt-repository cloud-archive:victoria
 ----> Ussuri for Ubuntu 18.04 LTS <----
 sudo add-apt-repository cloud-archive:ussuri
 
-sudo apt install nova-compute
-sudo apt install python3-openstackclient
+sudo apt install nova-compute -y
+sudo apt install python3-openstackclient -y
