@@ -21,11 +21,11 @@ openstack service create --name glance \
 
 
 openstack endpoint create --region RegionOne \
-  image public http://controller:9292
+  image public http://controller01:9292
 openstack endpoint create --region RegionOne \
-  image internal http://controller:9292
+  image internal http://controller01:9292
 openstack endpoint create --region RegionOne \
-  image admin http://controller:9292
+  image admin http://controller01:9292
 
 Register quota limits (optional):
 ---------------------------------
@@ -43,19 +43,19 @@ openstack --os-cloud devstack-system-admin registered limit create \
   --service glance --default-limit 100 --region RegionOne image_count_uploading
 
 
-sudo apt install glance
+sudo apt install glance -y
 
 sudo vim /etc/glance/glance-api.conf
 [DEFAULT]
 use_keystone_quotas = True
 
 [database]
-connection = mysql+pymysql://glance:openstack@controller/glance
+connection = mysql+pymysql://glance:openstack@controller01/glance
 
 [keystone_authtoken]
-www_authenticate_uri = http://controller:5000
-auth_url = http://controller:5000
-memcached_servers = controller:11211
+www_authenticate_uri = http://controller01:5000
+auth_url = http://controller01:5000
+memcached_servers = controller01:11211
 auth_type = password
 project_domain_name = Default
 user_domain_name = Default
@@ -72,7 +72,7 @@ default_store = file
 filesystem_store_datadir = /var/lib/glance/images/
 
 [oslo_limit]
-auth_url = http://controller3:5000
+auth_url = http://controller013:5000
 auth_type = password
 user_domain_id = default
 username = glance_limit

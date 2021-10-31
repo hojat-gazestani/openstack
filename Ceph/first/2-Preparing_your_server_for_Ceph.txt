@@ -29,6 +29,8 @@ ceph@admin-node$ vim /etc/yum.repos.d/start-ceph.repo
 	type=rpm-md
 	gpgkey=https://ceph.com/git/?p=ceph.git;a-blob_plain;f=keys/release.asc
 
+for i in {1..3}; do scp /etc/yum.repos.d/start-ceph.repo cephs$i:/etc/yum.repos.d/; done
+
 ceph@admin-node$ timedatectl													
 
 ceph@admin-node$ sudo useradd -d /home/ceph -m ceph
