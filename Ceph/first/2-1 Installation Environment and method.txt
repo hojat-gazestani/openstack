@@ -1,3 +1,22 @@
+Host name
+---------
+# Ceph nodes
+172.16.30.104   sm0	sm0.test.local
+172.16.30.106   sm1	sm1.test.local
+172.16.30.105   sm2	sm2.test.local
+172.16.30.100   sr0	sr0.test.local
+172.16.30.103   sr1	sr1.test.local
+172.16.30.102   sr2	sr2.test.local
+
+sudo hostnamectl set-hostname sm0
+
+SSH configuration
+-----------------
+sudo useradd -d /home/ceph-admin -m ceph-admin -s /bin/bash
+echo 'ceph-admin:openstack' | sudo chpasswd
+echo "ceph-admin ALL = (root) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/ceph-admin
+sudo chmod 0440 /etc/sudoers.d/ceph-admin
+
 Network Time Protocol NTP
 -------------------------
 sudo apt install chrony -y
