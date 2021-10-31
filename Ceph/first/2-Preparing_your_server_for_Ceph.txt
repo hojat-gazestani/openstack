@@ -14,7 +14,14 @@ Preparing Servers to run Ceph
 - Time synchronization is mandatory
 - Port 6789/tcp must be open in the firewall
 
-
+Ceph Installation method
+------------------------
+cephadm:        Octopus and newer releases.
+ceph-deploy:    Nautilus and older release.
+Rook:           Nautilus and newer releases of Ceph.
+                manages Ceph clusters running in Kubernetes,
+ceph-ansible:   introduced in Nautlius and Octopus,
+                is not integrated with the new orchestrator APIs
 
 Setting up Ceph Prerequisites on Centos
 ---------------------------------------
@@ -67,7 +74,6 @@ $ wget -q -O- 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc'
 $ echo deb http://ceph.com/debian-dumpling/ $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/ceph.list
 $ sudo apt-get update
 $ sudo apt-get install ceph-deploy
-
 
 
 Step 2: Install Software on all Nodes
