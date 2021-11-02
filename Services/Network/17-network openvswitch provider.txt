@@ -4,7 +4,7 @@ network - Open vSwitch - provider on contorller node
 ====================================================
 sudo apt install neutron-server ml2-plugin
 
-sudo vim neutron.conf
+sudo vim /etc/neutron/neutron.conf
 [DEFAULT]
 core_plugin = ml2
 auth_strategy = keystone
@@ -24,7 +24,7 @@ dhcp_agents_per_network = 2
 [agent]
 # ...
 
-sduo vim ml2_conf.ini 
+sudo vim /etc/neutron/plugins/ml2/ml2_conf.ini 
 [ml2]
 type_drivers = flat,vlan
 tenant_network_types =
@@ -43,8 +43,9 @@ sudo su -s /bin/sh -c "neutron-db-manage --config-file /etc/neutron/neutron.conf
 Compute nodes
 -------------
 sudo apt install ovs layer2 agent dhcp-agent metadata-agent ovs
+sudo apt install openvswitch-switch neutron-openvswitch-agent neutron-dhcp-agent neutron-metadata-agent -y
 
-sudo vim neutron.conf
+sudo vim /etc/neutron/neutron.conf
 [DEFAULT]
 core_plugin = ml2
 auth_strategy = keystone
@@ -61,25 +62,25 @@ auth_strategy = keystone
 [agent]
 # ...
 
-sudo vim openvswitch_agent.ini
+sudo vim /etc/neutron/plugins/ml2/openvswitch_agent.ini
 [ovs]
 bridge_mappings = provider:br-provider
 
 [securitygroup]
 firewall_driver = iptables_hybrid
 
-sudo vim dhcp_agent.ini
+sudo vim /etc/neutron/dhcp_agent.ini
 [DEFAULT]
 interface_driver = openvswitch
 enable_isolated_metadata = True
 force_metadata = True
 
-sudo vim metadata_agent.ini
+sudo vim /etc/neutron/metadata_agent.ini
 [DEFAULT]
 nova_metadata_host = controller
 metadata_proxy_shared_secret = openstack
 
-sudo systemctl start ovs
+sudo systemctl restart openvswitch-switch.service
 
 ovs-vsctl add-br br-provider
 ovs-vsctl add-port br-provider PROVIDER_INTERFACE
