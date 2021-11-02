@@ -1,4 +1,4 @@
-Xena - Install and configure neutron on controller node
+Xena - Install and configure neutron on controller01 node
 =======================================================
 
 
@@ -20,11 +20,11 @@ openstack service create --name neutron \
   --description "OpenStack Networking" network
 
 openstack endpoint create --region RegionOne \
-  network public http://controller:9696
+  network public http://controller01:9696
 openstack endpoint create --region RegionOne \
-  network internal http://controller:9696
+  network internal http://controller01:9696
 openstack endpoint create --region RegionOne \
-  network admin http://controller:9696
+  network admin http://controller01:9696
 
 Networking Option 1: Provider networks
 ======================================
@@ -37,20 +37,20 @@ sudo vim /etc/neutron/neutron.conf
 core_plugin = ml2
 service_plugins =
 
-transport_url = rabbit://openstack:openstack@controller
+transport_url = rabbit://openstack:openstack@controller01
 auth_strategy = keystone
 
 notify_nova_on_port_status_changes = true
 notify_nova_on_port_data_changes = true
 
 [database]
-connection = mysql+pymysql://neutron:openstack@controller/neutron
+connection = mysql+pymysql://neutron:openstack@controller01/neutron
 
 
 [keystone_authtoken]
-www_authenticate_uri = http://controller:5000
-auth_url = http://controller:5000
-memcached_servers = controller:11211
+www_authenticate_uri = http://controller01:5000
+auth_url = http://controller01:5000
+memcached_servers = controller01:11211
 auth_type = password
 project_domain_name = default
 user_domain_name = default
@@ -59,7 +59,7 @@ username = neutron
 password = openstack
 
 [nova]
-auth_url = http://controller:5000
+auth_url = http://controller01:5000
 auth_type = password
 project_domain_name = default
 user_domain_name = default
@@ -99,8 +99,8 @@ enable_vxlan = false
 enable_security_group = true
 firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
 
-sudo net.bridge.bridge-nf-call-iptables
-sudo net.bridge.bridge-nf-call-ip6tables
+sudo sysctl net.bridge.bridge-nf-call-iptables
+sudo sysctl net.bridge.bridge-nf-call-ip6tables
 
 Configure the DHCP agent
 -----------------------
@@ -117,25 +117,25 @@ sudo apt install neutron-server neutron-plugin-ml2 \
   neutron-linuxbridge-agent neutron-l3-agent neutron-dhcp-agent \
   neutron-metadata-agent -y
 
-sudo  /etc/neutron/neutron.conf
+sudo vim  /etc/neutron/neutron.conf
 [DEFAULT]
 core_plugin = ml2
 service_plugins = router
 allow_overlapping_ips = true
 
-transport_url = rabbit://openstack:openstack@controller
+transport_url = rabbit://openstack:openstack@controller01
 auth_strategy = keystone
 
 notify_nova_on_port_status_changes = true
 notify_nova_on_port_data_changes = true
 
 [database]
-connection = mysql+pymysql://neutron:openstack@controller/neutron
+connection = mysql+pymysql://neutron:openstack@controller01/neutron
 
 [keystone_authtoken]
-www_authenticate_uri = http://controller:5000
-auth_url = http://controller:5000
-memcached_servers = controller:11211
+www_authenticate_uri = http://controller01:5000
+auth_url = http://controller01:5000
+memcached_servers = controller01:11211
 auth_type = password
 project_domain_name = default
 user_domain_name = default
@@ -144,7 +144,7 @@ username = neutron
 password = openstack
 
 [nova]
-auth_url = http://controller:5000
+auth_url = http://controller01:5000
 auth_type = password
 project_domain_name = default
 user_domain_name = default
@@ -190,8 +190,8 @@ l2_population = true
 enable_security_group = true
 firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
 
-sudo net.bridge.bridge-nf-call-iptables
-sudo net.bridge.bridge-nf-call-ip6tables
+sudo sysctl net.bridge.bridge-nf-call-iptables
+sudo sysctl net.bridge.bridge-nf-call-ip6tables
 
 Configure the layer-3 agent
 ---------------------------
@@ -214,14 +214,14 @@ Configure the metadata agent
 ----------------------------
 sudo vim /etc/neutron/metadata_agent.ini
 [DEFAULT]
-nova_metadata_host = controller
+nova_metadata_host = controller01
 metadata_proxy_shared_secret = openstack
 
 Configure the Compute service to use the Networking service
 -----------------------------------------------------------
 sudo vim /etc/nova/nova.conf
 [neutron]
-auth_url = http://controller:5000
+auth_url = http://controller01:5000
 auth_type = password
 project_domain_name = default
 user_domain_name = default
@@ -239,8 +239,8 @@ sudo su -s /bin/sh -c "neutron-db-manage --config-file /etc/neutron/neutron.conf
 
 sudo service nova-api restart
 
-service neutron-server restart
-service neutron-linuxbridge-agent restart
-service neutron-dhcp-agent restart
-service neutron-metadata-agent restart
-service neutron-l3-agent restart
+sudo service neutron-server restart
+sudo service neutron-linuxbridge-agent restart
+sudo service neutron-dhcp-agent restart
+sudo service neutron-metadata-agent restart
+sudo service neutron-l3-agent restart

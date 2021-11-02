@@ -5,13 +5,13 @@ sudo apt install neutron-linuxbridge-agent -y
 
 sudo vim /etc/neutron/neutron.conf 
 [DEFAULT]
-transport_url = rabbit://openstack:openstack@controller
+transport_url = rabbit://openstack:openstack@controller01
 auth_strategy = keystone
 
 [keystone_authtoken]
-www_authenticate_uri = http://controller:5000
-auth_url = http://controller:5000
-memcached_servers = controller:11211
+www_authenticate_uri = http://controller01:5000
+auth_url = http://controller01:5000
+memcached_servers = controller01:11211
 auth_type = password
 project_domain_name = default
 user_domain_name = default
@@ -35,8 +35,8 @@ enable_vxlan = false
 enable_security_group = true
 firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
 
-sudo net.bridge.bridge-nf-call-iptables
-sudo net.bridge.bridge-nf-call-ip6tables
+sudo sysctl net.bridge.bridge-nf-call-iptables
+sudo sysctl  net.bridge.bridge-nf-call-ip6tables
 
 Networking Option 2: Self-service networks
 ===========================================
@@ -53,5 +53,5 @@ l2_population = true
 enable_security_group = true
 firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
 
-sudo net.bridge.bridge-nf-call-iptables
-sudo net.bridge.bridge-nf-call-ip6tables
+sudo sysctl net.bridge.bridge-nf-call-iptables
+sudo sysctl net.bridge.bridge-nf-call-ip6tables

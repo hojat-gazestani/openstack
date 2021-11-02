@@ -1,21 +1,63 @@
 Host name
 ---------
 # Ceph nodes
-172.16.30.104   sm0	sm0.test.local
-172.16.30.106   sm1	sm1.test.local
-172.16.30.105   sm2	sm2.test.local
-172.16.30.100   sr0	sr0.test.local
-172.16.30.103   sr1	sr1.test.local
-172.16.30.102   sr2	sr2.test.local
+172.16.30.104   sm0	
+172.16.30.106   sm1
+172.16.30.105   sm2
+172.16.30.100   sr0
+172.16.30.103   sr1
+172.16.30.102   sr2
 
 sudo hostnamectl set-hostname sm0
 
 SSH configuration
 -----------------
 sudo useradd -d /home/ceph-admin -m ceph-admin -s /bin/bash
-echo 'ceph-admin:openstack' | sudo chpasswd
+echo 'ceph-admin:openstack' | sudo chpasswd # useradd ceph; echo openstack | passwd --stdin ceph
 echo "ceph-admin ALL = (root) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/ceph-admin
 sudo chmod 0440 /etc/sudoers.d/ceph-admin
+
+ssh-keygen
+
+tee -a ~/.ssh/config <<EOF
+Host *
+   UserKnownHostsFile /dev/null
+   StrictHostKeyChecking no
+   IdentitiesOnly yes
+   ConnectTimeout 0
+   ServerAliveInterval 300
+Host sr0
+   Hostname sr0
+   User ceph-admin
+   UserKnownHostsFile /dev/null
+   StrictHostKeyChecking no
+   IdentitiesOnly yes
+   ConnectTimeout 0
+   ServerAliveInterval 300
+Host sr1
+   Hostname sr1
+   User ceph-admin
+   UserKnownHostsFile /dev/null
+   StrictHostKeyChecking no
+   IdentitiesOnly yes
+   ConnectTimeout 0
+   ServerAliveInterval 300
+Host sr2
+   Hostname sr2
+   User ceph-admin
+   UserKnownHostsFile /dev/null
+   StrictHostKeyChecking no
+   IdentitiesOnly yes
+   ConnectTimeout 0
+   ServerAliveInterval 300
+EOF
+
+su ceph-admin
+ssh-keygen
+ssh-copy-id ceph-admin@sr0 && ssh-copy-id ceph-admin@sr1 && ssh-copy-id ceph-admin@sr2
+for i in sr0 sr1 sr2; do
+    ssh-copy-id $i
+done
 
 Network Time Protocol NTP
 -------------------------
@@ -37,24 +79,6 @@ timedatectl
 
 User Configuration
 ------------------
-sudo useradd -d /home/ceph -m ceph
-echo 'ceph:openstack' | sudo chpasswd
-# OR
-useradd ceph; echo openstack | passwd --stdin ceph				
-
-echo "ceph ALL = (root) NOPASSWD: ALL" > /etc/sudoers.d/ceph	
-chmod 0400 /etc/sudoers.d/ceph
-su - ceph; sudo ls -a /root should list files					
-vim /etc/ssh/sshd_config
-	PasswordAuthentication yes
-
-ssh-keygen
-ssh-copy-id ceph@node1
-vim /etc/hosts
-	192.168.1.1 admin-node
-	192.168.1.2 node1
-	192.168.1.3 node2
-	192.168.1.4 node3
 setenforce 0; yum -y install yum-plugin-priorities
 yum update -y
 sed -i 's/requiretty/\!requiretty/' /etc/sudoers # Allow remote sudo commands to run on all nodes
