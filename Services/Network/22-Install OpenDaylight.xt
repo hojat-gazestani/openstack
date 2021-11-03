@@ -46,7 +46,6 @@ which karaf
 
 sudo -E karaf
 
-<<<<<<< HEAD
 opendaylight-user@root>feature:install odl-l2switch-switch
 opendaylight-user@root>feature:install odl-mdsal-apidocs
 opendaylight-user@root>feature:install odl-dlux-core
