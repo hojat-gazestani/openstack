@@ -19,7 +19,7 @@ unzip karaf-0.8.4.zip
 cd karaf-0.8.4/
 
 ./bin/karaf
-opendaylight-user@root>feature:list
+feature:list
 
 
 How to install OpenDaylight as a Service on Ubuntu 18.04 LTS
@@ -46,22 +46,22 @@ which karaf
 
 sudo -E karaf
 
-opendaylight-user@root>feature:install odl-l2switch-switch
-opendaylight-user@root>feature:install odl-mdsal-apidocs
-opendaylight-user@root>feature:install odl-dlux-core
-opendaylight-user@root>feature:install odl-dluxapps-topology
-opendaylight-user@root>feature:install odl-dluxapps-nodes
+feature:install odl-l2switch-switch
+feature:install odl-mdsal-apidocs
+feature:install odl-dlux-core
+feature:install odl-dluxapps-topology
+feature:install odl-dluxapps-nodes
 
-opendaylight-user@root>feature:install  odl-dluxapps-yangui odl-dluxapps-yangvisualizer odl-dluxapps-yangman
+feature:install  odl-dluxapps-yangui odl-dluxapps-yangvisualizer odl-dluxapps-yangman
 
-opendaylight-user@root>feature:install odl-base-all odl-aaa-authn odl-restconf-all odl-nsf-all odl-adsal-northbound odl-ovsdb-northbound odl-ovsdb-openstack 
-opendaylight-user@root>feature:install odl-l2switch-switch-ui 
+feature:install odl-base-all odl-aaa-authn odl-restconf-all odl-nsf-all odl-adsal-northbound odl-ovsdb-northbound odl-ovsdb-openstack 
+feature:install odl-l2switch-switch-ui 
 
 sudo netstat -an | grep 8181
 
 http://172.16.50.51:8181/index.html#/logi
 
-opendaylight-user@root>system:shutdown
+system:shutdown
 
 sudo update-alternatives --install /usr/bin/stop stop /usr/local/karaf/karaf-0.8.4/bin/stop 1
 sudo update-alternatives --config stop
@@ -95,6 +95,15 @@ ps -ef | grep karaf
 
 Mininet
 =======
+sudo mn --controller=remote,ip=172.16.50.51,port=6633
+
+feature:install odl-restconf
+feature:install odl-l2switch-switch
+feature:install odl-mdsal-apidocs
+feature:install odl-dlux-all
+
+mininet$ vim start-mininet-network.sh
+sudo mn --topo linear,3 --mac --controller=remote,ip=127.0.0.1,port=6633 --switch ovs,protocols=openflow13
 mininet$ ./start-mininet-network.sh
 
 Other
