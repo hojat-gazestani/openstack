@@ -61,20 +61,20 @@ sudo apt install openvswitch-switch
 sudo systemctl start openvswitch-switch.service
 /usr/share/openvswitch/scripts/ovs-ctl start
 
-ovs-vsctl show 
+sudo ovs-vsctl show 
 #Open vSwitch ID
 
-ovs-vsctl set Open_vSwitch <OPENVSWITCH ID> other_config={local_ip=<TUNNEL INTERFACE IP>}
-ovs-vsctl set-manager tcp:<OPENDAYLIGHT MANAGEMENT IP>:6640
+sudo ovs-vsctl set Open_vSwitch <OPENVSWITCH ID> other_config={local_ip=<TUNNEL INTERFACE IP>}
+sudo ovs-vsctl set-manager tcp:<OPENDAYLIGHT MANAGEMENT IP>:6640
 
-ovs-vsctl set-manager tcp:${ODL_IP_ADDRESS}:6640
+sudo ovs-vsctl set-manager tcp:${ODL_IP_ADDRESS}:6640
 
-ovs-vsctl add-br br-ex
-ovs-vsctl add-port br-ex <INTERFACE NAME OF EXTERNAL NETWORK> #commonly eth0 or p2p1
-ovs-vsctl show
+sudo ovs-vsctl add-br br-ex
+sudo ovs-vsctl add-port br-ex <INTERFACE NAME OF EXTERNAL NETWORK> #commonly eth0 or p2p1
+sudo ovs-vsctl show
 
 sudo neutron-odl-ovs-hostconfig
-ovs-vsctl show
+sudo ovs-vsctl show
 
 Verifying the inegration
 ------------------------
