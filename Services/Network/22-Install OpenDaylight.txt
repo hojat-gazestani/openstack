@@ -59,7 +59,7 @@ opendaylight-user@root>feature:install odl-l2switch-switch-ui
 
 sudo netstat -an | grep 8181
 
-http://8.7.6.5:8181/index.html#/logi
+http://172.16.50.51:8181/index.html#/logi
 
 opendaylight-user@root>system:shutdown
 
