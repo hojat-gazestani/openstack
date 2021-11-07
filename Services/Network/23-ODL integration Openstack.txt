@@ -1,6 +1,5 @@
-ODL Installation - Contrller
-============================
-
+ODL Installation - Contrller Node
+================================
 openstack router remove subnet router1 subnet1ID
 openstack router delete router1
 
@@ -23,40 +22,39 @@ sudo ovs-vsctl show #This command must return the empty set except OpenVswitch
 pip install networking_odl
 
 sudo vim /etc/neutron/neutron.conf
-	[DEFAULT]
-	core_plugin = neutron.plugins.ml2.plugin.Ml2Plugin
-	service_plugins = odl-router
+[DEFAULT]
+core_plugin = neutron.plugins.ml2.plugin.Ml2Plugin
+service_plugins = odl-router
 
-    [qos]
-    notification_drivers = odl-qos
+[qos]
+notification_drivers = odl-qos
 
 sudo vim /etc/neutron/plugins/ml2/ml2_conf.ini
-	[ml2]
-	mechanism_drivers = opendaylight
-	type_drivers = local,flat,vlan,vxlan
-	tenant_network_types = vxlan
-	extension_drivers = port_security, qos
+[ml2]
+mechanism_drivers = opendaylight
+type_drivers = local,flat,vlan,vxlan
+tenant_network_types = vxlan
+extension_drivers = port_security, qos
 
-	[ml2_type_vxlan]
-	vni_ranges = 1:1000
+[ml2_type_vxlan]
+vni_ranges = 1:1000
 
-	[ml2_type_vlan]
-	network_vlan_ranges = PHYSICAL_NETWORK:MIN_VLAN_ID:MAX_VLAN_ID
-	network_vlan_ranges = physnet1,physnet2:1001:2000
+[ml2_type_vlan]
+network_vlan_ranges = PHYSICAL_NETWORK:MIN_VLAN_ID:MAX_VLAN_ID
+network_vlan_ranges = physnet1,physnet2:1001:2000
 
-	[securitygroup]
-	enable_security_group = true
+[securitygroup]
+enable_security_group = true
 
-	[ml2_odl]
-	username = <ODL_USERNAME>
-	password = <ODL_PASSWORD>
-	url = http://controller01:8080/controller/nb/v2/neutron
-	port_binding_controller = pseudo-agentdb-binding
-	enable_dhcp_service = True
+[ml2_odl]
+username = <ODL_USERNAME>
+password = <ODL_PASSWORD>
+url = http://controller01:8080/controller/nb/v2/neutron
+port_binding_controller = pseudo-agentdb-binding
+enable_dhcp_service = True
 
 Compute/network
 ===============
-
 sudo apt install openvswitch-switch
 sudo systemctl start openvswitch-switch.service
 /usr/share/openvswitch/scripts/ovs-ctl start
@@ -77,7 +75,7 @@ sudo neutron-odl-ovs-hostconfig
 sudo ovs-vsctl show
 
 Verifying the inegration
-------------------------
+========================
 neutron router-create router1
 neutron net-create private
 neutron subnet-create private --name=private_subnet 172.0.0.0/24
@@ -85,7 +83,6 @@ neutron router-interface-add router1 private_subnet
 nova boot --flavor <flavor> --image <image id> --nic net-id=<network id> vinoth-vm1
 
 curl -u admin:admin http://${OPENDAYLIGHTs SERVER}:8080/controller/nb/v2/neutron/networks
-
 
 sources
 =======

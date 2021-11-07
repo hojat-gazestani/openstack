@@ -96,30 +96,30 @@ Create initial networks
 -----------------------
 . admin-openrc
 
-$ openstack network create --share --provider-physical-network provider \
+openstack network create --share --provider-physical-network provider \
   --provider-network-type flat provider1
 
-$ openstack subnet create --subnet-range 203.0.113.0/24 --gateway 203.0.113.1 \
+openstack subnet create --subnet-range 203.0.113.0/24 --gateway 203.0.113.1 \
   --network provider1 --allocation-pool start=203.0.113.11,end=203.0.113.250 \
   --dns-nameserver 8.8.4.4 provider1-v4
 
-$ openstack subnet create --subnet-range fd00:203:0:113::/64 --gateway fd00:203:0:113::1 \
+openstack subnet create --subnet-range fd00:203:0:113::/64 --gateway fd00:203:0:113::1 \
   --ip-version 6 --ipv6-address-mode slaac --network provider1 \
   --dns-nameserver 2001:4860:4860::8844 provider1-v6
 
 Verify network operation
 ========================
-# ip netns
-$ openstack security group rule create --proto icmp default
-$ openstack security group rule create --ethertype IPv6 --proto ipv6-icmp default
-$ openstack security group rule create --proto tcp --dst-port 22 default
-$ openstack security group rule create --ethertype IPv6 --proto tcp --dst-port 22 default
+ip netns
+openstack security group rule create --proto icmp default
+openstack security group rule create --ethertype IPv6 --proto ipv6-icmp default
+openstack security group rule create --proto tcp --dst-port 22 default
+openstack security group rule create --ethertype IPv6 --proto tcp --dst-port 22 default
 
-$ openstack server create --flavor 1 --image cirros \
+openstack server create --flavor 1 --image cirros \
   --nic net-id=NETWORK_ID provider-instance1
 
-$ openstack server list
+openstack server list
 
-$ ping -c 4 203.0.113.13
+ping -c 4 203.0.113.13
 
-$ ping6 -c 4 fd00:203:0:113:f816:3eff:fe58:be4e
+ping6 -c 4 fd00:203:0:113:f816:3eff:fe58:be4e

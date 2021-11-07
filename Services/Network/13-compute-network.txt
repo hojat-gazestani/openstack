@@ -1,7 +1,5 @@
-Install and configure compute node
-==================================
-
-
+Networking service Installation Guide - Compute Node
+====================================================
 sudo apt install neutron-linuxbridge-agent
 
 sudo vim /etc/neutron/neutron.conf 

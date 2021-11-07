@@ -1,6 +1,5 @@
 Install OpenDaylight on Ubuntu 20.04 LTS
 ========================================
-
 sudo apt-get -y update && sudo apt-get -y upgrade
 
 sudo apt-get -y install unzip openjdk-8-jre

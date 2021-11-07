@@ -1,11 +1,7 @@
 https://docs.openstack.org/neutron/victoria/admin/deploy-ovs-selfservice.html
 
-Network - openvswitch - self service 
-====================================
-
-contoller
-=========
-
+Network - openvswitch - self service - Controller Node
+======================================================
 sudo apt install ovs layer2-agent layer3-agent ovs
 
 sudo vim neutron.conf 
@@ -84,46 +80,46 @@ sudo systemctl restart ovs-agent
 Verify service operation
 ========================
 . admin-openrc
-$ openstack network agent list
+openstack network agent list
 
 Create initial networks - Controller
 ===================================
 . admin-openrc
-$ openstack network set --external provider1
+openstack network set --external provider1
 
 . demo-openrc
-$ openstack network create selfservice1
-$ openstack subnet create --subnet-range 192.0.2.0/24 \
+openstack network create selfservice1
+openstack subnet create --subnet-range 192.0.2.0/24 \
   --network selfservice1 --dns-nameserver 8.8.4.4 selfservice1-v4
-$ openstack subnet create --subnet-range fd00:192:0:2::/64 --ip-version 6 \
+openstack subnet create --subnet-range fd00:192:0:2::/64 --ip-version 6 \
   --ipv6-ra-mode slaac --ipv6-address-mode slaac --network selfservice1 \
   --dns-nameserver 2001:4860:4860::8844 selfservice1-v6
 
 
-$ openstack router create router1
-$ openstack router add subnet router1 selfservice1-v4
-$ openstack router add subnet router1 selfservice1-v6
+openstack router create router1
+openstack router add subnet router1 selfservice1-v4
+openstack router add subnet router1 selfservice1-v6
 
-$ openstack router set --external-gateway provider1 router1
+openstack router set --external-gateway provider1 router1
 
 Verify network operation
 ========================
-# ip netns
+ip netns
 
 
 . demo-openrc
-$ openstack security group rule create --proto icmp default
-$ openstack security group rule create --ethertype IPv6 --proto ipv6-icmp default
-$ openstack security group rule create --proto tcp --dst-port 22 default
-$ openstack security group rule create --ethertype IPv6 --proto tcp --dst-port 22 default
+openstack security group rule create --proto icmp default
+openstack security group rule create --ethertype IPv6 --proto ipv6-icmp default
+openstack security group rule create --proto tcp --dst-port 22 default
+openstack security group rule create --ethertype IPv6 --proto tcp --dst-port 22 default
 
-$ openstack server create --flavor 1 --image cirros --nic net-id=NETWORK_ID selfservice-instance1
+openstack server create --flavor 1 --image cirros --nic net-id=NETWORK_ID selfservice-instance1
 
-$ openstack server list
+openstack server list
 
-$ ping6 -c 4 fd00:192:0:2:f816:3eff:fe30:9cb0
+ping6 -c 4 fd00:192:0:2:f816:3eff:fe30:9cb0
 
-$ openstack floating ip create provider1
-$ openstack server add floating ip selfservice-instance1 203.0.113.16
+openstack floating ip create provider1
+openstack server add floating ip selfservice-instance1 203.0.113.16
 
-$ ping -c 4 203.0.113.16
+ping -c 4 203.0.113.16
