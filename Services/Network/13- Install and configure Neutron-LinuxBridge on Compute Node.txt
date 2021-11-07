@@ -70,3 +70,10 @@ password = openstack
 
 sudo service nova-compute restart
 sudo service neutron-linuxbridge-agent restart
+
+Verify operation
+================
+. admin-openrc
+openstack extension list --network
+
+openstack network agent list
