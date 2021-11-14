@@ -24,14 +24,15 @@ pip install networking_odl
 sudo vim /etc/neutron/neutron.conf
 [DEFAULT]
 core_plugin = neutron.plugins.ml2.plugin.Ml2Plugin
-service_plugins = odl-router
+service_plugins = odl-router_v2
 
 [qos]
 notification_drivers = odl-qos
 
+#        /etc/neutron/plugins/ml2/ml2_conf_odl.ini
 sudo vim /etc/neutron/plugins/ml2/ml2_conf.ini
 [ml2]
-mechanism_drivers = opendaylight
+mechanism_drivers = opendaylight_v2
 type_drivers = local,flat,vlan,vxlan
 tenant_network_types = vxlan
 extension_drivers = port_security, qos
