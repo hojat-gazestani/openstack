@@ -19,7 +19,7 @@ sudo rm -rf /etc/openvswitch/conf.db
 sudo service openvswitch-switch start
 sudo ovs-vsctl show #This command must return the empty set except OpenVswitch
 
-pip install networking_odl
+sudo pip install networking_odl
 
 sudo vim /etc/neutron/neutron.conf
 [DEFAULT]
