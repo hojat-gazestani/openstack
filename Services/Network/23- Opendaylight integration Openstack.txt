@@ -89,3 +89,5 @@ sources
 =======
 https://superuser.openstack.org/articles/open-daylight-integration-with-openstack-a-tutorial/
 https://docs.openstack.org/networking-odl/pike/install/installation.html
+https://docs.opendaylight.org/projects/netvirt/en/latest/openstack-guide/openstack-with-netvirt.html
+http://sapham.net/2019/05/18/opendaylight-101-integrate-with-openstack.html
