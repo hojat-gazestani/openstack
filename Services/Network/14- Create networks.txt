@@ -10,8 +10,8 @@ openstack network create  --share --external \
   --provider-network-type flat provider
 
 openstack subnet create --network provider \
-  --allocation-pool start=172.16.51.101,end=172.16.51.250 \
-  --dns-nameserver 8.8.4.4 --gateway 172.16.51.254 \
+  --allocation-pool start=172.16.55.101,end=172.16.50.58 \
+  --dns-nameserver 8.8.4.4 --gateway 172.16.50.254 \
   --subnet-range 172.16.51.0/24 provider
 
 Self-service network
