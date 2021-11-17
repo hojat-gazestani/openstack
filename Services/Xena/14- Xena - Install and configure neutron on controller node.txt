@@ -228,7 +228,7 @@ user_domain_name = default
 region_name = RegionOne
 project_name = service
 username = neutron
-password = NEUTRON_PASS
+password = openstack
 service_metadata_proxy = true
 metadata_proxy_shared_secret = openstack
 
