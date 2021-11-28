@@ -125,6 +125,9 @@ Design
 		CRUSH map can represent your physical datacenter topology, consisting of racks, rows, rooms, floors, datacenters
 		the cluster can tollerate failures across certain boundaries- PIC-2
 
+	Bluestore performance Scalability ( 3 vs 5 nodes
+		
 Sources:
+https://ceph.io/community/part-3-rhcs-bluestore-performance-scalability-3-vs-5-nodes/
 https://medium.com/@adam.goossens/so-you-want-to-build-a-ceph-cluster-7ff9a033411d
 https://louwrentius.com/understanding-ceph-open-source-scalable-storage.html
