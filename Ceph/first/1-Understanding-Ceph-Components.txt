@@ -7,9 +7,15 @@ ODSs (Object-storage device node):
 	
 	OSD daemon: made storage smart
 		Any block device with a file system that supports User Extended Attributes can be an OSD.
-	Every disk is an OSD and the number of OSDs is unlimited
+	Every disk is an OSD and the number of OSDs is unlimited (24 hard drive = 24 OSDs)
 	OSD is the block device.
 	OSD daemon is the block device.
+	
+	FAIL SCENARIO:
+		1- Drive goes down -> OSD will goes down
+		2- Monitor node will redistribute an update CRUSH map
+		3- OSDs also respond to the update because redandancy is lost.
+		4- My start to replicate non-redundant data to make it redundant again (across fewer nodes)
 
 MONs (Monitor node): 
 	Maintains a master copy of the storage cluster data map.
@@ -77,3 +83,48 @@ Know your MTU
 - Ceph node communicate using the IP
 - Small MTU 1500 bytes, create more small packet, leading to increased network overhead.
 - Jumbo frame 9000 bytes, the payload could be transmitted in a single packet. 
+
+Design
+------
+	Network
+		public-facing network: carry client traffic
+		internal cluster network: carry heartbeat, replication and recovery traffic between OSDs
+
+		every write on the public network will cause (n-1) writes on the internal network, where n is the number of replicas.
+		Ceph will only acknowledge a write to the client when it has been written to the journal/WALs(write-ahead log) of all replicas
+		Avoid bottlenecked in replicated pools, consider sizing your cluster network to be n-1 times larger than the public network.
+
+	More IOPS:
+		Ceph acknowledges a write to the client only once the data has been written to the write-ahead log (WAL) of the primary OSD and to the WALs of all replicas. 
+		So, faster WAl increase the IOPS.
+		WALs or BlueStore RocksDB metadata -> SSD at minimum, and NVMe if possible
+		
+		If your HDD can write at 100MB/s sustained, and your SSD can manage 500MB/s sustained, 
+		more than one SSD/NVMe device per node for metadata/WAL to ensure that you won’t lose all OSDs on the node if a metadata device fails.
+
+	Ceph redundancy (Rplication)
+		RAID-1 (replication)
+		RAID-5/6 (erasure encoding)
+		Imagine that instead of the array consisting of hard drives, it consist of entire servers.
+
+		With downside of storage cost: configure more than one replica instead of RAID-1
+		three-node cluster each node holds 33% of your data
+		ten node cluster, it’s only 10% per node
+	
+		Forcing more network traffic across fewer nodes
+
+	Erasure Encoding
+		With Ceph you are not confined to the limits of RAID-5/RAID-6 with just one or two 'redundant disks' (in Ceph's case storage nodes).
+		using "Erasure Encoding" you cal tell: "I want you to chop up my data in 8 data segments and 4 parity segments"- PIC-1
+		Can lose up to four entire hosts.
+		33% storage overhead for redundancy instead of 50%
+		8 + 4 = 12 storage nodes
+		you could do 6 data segments + 2 parity segments (similar to RAID-6) with only 8 hosts
+
+	Ceph failure domains
+		CRUSH map can represent your physical datacenter topology, consisting of racks, rows, rooms, floors, datacenters
+		the cluster can tollerate failures across certain boundaries- PIC-2
+
+Sources:
+https://medium.com/@adam.goossens/so-you-want-to-build-a-ceph-cluster-7ff9a033411d
+https://louwrentius.com/understanding-ceph-open-source-scalable-storage.html
