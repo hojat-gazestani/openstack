@@ -40,8 +40,23 @@ network_vlan_ranges = provider
 sudo su -s /bin/sh -c "neutron-db-manage --config-file /etc/neutron/neutron.conf \
   --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head" neutron
 
+Configure the Compute service to use the Networking service
+-----------------------------------------------------------
+sudo vim /etc/nova/nova.conf
+[neutron]
+auth_url = http://controller01:5000
+auth_type = password
+project_domain_name = default
+user_domain_name = default
+region_name = RegionOne
+project_name = service
+username = neutron
+password = openstack
+service_metadata_proxy = true
+metadata_proxy_shared_secret = openstack
+
 Compute nodes
--------------
+=============
 sudo apt install ovs layer2 agent dhcp-agent metadata-agent ovs
 sudo apt install openvswitch-switch neutron-openvswitch-agent neutron-dhcp-agent neutron-metadata-agent -y
 
@@ -78,6 +93,21 @@ force_metadata = True
 sudo vim /etc/neutron/metadata_agent.ini
 [DEFAULT]
 nova_metadata_host = controller
+metadata_proxy_shared_secret = openstack
+
+Configure the Compute service to use the Networking service
+-----------------------------------------------------------
+sudo vim /etc/nova/nova.conf
+[neutron]
+auth_url = http://controller01:5000
+auth_type = password
+project_domain_name = default
+user_domain_name = default
+region_name = RegionOne
+project_name = service
+username = neutron
+password = openstack
+service_metadata_proxy = true
 metadata_proxy_shared_secret = openstack
 
 sudo systemctl restart openvswitch-switch.service
