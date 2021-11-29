@@ -126,8 +126,59 @@ Design
 		the cluster can tollerate failures across certain boundaries- PIC-2
 
 	Bluestore performance Scalability ( 3 vs 5 nodes
+
+
+	Consideration:
+		Should the replicated node be on the same rack or multiple racks to avoid SPOF ?
+    		Suould the OSD traffic stay within the rack or span across rack in a dedicated or shared network ?
+    		How many nodes failure can be tolerated ?
+    		If the nodes are separated out across multiple racks network traffic increases and the impact of latency and the number of network switch hops should be considered.
+
+		Ceph will automatically recover by re-replicating data from the failed nodes using secondary copies present on other nodes in cluster . A node failure thus have several effects.
+
+    		Total cluster capacity is reduced by some fractions.
+    		Total cluster throughput is reduced by some fractions.
+    		The cluster enters a write heavy recovery processes.
+
+		A general thumb of rule to calculate recovery time in a ceph cluster given 1 disk per OSD node is :
+
+		Recovery Time in seconds = disk capacity in Gigabits / ( network speed *(nodes-1) )
+Hardware
+--------
+	Monitor nodes:
+		A minimum of three monitors nodes
+		1U server with low cost processor E5-2603,16GB RAM and 1GbE network
+		if PG,Monitor and OSD logs are storage on local disk -> 
 		
+	Storage nodes:
+		# POC Environment
+		minimum of 3 physical nodes with 10 OSD's each
+		66% cluster availability upon a physical node failure and 97% uptime upon an OSD failure.
+		RGW and Monitor nodes can be put on OSD  nodes but this may impact performance  and not recommended for production.
+
+		# Production Environment
+		minimum of 5 physically separated nodes and minimum of 100 OSD @ 4TB per OSD the cluster capacity is over 130TB
+		80% uptime on physical node failure and 99% uptime on OSD failure
+		RGW and Monitors should be on separate nodes.
+
+	Business Requirement
+	Budget ?
+	Do you need Ceph cluster for day to day operation or SPECIAL
+	Technical Requirement
+	What applications will be running on your ceph cluster ?
+	What type of data will be stored on your ceph cluster 
+	Should the ceph cluster be optimized for capacity and performance ?
+	What should be usable storage capacity ?
+	What is expected growth rate ?
+	How many IOPS should the cluster support ?
+	How much throughput should the cluster support
+	How much data replication ( reliability level ) you need ?
+		
+
+
+
 Sources:
+https://ceph.io/en/news/blog/2014/zero-to-hero-guide-for-ceph-cluster-planning/
 https://ceph.io/community/part-3-rhcs-bluestore-performance-scalability-3-vs-5-nodes/
 https://medium.com/@adam.goossens/so-you-want-to-build-a-ceph-cluster-7ff9a033411d
 https://louwrentius.com/understanding-ceph-open-source-scalable-storage.html
