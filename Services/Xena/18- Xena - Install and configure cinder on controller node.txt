@@ -1,4 +1,4 @@
-Xena - Install and configure cinder on controller node
+Xena - Install and configure cinder on controller01 node
 ======================================================
 
 sudo mysql
@@ -23,36 +23,36 @@ openstack service create --name cinderv3 \
   --description "OpenStack Block Storage" volumev3
 
 openstack endpoint create --region RegionOne \
-  volumev2 public http://controller:8776/v2/%\(project_id\)s
+  volumev2 public http://controller01:8776/v2/%\(project_id\)s
 openstack endpoint create --region RegionOne \
-  volumev2 internal http://controller:8776/v2/%\(project_id\)s
+  volumev2 internal http://controller01:8776/v2/%\(project_id\)s
 openstack endpoint create --region RegionOne \
-  volumev2 admin http://controller:8776/v2/%\(project_id\)s
+  volumev2 admin http://controller01:8776/v2/%\(project_id\)s
 
 openstack endpoint create --region RegionOne \
-  volumev3 public http://controller:8776/v3/%\(project_id\)s
+  volumev3 public http://controller01:8776/v3/%\(project_id\)s
 openstack endpoint create --region RegionOne \
-  volumev3 internal http://controller:8776/v3/%\(project_id\)s
+  volumev3 internal http://controller01:8776/v3/%\(project_id\)s
 openstack endpoint create --region RegionOne \
-  volumev3 admin http://controller:8776/v3/%\(project_id\)s
+  volumev3 admin http://controller01:8776/v3/%\(project_id\)s
 
 sudo apt install cinder-api cinder-scheduler -y 
 
 sudo vim  /etc/cinder/cinder.conf
 [DEFAULT]
-transport_url = rabbit://openstack:openstack@controller
-my_ip = 10.0.0.11
+transport_url = rabbit://openstack:openstack@controller01
+my_ip = 172.16.50.51
 
 auth_strategy = keystone
 
 [database]
-connection = mysql+pymysql://cinder:openstack@controller/cinder
+connection = mysql+pymysql://cinder:openstack@controller01/cinder
 
 
 [keystone_authtoken]
-www_authenticate_uri = http://controller:5000
-auth_url = http://controller:5000
-memcached_servers = controller:11211
+www_authenticate_uri = http://controller01:5000
+auth_url = http://controller01:5000
+memcached_servers = controller01:11211
 auth_type = password
 project_domain_name = default
 user_domain_name = default
@@ -71,9 +71,9 @@ sudo vim /etc/nova/nova.conf
 [cinder]
 os_region_name = RegionOne
 
-service nova-api restart
-service cinder-scheduler restart
-service apache2 restart
+sudo service nova-api restart
+sudo service cinder-scheduler restart
+sudo service apache2 restart
 
 Verify Cinder operation
 -----------------------
