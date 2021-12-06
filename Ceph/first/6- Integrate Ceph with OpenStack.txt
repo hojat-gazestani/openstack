@@ -1,18 +1,21 @@
 Glance Integration
 ------------------
 
-glance-api (controller01) $ sudo apt-get install python3-rbd
-glance-api (controller01) / nova-compute (compute-nodes) / cinder-backup+cinder-volume (block-storage) $ sudo apt-get install ceph-common
+controller01 {glance-api} $ sudo apt-get install python3-rbd
+controller01 {glance-api}  / compute-node {nova-compute} / block-storage {cinder-backup+cinder-volume} $ sudo apt-get install ceph-common
 
 controller01 / block / compute $ sudo mkdir /etc/ceph
 
-controller01 / block / compute # cat << EOF >/etc/sudoers.d/cephadmin
-cephadmin ALL = (root) NOPASSWD:ALL
-Defaults:cephadmin !requiretty
-EOF
-
+ceph-mon-01 $ sudo ceph osd pool create volumes 128
 ceph-mon-01 $ sudo ceph osd pool create images 128
-sudo ceph osd lspools
+ceph-mon-01 $ sudo ceph osd pool create backups 128
+ceph-mon-01 $ sudo ceph osd pool create vms 128
+ceph-mon-01 $ sudo ceph osd lspools
+
+ceph-mon-01 $ sudo rbd pool init volumes
+ceph-mon-01 $ sudo rbd pool init images
+ceph-mon-01 $ sudo rbd pool init backups
+ceph-mon-01 $ sudo rbd pool init vms
 
 sudo ceph auth get-or-create client.images mon 'allow r' osd 'allow class-read object_prefix rdb_children, allow rwx pool=images' -o /etc/ceph/ceph.client.images.keyring
 
@@ -191,16 +194,15 @@ ceph auth get-or-create client.glance mon 'profile rbd' osd 'profile rbd pool=im
 ceph auth get-or-create client.cinder mon 'profile rbd' osd 'profile rbd pool=volumes, profile rbd pool=vms, profile rbd-read-only pool=images' mgr 'profile rbd pool=volumes, profile rbd pool=vms'
 ceph auth get-or-create client.cinder-backup mon 'profile rbd' osd 'profile rbd pool=backups' mgr 'profile rbd pool=backups'
 
-ceph auth get-or-create client.glance | ssh {your-glance-api-server} sudo tee /etc/ceph/ceph.client.glance.keyring
-ssh {your-glance-api-server} sudo chown glance:glance /etc/ceph/ceph.client.glance.keyring
-ceph auth get-or-create client.cinder | ssh {your-volume-server} sudo tee /etc/ceph/ceph.client.cinder.keyring
-ssh {your-cinder-volume-server} sudo chown cinder:cinder /etc/ceph/ceph.client.cinder.keyring
-ceph auth get-or-create client.cinder-backup | ssh {your-cinder-backup-server} sudo tee /etc/ceph/ceph.client.cinder-backup.keyring
-ssh {your-cinder-backup-server} sudo chown cinder:cinder /etc/ceph/ceph.client.cinder-backup.keyring
+ceph auth get-or-create client.glance | ssh controller01 {your-glance-api-server} sudo tee /etc/ceph/ceph.client.glance.keyring
+ssh controller01 {your-glance-api-server} sudo chown glance:glance /etc/ceph/ceph.client.glance.keyring
+ceph auth get-or-create client.cinder | ssh block01 {your-volume-server} sudo tee /etc/ceph/ceph.client.cinder.keyring
+ssh block01 {your-cinder-volume-server} sudo chown cinder:cinder /etc/ceph/ceph.client.cinder.keyring
+ceph auth get-or-create client.cinder-backup | ssh block01 {your-cinder-backup-server} sudo tee /etc/ceph/ceph.client.cinder-backup.keyring
+ssh block01 {your-cinder-backup-server} sudo chown cinder:cinder /etc/ceph/ceph.client.cinder-backup.keyring
 
-ceph auth get-or-create client.cinder | ssh {your-nova-compute-server} sudo tee /etc/ceph/ceph.client.cinder.keyring
-
-ceph auth get-key client.cinder | ssh {your-compute-node} tee client.cinder.key
+ceph auth get-or-create client.cinder | ssh controller01 {your-nova-compute-server} sudo tee /etc/ceph/ceph.client.cinder.keyring
+ceph auth get-key client.cinder | ssh computes {your-compute-node} tee client.cinder.key
 
 compute-node
 	uuidgen
@@ -280,13 +282,13 @@ rbd_secret_uuid = 457eb676-33da-42ec-9a8c-9293d545c337
 (Nova compute) node:
 ceph daemon /var/run/ceph/ceph-client.cinder.19195.32310016.asok help
 
-sudo vim ceph.conf
+sudo vim /etc/ceph/ceph.conf 
 [client]
-    rbd cache = true
-    rbd cache writethrough until flush = true
-    admin socket = /var/run/ceph/guests/$cluster-$type.$id.$pid.$cctid.asok
-    log file = /var/log/qemu/qemu-guest-$pid.log
-    rbd concurrent management ops = 20
+rbd cache = true
+rbd cache writethrough until flush = true
+admin socket = /var/run/ceph/guests/$cluster-$type.$id.$pid.$cctid.asok
+log file = /var/log/qemu/qemu-guest-$pid.log
+rbd concurrent management ops = 20
 
 mkdir -p /var/run/ceph/guests/ /var/log/qemu/
 chown qemu:libvirtd /var/run/ceph/guests /var/log/qemu/
@@ -305,5 +307,102 @@ qemu-img convert -f qcow2 -O raw precise-cloudimg.img precise-cloudimg.raw
 Source:
 https://docs.ceph.com/en/latest/rbd/rbd-openstack/
 
+=========================================================================================
+ceph → libvrit → librbd → qemu
 
+block $ install qemu, libvit ceph-client
+block $ $ sudo apt -y install bridge-utils cpu-checker libvirt-clients libvirt-daemon qemu qemu-kvm ceph-common
+ceph $ sudo ceph osd pool create volumes 128
+ceph $ sudo ceph auth get-or-create client.cinder mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool=volumes, allow rwx pool=vms, allow rx pool=images'
+ceph $ sudo ceph auth get-or-create client.cinder | ssh root@controller tee /etc/ceph/ceph.client.cinder.keyring
+
+ceph $ ssh root@controller chown cinder:cinder /etc/ceph/ceph.client.cinder.keyring
+ceph $ scp /etc/ceph/ceph.conf root@pod0-spare:/etc/ceph/
+ceph $ scp /etc/ceph/ceph.client.admin.keyring root@pod0-spare:/etc/ceph/
+ceph $ ceph auth get-key client.cinder | ssh root@pod0-spare tee /etc/ceph/client.cinder.key
+
+controller $ mkdir -p /var/run/ceph/guests/ /var/log/qemu/
+controller $ cat <<EOF>> /etc/ceph/ceph.conf
+rbd default format = 2
+admin socket = /var/run/ceph/\$cluster-\$type.\$id.\$pid.\$cctid.asok
+log file = /var/log/qemu/qemu-guest-\$pid.log
+rbd concurrent management ops = 20
+[client.admin]
+keyring = /etc/ceph/ceph.client.admin.keyring 
+[client.cinder]
+keyring = /etc/ceph/ceph.client.cinder.keyring
+[client.glance]
+keyring = /etc/ceph/ceph.client.glance.keyring
+EOF
+
+controller $ uuidgen > /root/uuid
+
+controller $ cat > /etc/ceph/secret.xml <<EOF
+<secret ephemeral="no" private="no">
+<uuid>`cat /root/uuid`</uuid>
+<usage type="ceph">
+<name>client.cinder secret</name>
+</usage>
+</secret>
+EOF
+
+virsh secret-define --file /etc/ceph/secret.xml
+virsh secret-set-value --secret `cat /root/uuid` --base64 $(cat /etc/ceph/client.cinder.key) && rm /etc/ceph/client.cinder.key /etc/ceph/secret.xml
+
+openstack-config --set /etc/cinder/cinder.conf DEFAULT enabled_backends ceph
+
+block01 $ sudo vim  /etc/cinder/cinder.conf
+[lvm]
+
+[ceph]
+volume_driver = cinder.volume.drivers.rbd.RBDDriver
+rbd_cluster_name = ceph
+rbd_pool = volumes
+rbd_user = cinder
+rbd_ceph_conf = /etc/ceph/ceph.conf
+rbd_flatten_volume_from_snapshot = false
+rbd_secret_uuid = 4b5fd580-360c-4f8c-abb5-c83bb9a3f964
+rbd_max_clone_depth = 5
+rbd_store_chunk_size = 4
+rados_connect_timeout = -1
+
+backup_driver = cinder.backup.drivers.ceph
+backup_ceph_user = cinder-backup
+backup_ceph_conf = /etc/ceph/ceph.conf
+backup_ceph_chunk_size = 134217728
+backup_ceph_pool = backups
+backup_ceph_stripe_unit = 0
+backup_ceph_stripe_count = 0
+restore_discard_excess_bytes = true
+systemctl restart openstack-cinder-api.service
+systemctl restart openstack-cinder-volume.service
+systemctl restart openstack-cinder-scheduler.service
+
+
+controller $ cat  /etc/openstack-dashboard/local_settings | grep enable_backup
+OPENSTACK_CINDER_FEATURES = {
+    'enable_backup': True,
+}
+
+
+source ~/keystonerc_admin
+
+cinder type-create ceph
+cinder type-key ceph set volume_backend_name=ceph
+cinder service-list
+cinder create --volume-type ceph --display-name test 1
+
+openstack volume list
+
+rbd -p volumes ls
+rbd -p volumes ls > volume-id
+rbd -p volumes info `cat volume-id`
+
+openstack volume delete test
+openstack volume list
+cat volume-id
+
+Sources:
+https://access.redhat.com/documentation/en-us/red_hat_ceph_storage/2/html/ceph_block_device_to_openstack_guide/configuring_openstack_to_use_ceph
+http://onecloudclass.com/lab-12-integrate-ceph-with-cinder/
 
