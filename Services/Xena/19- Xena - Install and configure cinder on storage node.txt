@@ -43,5 +43,5 @@ target_helper = tgtadm
 [oslo_concurrency]
 lock_path = /var/lib/cinder/tmp
 
-service tgt restart
-service cinder-volume restart
+sudo service tgt restart
+sudo service cinder-volume restart
