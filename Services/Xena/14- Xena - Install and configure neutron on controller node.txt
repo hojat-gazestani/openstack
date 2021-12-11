@@ -1,7 +1,6 @@
 Xena - Install and configure neutron on controller01 node
 =======================================================
 
-
 sudo mysql 
 CREATE DATABASE neutron;
 
