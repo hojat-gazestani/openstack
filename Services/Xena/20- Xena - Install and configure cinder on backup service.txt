@@ -1,8 +1,5 @@
-Xena - Install and configure cinder on backup service
-=====================================================
-
----->  Block Storage node <----
-
+Xena - Install and configure cinder on backup service on Block Storage node
+===========================================================================
 sudo apt install cinder-backup -y
 
 sudo vim  /etc/cinder/cinder.conf

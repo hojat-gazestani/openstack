@@ -1,6 +1,5 @@
 Xena - Install and configure cinder on storage node
 ===================================================
-
 sudo apt install lvm2 thin-provisioning-tools -y
 
 sudo pvcreate /dev/sdb
