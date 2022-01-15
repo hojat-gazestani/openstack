@@ -10,7 +10,7 @@ ssh root@master.haii.or.th
 5.3. Prepare before installation 
 --------------------------------
 
-### add hosts file 
+# add hosts file 
 ```
 # vi /etc/hosts
 192.168.1.254 master
