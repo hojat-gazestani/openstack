@@ -28,7 +28,7 @@ client.glance   mon 'profile rbd'
 ceph-mon-01 $ scp /etc/ceph/ceph.conf root@controller01:/etc/ceph
 ceph-mon-01 $ scp /etc/ceph/ceph.client.glancekeyring  root@controller01:/etc/ceph
 #OR
-ceph-mon-01 $ ceph auth get-or-create client.glance | ssh controller01 {your-glance-api-server} sudo tee /etc/ceph/ceph.client.glance.keyring
+ceph-mon-01 $ ceph auth get-or-create client.glance | ssh root@controller01-{your-glance-api-server} sudo tee /etc/ceph/ceph.client.glance.keyring
 osp9 # sudo chgrp glance /etc/ceph/ceph.client.glance.keyring
 osp9 # sudo chmod 0640 /etc/ceph/ceph.client.glance.keyring
 
@@ -54,17 +54,17 @@ ceph-mon-01 $ sudo ceph auth get-key client.cinder |ssh user@controller01  tee c
 controller01 $ sudo chgrp cinder /etc/ceph/ceph.client.cinder.keyring
 controller01 $ sudo chmod 0640 /etc/ceph/ceph.client.cinder.keyring
 
-ceph-mon-01  $ sudo scp /etc/ceph/ceph.client.cinder.keyring root@controller01:/etc/ceph/eph.client.nova.keyring 
-ceph-mon-01  $ sudo ceph auth get-key client.cinder |ssh {all-compute-node}  tee client.nova.key
-controller01  # sudo chgrp nova /etc/ceph/ceph.client.nova.keyring
-controller01  # sudo chmod 0640 /etc/ceph/ceph.client.nova.keyring
+# ceph-mon-01  $ sudo scp /etc/ceph/ceph.client.cinder.keyring root@controller01:/etc/ceph/eph.client.nova.keyring 
+# ceph-mon-01  $ sudo ceph auth get-key client.cinder |ssh {all-compute-node}  tee client.nova.key
+# controller01  # sudo chgrp nova /etc/ceph/ceph.client.nova.keyring
+# controller01  # sudo chmod 0640 /etc/ceph/ceph.client.nova.keyring
 
-ceph auth get-or-create client.cinder | ssh block01 {your-volume-server} sudo tee /etc/ceph/ceph.client.cinder.keyring
-ssh block01 {your-cinder-volume-server} sudo chown cinder:cinder /etc/ceph/ceph.client.cinder.keyring
-ceph auth get-or-create client.cinder-backup | ssh block01 {your-cinder-backup-server} sudo tee /etc/ceph/ceph.client.cinder-backup.keyring
-ssh block01 {your-cinder-backup-server} sudo chown cinder:cinder /etc/ceph/ceph.client.cinder-backup.keyring
-ceph auth get-or-create client.cinder | ssh controller01 {your-nova-compute-server} sudo tee /etc/ceph/ceph.client.cinder.keyring
-ceph auth get-key client.cinder | ssh computes {your-compute-node} tee client.cinder.key
+sudo ceph auth get-or-create client.cinder | ssh root@block01-{your-volume-server} sudo tee /etc/ceph/ceph.client.cinder.keyring
+ssh block01-{your-cinder-volume-server} sudo chown cinder:cinder /etc/ceph/ceph.client.cinder.keyring
+sudo ceph auth get-or-create client.cinder-backup | ssh root@block01-{your-cinder-backup-server} sudo tee /etc/ceph/ceph.client.cinder-backup.keyring
+ssh root@block01-{your-cinder-backup-server} sudo chown cinder:cinder /etc/ceph/ceph.client.cinder-backup.keyring
+sudo ceph auth get-or-create client.cinder | ssh root@controller01-{your-nova-compute-server} sudo tee /etc/ceph/ceph.client.cinder.keyring
+sudo ceph auth get-key client.cinder | ssh root@computes-{your-compute-node} tee client.cinder.key
 
 ceph $ sudo ceph auth get-or-create client.cinder | ssh root@controller tee /etc/ceph/ceph.client.cinder.keyring
 ceph $ ssh root@controller chown cinder:cinder /etc/ceph/ceph.client.cinder.keyring
@@ -76,7 +76,7 @@ ceph $ ceph auth get-key client.cinder | ssh root@pod0-spare tee /etc/ceph/clien
 
 Glance Integration
 ------------------
-ceph-mon-01 $ sudo vim /etc/ceph/ceph.conf
+controller01/ceph-mon-01 $ sudo vim /etc/ceph/ceph.conf
 [client.images]
 keyring = /etc/ceph/ceph.client.images.keyring
 
@@ -104,12 +104,13 @@ ceph-mon-01 $ sudo rbd info images/a55e9417-67af-43c5-a342-85d2c4c483f7
 
 Cinder Integration with Ceph
 ----------------------------
-controller01 $ sudo vim /etc/ceph/ceph.conf
+block01 $ sudo vim /etc/ceph/ceph.conf
 [client.volumes]
-keyring = /etc/ceph/ceph.client.volumes.keyring
+#keyring = /etc/ceph/ceph.client.volumes.keyring
+keyring = /etc/ceph/ceph.client.cinder.keyring
 
-root@controller01 # uuidgen |tee /etc/ceph/cinder.uuid.txt
-controller01 $ sudo vim /etc/ceph/cinder.xml
+root@block01 # uuidgen |tee /etc/ceph/cinder.uuid.txt
+controller01 $ sudo vim /etc/ceph/cinder.uuid.xml
 ce6d1549-4d63-476b-afb6-88f0b196414f
 client.volumes secret
 
@@ -122,10 +123,10 @@ cat > secret.xml <<EOF
 </secret>
 EOF
 
-controller01 $ sudo virsh secret-define --file /etc/ceph/cinder.xml
+block01 $ sudo virsh secret-define --file /etc/ceph/secret.xml
 
-controller01  # virsh secret-set-value --secret ce6d1549-4d63-476b-afb6-88f0b196414f --base64 $(cat /etc/ceph/client.volumes.key)
-controller01  $ sudo vi /etc/cinder/cinder.conf
+block01  # virsh secret-set-value --secret ce6d1549-4d63-476b-afb6-88f0b196414f --base64 $(cat /etc/ceph/client.cinder.key)
+block01  $ sudo vi /etc/cinder/cinder.conf
 [rbd]
 volume_driver = cinder.volume.drivers.rbd.RBDDriver
 rbd_pool = volumes
@@ -138,9 +139,9 @@ glance_api_version = 2
 rbd_user = volumes
 rbd_secret_uuid = ce6d1549-4d63-476b-afb6-88f0b196414f
 
-controller01  $ openstack-service restart cinder
+block01  $ openstack-service restart cinder
 
-controller01  $ sudo cinder create --display-name="test" 1
+block01  $ sudo cinder create --display-name="test" 1
 
 ceph-mon-01  $ sudo rbd ls volumes
 volume-d251bb74-5c5c-4c40-a15b-2a4a17bbed8b
