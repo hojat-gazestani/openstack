@@ -31,14 +31,14 @@ Install OpenHPC
 
 ### Install the OpenHPC repository
 ```
-yum -y install http://build.openhpc.community/OpenHPC:/1.3/CentOS_7/x86_64/ohpcrelease-1.3-1.el7.x86_64.rpm
+# yum -y install http://build.openhpc.community/OpenHPC:/1.3/CentOS_7/x86_64/ohpcrelease-1.3-1.el7.x86_64.rpm
 ```
 
 ### Install OpenHPC Basic Package 
 ```
 # yum -y install ohpc-base
 # yum -y install ohpc-warewulf
-‍‍‍‍‍‍‍```
+```
 
 ### Set Time Server to time.haii.or.th
 ```
