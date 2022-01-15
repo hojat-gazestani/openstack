@@ -16,7 +16,7 @@ ssh root@master.haii.or.th
 192.168.1.254 master
 ```
 
-### Turn off Firewall 
+## Turn off Firewall 
 ```
 # systemctl disable firewalld
 # systemctl stop firewalld
