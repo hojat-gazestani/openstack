@@ -318,6 +318,7 @@ Use prun to launch executable
 
 [prun] Launch cmd = mpiexec -x LD_LIBRARY_PATH --prefix /opt/ohpc/pub/mpi/openmpi3-
 gnu7/3.0.0 --hostfile /var/spool/pbs/aux/4.master ./a.out (family=openmpi3)
+
 Hello, world (2 procs total)
  --> Process # 0 of 2 is alive. -> c1
  --> Process # 1 of 2 is alive. -> c2
@@ -342,16 +343,20 @@ Modify the number of processors in use to #PBS -l select=2:mpiprocs=1
 #----------------------------------------------------------
 # Job name
 #PBS -N test
+
 # Name of stdout output file
 #PBS -o job.out
+
 # Total number of nodes and MPI tasks/node requested
 #PBS -l select=2:mpiprocs=1
 
 # Run time (hh:mm:ss) - 1.5 hours
 #PBS -l walltime=01:30:00
 #----------------------------------------------------------
+
 # Change to submission directory
 cd $PBS_O_WORKDIR
+
 # Launch MPI-based executable
 prun ./a.out
 ```
@@ -369,10 +374,13 @@ view job status
 see result 
 ```
 [test@master ~]$ cat job.out
+
 [prun] Master compute host = c1
 [prun] Resource manager = pbspro
 [prun] Launch cmd = mpiexec -x LD_LIBRARY_PATH --prefix /opt/ohpc/pub/mpi/openmpi3-
 gnu7/3.0.0 --hostfile /var/spool/pbs/aux/4.master ./a.out (family=openmpi3)
+
+
 Hello, world (2 procs total)
  --> Process # 0 of 2 is alive. -> c1
  --> Process # 1 of 2 is alive. -> c2
