@@ -246,8 +246,8 @@ To delete a node, use the command wwsh node delete c1.
 
 ## 5.32. Configure VNFS for compute node 
 ```
-# wwsh -y provision set "c1" --vnfs=centos7.4 --bootstrap=`uname -r` --files=dynamic_hosts,passwd,group,shadow,network
-# wwsh -y provision set "c2" --vnfs=centos7.4 --bootstrap=`uname -r` --files=dynamic_hosts,passwd,group,shadow,network
+# wwsh -y provision set "c1" --vnfs=centos7.5 --bootstrap=`uname -r` --files=dynamic_hosts,passwd,group,shadow,network
+# wwsh -y provision set "c2" --vnfs=centos7.5 --bootstrap=`uname -r` --files=dynamic_hosts,passwd,group,shadow,network
 # wwsh provision list
 ```
 
