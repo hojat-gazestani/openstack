@@ -31,13 +31,13 @@
   * Consumers tell queues to bind named exchanges; each binding pattern e.g: "tony" or "*.ibm.*"
   * Producers send messages to exchange with a routing key e.g. "tony", 
 
-![alt text](1)
+![alt text](https://github.com/hojat-gazestani/openstack/blob/main/PIC/1-messageq.png)
 
 * openstack components
   * Each of the components interact using Messaging API.
   * Each Service, may have multiple internal services, such as scheduler, that also are Part of complete message flow.
 
-![alt text](2)
+![alt text](https://github.com/hojat-gazestani/openstack/blob/main/PIC/2-Openstack%20component.png)
 
 * How to watch the movement
   * Log, log and log
@@ -47,7 +47,7 @@
   * ElasticSearch
 
 * Nova Messaging Flow
-  * ![alt text](3)
+  * ![alt text](https://github.com/hojat-gazestani/openstack/blob/main/PIC/3-openstack%20instance%20creation%20flow.png)
 
 Request Flow Provisioning instance in Openstack
 -----------------------------------------------
@@ -82,7 +82,7 @@ Request Flow Provisioning instance in Openstack
 ### 10- Nova Scheduler finds the host.
     Nova-scheduler interacts with nova-database to find an appropriate host via filtering and weighing.
     Scheduling can go from simple to very complex. Typically this has a lot of customer specific customization. Highly likely to be a problematic area depending on customer.
-    ![alt text](nova scheduling)
+    ![alt text](https://github.com/hojat-gazestani/openstack/blob/main/PIC/4-novaSchedeling.png)
 
 ### 11- Nova Scheduler sends the replay
     Nova scheduler returns the appropriate host ID after the filtering and weighting.
