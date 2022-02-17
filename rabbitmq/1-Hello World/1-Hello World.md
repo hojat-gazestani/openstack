@@ -1,4 +1,7 @@
 # 1-Hello World
+
+![A producer and consumer](https://github.com/hojat-gazestani/openstack/blob/main/rabbitmq/pic/1-%20running%20rabbitmq%20in%20docker.png)
+
 ## Install Python client RabbitMQ libraries 
 ```shell
 python -m pip install pika --upgrade
