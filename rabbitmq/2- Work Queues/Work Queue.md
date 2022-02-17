@@ -1,4 +1,4 @@
-# Work Queeu
+# Work Queue
 * Task Queues main idea is to avoid doing a resource-intensive task immediately and having to wait for it to complete.
 * Instead we schedule the task to be done later.
 
