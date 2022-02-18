@@ -6,7 +6,7 @@
 * queue: buffer that stores messages. 
 * consumer: application that receives messages.
 * exchange: On one side it receives messages from producers and the other side it pushes them to queues.
-  [exchange](exchange)
+  ![exchange](https://github.com/hojat-gazestani/openstack/blob/main/rabbitmq/pic/3-exchange.png)
   * what to do with a message?
     * appended to a particular queue
     * appended to many queues
