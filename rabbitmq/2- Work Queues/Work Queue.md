@@ -43,5 +43,9 @@ channel.basic_publish(exchange='',
 * It doesn't look at the number of unacknowledged messages for a consumer. It just blindly dispatches every n-th message to the n-th consumer.
 
 ```python
+def callback(ch, method, properties, body):
+    ...
+    ch.basic_ack(delivery_tag=method.delivery_tag)
+
 channel.basic_qos(prefetch_count=1)
 ```
