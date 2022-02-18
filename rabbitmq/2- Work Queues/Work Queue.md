@@ -6,16 +6,21 @@
 
 ![Work queue, one producer and two consumer](https://github.com/hojat-gazestani/openstack/blob/main/rabbitmq/pic/2-RabbitMq%20Python%20Hello%20worldi.png)
 
-auto_ack=True
 
+## Message acknowledgment
+
+* auto_ack=True
+
+```shell
 python new_task.py First message.
 python new_task.py Second message..
 python new_task.py Third message...
 python new_task.py Fourth message....
 python new_task.py Fifth message.....
 
-auto_ack=False
-A timeout (30 minutes by default)is enforced on consumer delivery acknowledgement.
+```
+
+* A timeout (30 minutes by default)is enforced on consumer delivery acknowledgement.
 
 
 ## Message durability
