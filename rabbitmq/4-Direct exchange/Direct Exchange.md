@@ -23,3 +23,5 @@ channel.queue_bind(exchange=exchange_name,
 * In that case, the direct exchange will behave like fanout and will broadcast the message to all the matching queues.
 
 ### New log system
+
+![New log systemd](https://github.com/hojat-gazestani/openstack/blob/main/rabbitmq/pic/6-New%20log%20system.png)
