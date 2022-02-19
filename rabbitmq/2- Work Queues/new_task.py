@@ -5,17 +5,16 @@ connection = pika.BlockingConnection(
     pika.ConnectionParameters(host='localhost'))
 channel = connection.channel()
 
-channel.queue_declare(queue='dur_q', durable=True)
+channel.exchange_declare(exchange='logs', exchange_type='fanout')
+channel.queue_declare(queue='')
 
 message = ' '.join(sys.argv[1:]) or "Hello World......"
 channel.basic_publish(
-    exchange='',
-    routing_key='dur_q',
+    exchange='logs',
+    routing_key='not_dur',
     body=message,
-    properties=pika.BasicProperties(
-       delivery_mode = pika.spec.PERSISTENT_DELIVERY_MODE
-    ))
+    )
 
 
-print(" [x] Sent %r" % message)
-connection.close()
+#print(" [x] Sent %r" % message)
+#connection.close()
