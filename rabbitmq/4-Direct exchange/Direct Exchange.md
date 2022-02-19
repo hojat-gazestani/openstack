@@ -25,3 +25,11 @@ channel.queue_bind(exchange=exchange_name,
 ### New log system
 
 ![New log systemd](https://github.com/hojat-gazestani/openstack/blob/main/rabbitmq/pic/6-New%20log%20system.png)
+
+
+### Run
+```shell
+python receive_logs_direct.py warning error > logs_from_rabbit.log
+python receive_logs_direct.py info warning error
+python emit_log_direct.py error "Run. Run. Or it will explode."
+```
