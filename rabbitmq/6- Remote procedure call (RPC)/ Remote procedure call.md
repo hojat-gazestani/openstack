@@ -29,4 +29,11 @@ channel.basic_publish(exchange='',
 
 ### Summary
 
-![RPC]()
+![RPC](https://github.com/hojat-gazestani/openstack/blob/main/rabbitmq/pic/8-rpc.png)
+
+* Our RPC will work like this:
+  1. When the Client starts up, it creates an anonymous exclusive callback queue.
+  2. For an RPC request, the Client sends a message with two properties: **reply_to**, which is set to the callback queue and **correlation_id**, which is set to a unique value for every request.
+  3. The request is sent to an **rpc_queue** queue.
+  4. The RPC worker (aka: server) is waiting for requests on that queue. When a request appears, it does the job and sends a message with the result back to the Client, using the queue from the **reply_to** field.
+  5. The client waits for data on the callback queue. When a message appears, it checks the **correlation_id** property. If it matches the value from the request it returns the response to the application.
