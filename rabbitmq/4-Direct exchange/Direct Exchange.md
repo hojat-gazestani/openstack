@@ -13,3 +13,8 @@ channel.queue_bind(exchange=exchange_name,
                    queue=queue_name,
                    routing_key='black')
 ```
+
+![Direct exchange](https://github.com/hojat-gazestani/openstack/blob/main/rabbitmq/pic/4-Direct%20Exchange.png)
+
+### Multiple bindings
+
