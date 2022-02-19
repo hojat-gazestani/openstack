@@ -18,3 +18,8 @@ channel.queue_bind(exchange=exchange_name,
 
 ### Multiple bindings
 
+![Multiple bindings](https://github.com/hojat-gazestani/openstack/blob/main/rabbitmq/pic/5-Multiple%20bindings.png)
+
+* In that case, the direct exchange will behave like fanout and will broadcast the message to all the matching queues.
+
+### New log system
