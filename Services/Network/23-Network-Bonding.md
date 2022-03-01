@@ -56,3 +56,11 @@ bond-miimon 100
 bond-lacp-rate 1
 bond-slaves none
 ```
+
+### test
+```shell
+speedometer -r bond0 -t bond0
+
+iperf -s
+iperf -c 192.168.1.8
+```
