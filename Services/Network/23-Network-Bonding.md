@@ -64,3 +64,27 @@ speedometer -r bond0 -t bond0
 iperf -s
 iperf -c 192.168.1.8
 ```
+
+### linux vlan
+```shell
+sudo apt-get install vlan
+sudo modprobe 8021q
+modinfo 8021q
+
+sudo vconfig add eno1 52
+
+sudo vim /etc/network/interfaces
+auto enp1s0.10
+iface enp1s0.10 inet dhcp
+	vlan-raw-device enp1s0
+	
+auto eno1.52
+iface eno1.52 inet static
+     address 172.20.52.196
+     netmask 255.255.255.0
+     
+	
+sudo ifup enp1s0.10
+
+sudo ip addr add 192.168.100.2/24 dev enp1s0.100
+```
