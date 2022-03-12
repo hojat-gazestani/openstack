@@ -43,6 +43,13 @@ bonding mode=4 miimon=100 lacp_rate=1
 ```
 
 #### Linux Network Configuration
+* Manual
+```shell
+sudo ip link add bond0 type bond mode 802.3ad
+sudo ip link set eno1 master bond0
+sudo ip link set eno2 master bond0
+```
+
 * active-backup setup,
 ```shell
 auto eno1
@@ -80,10 +87,10 @@ iface bond0 inet static
      address 10.0.0.80
      gateway 10.0.0.1
      netmask 255.255.255.0
-    bond-mode 4 OR 802.3ad 
-    bond-miimon 100
-    bond-lacp-rate 1
-    bond-slaves none
+     bond-mode 4 #OR 802.3ad 
+     bond-miimon 100
+     bond-lacp-rate 1
+     bond-slaves none
 ```
 
 ### test
