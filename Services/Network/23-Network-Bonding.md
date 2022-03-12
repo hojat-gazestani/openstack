@@ -62,7 +62,7 @@ iface eno2 inet manual
     bond-master bond0
 
 auto bond0
-iface bond0 inet static
+iface bond0 inet manual
     address 192.168.1.10
     gateway 192.168.1.1
     netmask 255.255.255.0
@@ -83,11 +83,11 @@ iface eno4 inet manual
      bond-master bond0
  
 auto bond0
-iface bond0 inet static
+iface bond0 inet manual
      address 10.0.0.80
      gateway 10.0.0.1
      netmask 255.255.255.0
-     bond-mode 4 #OR 802.3ad 
+     bond-mode 802.3ad 
      bond-miimon 100
      bond-lacp-rate 1
      bond-slaves none
