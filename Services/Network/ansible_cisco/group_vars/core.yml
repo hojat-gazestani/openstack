@@ -1,0 +1,8 @@
+# core_sw_01 and core_sw_02.
+---
+svi_int:
+ - name: vlan15
+   ip: "{{ vlan15.ip }}"
+   mask: 255.255.255.0
+   vip: 10.0.15.252 
+   pri: "{{ vlan15.pri }}"

@@ -1,0 +1,13 @@
+---
+- name: core switch configurations
+  hosts: core
+  gather_facts: no
+  connection: local
+
+  tasks:
+  - name: create vlans
+    ios_config:
+      provider: "{{ provider }}"
+      lines: name {{ item.name }}
+      parents: vlan {{ item.vlan_id }}
+    with_items: "{{ vlans }}"

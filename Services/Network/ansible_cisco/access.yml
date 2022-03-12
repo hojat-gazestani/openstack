@@ -1,0 +1,17 @@
+
+enable secret cisco
+
+ip domain-name cloud.arcfava.com
+
+crypto key generate rsa modulus 1024
+
+
+username hoji privilege 15 secret cisco
+
+input ssh"
+line vty 0 4
+ login local 
+ transport input ssh 
+
+int vlan1
+ ip address 10.0.0.51 255.255.255.0
