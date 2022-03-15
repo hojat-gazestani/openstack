@@ -123,6 +123,20 @@ iface eno1.52 inet static
      address 172.20.52.196
      netmask 255.255.255.0
      
+auto bond1.240
+iface bond1.240 inet manual
+
+auto br-vxlan
+iface br-vxlan inet static
+        address 172.29.240.15
+        netmask 255.255.255.0
+        bridge_ports bond1.240
+        bridge_stp off
+        
+auto br-vlan
+iface br-vlan inet manual
+        bridge_ports bond1
+        bridge_stp off
   
 sudo ifup enp1s0.10
 
