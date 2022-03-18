@@ -1,6 +1,7 @@
 import pika
 import uuid
 
+
 class FibonacciRpcClient(object):
 
     def __init__(self):

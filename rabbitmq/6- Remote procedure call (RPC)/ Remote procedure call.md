@@ -2,6 +2,7 @@
 * run a function on a remote computer and wait for the result
 
 #### Client interface
+*  call:  sends an RPC request and blocks until the answer is received
 ```python
 fibonacci_rpc = FibonacciRpcClient()
 result = fibonacci_rpc.call(4)
@@ -9,6 +10,9 @@ print("fib(4) is %r" % result)
 ```
 
 ### Callback queue
+* A client sends a request message and a server replies with a response message.
+* In order to receive a response the client needs to send a 'callback' queue address with the request. Let's try it:
+
 ```python
 result = channel.queue_declare(queue='', exclusive=True)
 callback_queue = result.method.queue
