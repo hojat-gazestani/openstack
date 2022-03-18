@@ -1,0 +1,4 @@
+---
+vlans:
+ - { vlan_id: 15, name: voice15} 
+ - { vlan_id: 55, name: data55}

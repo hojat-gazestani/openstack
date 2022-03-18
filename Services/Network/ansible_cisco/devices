@@ -1,0 +1,17 @@
+[core]
+core_sw_01 ansible_host=10.0.0.51 ansible_hostname=core_sw_01
+core_sw_02 ansible_host=10.0.0.52 ansible_hostname=core_sw_02
+
+[access]
+acc_sw_01 ansible_host=10.0.0.53 ansible_hostname=acc_sw_01
+acc_sw_02 ansible_host=10.0.0.54 ansible_hostname=acc_sw_02
+acc_sw_03 ansible_host=10.0.0.55 ansible_hostname=acc_sw_03
+acc_sw_04 ansible_host=10.0.0.56 ansible_hostname=acc_sw_04
+
+[switches:children]
+core
+access
+
+[routers]
+rtr_01 ansible_host=10.0.0.101 ansible_hostname=rtr_01
+rtr_02 ansible_host=10.0.0.102 ansible_hostname=rtr_02
