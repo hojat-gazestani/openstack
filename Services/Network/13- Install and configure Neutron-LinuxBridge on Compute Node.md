@@ -1,5 +1,6 @@
-Networking service Installation Guide - Compute Node
-====================================================
+## Networking service Installation Guide - Compute Node
+```shell
+
 sudo apt install neutron-linuxbridge-agent
 
 sudo vim /etc/neutron/neutron.conf 
@@ -21,8 +22,11 @@ password = openstack
 [oslo_concurrency]
 lock_path = /var/lib/neutron/tmp
 
-Provider networks
------------------
+```
+
+### Provider networks
+```shell
+
 sudo vim /etc/neutron/plugins/ml2/linuxbridge_agent.ini
 [linux_bridge]
 physical_interface_mappings = provider:ens192
@@ -37,8 +41,11 @@ firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
 sudo sysctl net.bridge.bridge-nf-call-iptables
 sudo sysctl net.bridge.bridge-nf-call-ip6tables
 
-Self-service networks
----------------------
+```
+
+### Self-service networks
+```shell
+
 sudo vim /etc/neutron/plugins/ml2/linuxbridge_agent.ini
 [linux_bridge]
 physical_interface_mappings = provider:ens192
@@ -54,9 +61,11 @@ firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
 
 sudo sysctl net.bridge.bridge-nf-call-iptables
 sudo sysctl net.bridge.bridge-nf-call-ip6tables
+```
 
-Configure the Compute service to use the Networking service
------------------------------------------------------------
+### Configure the Compute service to use the Networking service
+```shell
+
 sudo vim /etc/nova/nova.conf 
 [neutron]
 auth_url = http://controller01:5000
@@ -71,9 +80,11 @@ password = openstack
 sudo service nova-compute restart
 sudo service neutron-linuxbridge-agent restart
 
-Verify operation
-================
+```
+### Verify operation
+```shell
 . admin-openrc
 openstack extension list --network
 
 openstack network agent list
+```

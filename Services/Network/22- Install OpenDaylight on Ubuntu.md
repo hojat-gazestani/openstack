@@ -1,5 +1,6 @@
-Install OpenDaylight on Ubuntu 20.04 LTS
-========================================
+## Install OpenDaylight on Ubuntu 20.04 LTS
+```shell
+
 sudo apt-get -y update && sudo apt-get -y upgrade
 
 sudo apt-get -y install unzip openjdk-8-jre
@@ -21,8 +22,10 @@ cd karaf-0.8.4/
 feature:list
 
 
-How to install OpenDaylight as a Service on Ubuntu 18.04 LTS
-============================================================
+```
+### How to install OpenDaylight as a Service on Ubuntu 18.04 LTS
+```shell
+
 
 sudo apt-get update
 sudo apt-get -y install unzip vim wget openjdk-8-jre
@@ -92,8 +95,10 @@ sudo systemctl start opendaylight
 
 ps -ef | grep karaf
 
-Mininet
-=======
+```
+### Mininet
+```shell
+
 sudo mn --controller=remote,ip=172.16.50.51,port=6633
 
 feature:install odl-restconf
@@ -105,8 +110,12 @@ mininet$ vim start-mininet-network.sh
 sudo mn --topo linear,3 --mac --controller=remote,ip=127.0.0.1,port=6633 --switch ovs,protocols=openflow13
 mininet$ ./start-mininet-network.sh
 
-Other
-====
+```
+### Other
+```shell
+
 sudo update-alternatives --install /usr/bin/stop stop /usr/local/karaf/karaf-0.8.4/bin/stop 1
 sudo update-alternatives --config stop
 which stop
+
+```

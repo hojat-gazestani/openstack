@@ -1,5 +1,6 @@
-ODL Installation - Contrller Node
-================================
+### ODL Installation - Contrller Node
+```shell
+
 openstack router remove subnet router1 subnet1ID
 openstack router delete router1
 
@@ -60,7 +61,7 @@ sudo apt install openvswitch-switch
 sudo systemctl start openvswitch-switch.service
 /usr/share/openvswitch/scripts/ovs-ctl start
 
-sudo ovs-vsctl show 
+sudo ovs-vsctl show
 #Open vSwitch ID
 
 sudo ovs-vsctl set Open_vSwitch <OPENVSWITCH ID> other_config={local_ip=<TUNNEL INTERFACE IP>}
@@ -75,8 +76,10 @@ sudo ovs-vsctl show
 sudo neutron-odl-ovs-hostconfig
 sudo ovs-vsctl show
 
-Verifying the inegration
-========================
+```
+### Verifying the inegration
+````shell
+
 neutron router-create router1
 neutron net-create private
 neutron subnet-create private --name=private_subnet 172.0.0.0/24
@@ -85,9 +88,12 @@ nova boot --flavor <flavor> --image <image id> --nic net-id=<network id> vinoth-
 
 curl -u admin:admin http://${OPENDAYLIGHTs SERVER}:8080/controller/nb/v2/neutron/networks
 
-sources
-=======
+````
+### sources
+```shell
 https://superuser.openstack.org/articles/open-daylight-integration-with-openstack-a-tutorial/
 https://docs.openstack.org/networking-odl/pike/install/installation.html
 https://docs.opendaylight.org/projects/netvirt/en/latest/openstack-guide/openstack-with-netvirt.html
 http://sapham.net/2019/05/18/opendaylight-101-integrate-with-openstack.html
+
+```

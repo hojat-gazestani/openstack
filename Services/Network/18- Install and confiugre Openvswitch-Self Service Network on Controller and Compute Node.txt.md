@@ -1,7 +1,8 @@
 https://docs.openstack.org/neutron/victoria/admin/deploy-ovs-selfservice.html
 
-Network - openvswitch - self service - Controller Node
-======================================================
+### Network - openvswitch - self service - Controller Node
+```shell
+
 sudo apt install ovs layer2-agent layer3-agent ovs
 
 sudo vim neutron.conf 
@@ -20,8 +21,10 @@ vni_ranges = VNI_START:VNI_END
 
 sudo systemctl neutrom-server ovs-agent
 
-Network node
-============
+```
+### Network node
+```shell
+
 sudo apt install ovs layer2-agent layer3-agent
 
 sudo vim neutron.conf
@@ -64,8 +67,9 @@ interface_driver = openvswitch
 
 sudo systemctl start ovs-agnet layer3-agnet
 
-Compute nodes
-=============
+```
+### Compute nodes
+```shell
 
 sudo vim openvswitch_agent.ini
 [ovs]
@@ -77,13 +81,18 @@ l2_population = True
 
 sudo systemctl restart ovs-agent
 
-Verify service operation
-========================
+```
+
+### Verify service operation
+```shell
 . admin-openrc
 openstack network agent list
 
-Create initial networks - Controller
-===================================
+```
+
+### Create initial networks - Controller
+```shell
+
 . admin-openrc
 openstack network set --external provider1
 
@@ -102,10 +111,11 @@ openstack router add subnet router1 selfservice1-v6
 
 openstack router set --external-gateway provider1 router1
 
-Verify network operation
-========================
-ip netns
+```
+### Verify network operation
+```shell
 
+ip netns
 
 . demo-openrc
 openstack security group rule create --proto icmp default
@@ -123,3 +133,5 @@ openstack floating ip create provider1
 openstack server add floating ip selfservice-instance1 203.0.113.16
 
 ping -c 4 203.0.113.16
+
+```

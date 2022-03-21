@@ -1,8 +1,8 @@
-Create networks on contrller
-===========================
+## Create networks on contrller
 
-Create the provider network
----------------------------
+
+### Create the provider network
+```shell
 . admin-openrc
 
 openstack network create  --share --external \
@@ -14,8 +14,10 @@ openstack subnet create --network provider \
   --dns-nameserver 8.8.4.4 --gateway 172.16.55.254 \
   --subnet-range 172.16.55.0/24 provider
 
-Self-service network
---------------------
+```
+### Self-service network
+```shell
+
 openstack network create selfservice
 
 openstack subnet create --network selfservice \
@@ -26,10 +28,13 @@ openstack router create router
 openstack router add subnet router selfservice
 openstack router set router --external-gateway provider
 
-Verify operation
-================
+```
+### Verify operation
+```shell
 
 controller$ ip netns
 
 openstack port list --router router
 
+
+```

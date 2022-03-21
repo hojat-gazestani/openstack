@@ -1,5 +1,6 @@
-Networking service Installation Guide - Controller Node
-=======================================================
+## Networking service Installation Guide - Controller Node
+```shell
+
 sudo mysql
 
 CREATE DATABASE neutron;
@@ -24,9 +25,11 @@ openstack endpoint create --region RegionOne \
   network internal http://controller01:9696
 openstack endpoint create --region RegionOne \
   network admin    http://controller01:9696
+```
 
-Provider networks
-----------------
+### Provider networks
+```shell
+
 sudo apt install neutron-server neutron-plugin-ml2 \
   neutron-linuxbridge-agent neutron-dhcp-agent \
   neutron-metadata-agent -y
@@ -102,8 +105,10 @@ interface_driver = linuxbridge
 dhcp_driver = neutron.agent.linux.dhcp.Dnsmasq
 enable_isolated_metadata = true
 
-Self-service networks
-----------------------
+```
+### Self-service networks
+```shell
+
 sudo apt install neutron-server neutron-plugin-ml2 \
   neutron-linuxbridge-agent neutron-l3-agent neutron-dhcp-agent \
   neutron-metadata-agent -y
@@ -188,15 +193,19 @@ interface_driver = linuxbridge
 dhcp_driver = neutron.agent.linux.dhcp.Dnsmasq
 enable_isolated_metadata = true
 
-metadata agent
---------------
+```
+### metadata agent
+```shell
+
 sudo vim  /etc/neutron/metadata_agent.ini
 [DEFAULT]
 nova_metadata_host = controller01
 metadata_proxy_shared_secret = openstack
 
-Configure the Compute service to use the Networking service
------------------------------------------------------------
+```
+### Configure the Compute service to use the Networking service
+```shell
+
 sudo vim /etc/nova/nova.conf 
 [neutron]
 auth_url = http://controller01:5000
@@ -210,8 +219,9 @@ password = openstack
 service_metadata_proxy = true
 metadata_proxy_shared_secret = openstack
 
-Finalize installation
-=====================
+```
+### Finalize installation
+```shell
 
 sudo su -s /bin/sh -c "neutron-db-manage --config-file /etc/neutron/neutron.conf \
   --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head" neutron
@@ -224,3 +234,5 @@ sudo service neutron-dhcp-agent restart
 sudo service neutron-metadata-agent restart
 
 sudo service neutron-l3-agent restart
+
+```

@@ -1,7 +1,8 @@
 https://docs.openstack.org/neutron/victoria/admin/deploy-ovs-provider.html
 
-network - Open vSwitch - provider on contorller node
-====================================================
+## network - Open vSwitch - provider on contorller node
+```shell
+
 sudo apt install neutron-server ml2-plugin
 
 sudo vim /etc/neutron/neutron.conf
@@ -40,8 +41,11 @@ network_vlan_ranges = provider
 sudo su -s /bin/sh -c "neutron-db-manage --config-file /etc/neutron/neutron.conf \
   --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head" neutron
 
-Configure the Compute service to use the Networking service
------------------------------------------------------------
+```
+
+### Configure the Compute service to use the Networking service
+```shell
+
 sudo vim /etc/nova/nova.conf
 [neutron]
 auth_url = http://controller01:5000
@@ -55,8 +59,10 @@ password = openstack
 service_metadata_proxy = true
 metadata_proxy_shared_secret = openstack
 
-Compute nodes
-=============
+```
+### Compute nodes
+```shell
+
 sudo apt install ovs layer2 agent dhcp-agent metadata-agent ovs
 sudo apt install openvswitch-switch neutron-openvswitch-agent neutron-dhcp-agent neutron-metadata-agent -y
 
@@ -95,8 +101,9 @@ sudo vim /etc/neutron/metadata_agent.ini
 nova_metadata_host = controller
 metadata_proxy_shared_secret = openstack
 
-Configure the Compute service to use the Networking service
------------------------------------------------------------
+```
+### Configure the Compute service to use the Networking service
+```shell
 sudo vim /etc/nova/nova.conf
 [neutron]
 auth_url = http://controller01:5000
@@ -117,13 +124,17 @@ ovs-vsctl add-port br-provider PROVIDER_INTERFACE
 
 sudo systemctl start ovs-agent dhcp-agent metadata-agent
 
-Verify service operation
-========================
+```
+
+### Verify service operation
+```shell
 . admin-openrc
 openstack network agent list
 
-Create initial networks
------------------------
+```
+### Create initial networks
+```shell
+
 . admin-openrc
 
 openstack network create --share --provider-physical-network provider \
@@ -137,8 +148,10 @@ openstack subnet create --subnet-range fd00:203:0:113::/64 --gateway fd00:203:0:
   --ip-version 6 --ipv6-address-mode slaac --network provider1 \
   --dns-nameserver 2001:4860:4860::8844 provider1-v6
 
-Verify network operation
-========================
+```
+### Verify network operation
+```shell
+
 ip netns
 openstack security group rule create --proto icmp default
 openstack security group rule create --ethertype IPv6 --proto ipv6-icmp default
@@ -153,3 +166,5 @@ openstack server list
 ping -c 4 203.0.113.13
 
 ping6 -c 4 fd00:203:0:113:f816:3eff:fe58:be4e
+
+```
