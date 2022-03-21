@@ -1,4 +1,5 @@
-##### SQL database for Ubuntu #####
+## SQL database for Ubuntu
+```shell
 sudo apt install -y mariadb-server python3-pymysql
 
 sudo vim /etc/mysql/mariadb.conf.d/99-openstack.cnf
@@ -14,3 +15,4 @@ character-set-server = utf8
 sudo service mysql restart
 
 sudo mysql_secure_installation
+```

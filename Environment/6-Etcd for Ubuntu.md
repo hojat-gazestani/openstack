@@ -1,6 +1,7 @@
-##### Etcd for Ubuntu #####
-----> controller <----
+## Etcd for Ubuntu
 
+### controller 
+```shell
 sudo apt install etcd -y
 
 sudo vim /etc/default/etcd
@@ -13,7 +14,9 @@ ETCD_INITIAL_ADVERTISE_PEER_URLS="http://192.168.60.20:2380"
 ETCD_ADVERTISE_CLIENT_URLS="http://192.168.60.20:2379"
 ETCD_LISTEN_PEER_URLS="http://0.0.0.0:2380"
 ETCD_LISTEN_CLIENT_URLS="http://192.168.60.20:2379"
-
-----> Finalize installation <----
+```
+### Finalize installation
+```shell
 sudo systemctl enable etcd
 sudo systemctl restart etcd
+```
