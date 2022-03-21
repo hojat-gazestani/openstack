@@ -1,10 +1,11 @@
-####  horizon installation for Victoria #####
+##  horizon installation for Victoria
+```shell
 
-sudo apt install openstack-dashboard -y 
+sudo apt install openstack-dashboard -y
 
-sudo vim /etc/openstack-dashboard/local_settings.py 
+sudo vim /etc/openstack-dashboard/local_settings.py
 OPENSTACK_HOST = "controller01"
-ALLOWED_HOSTS = ['*'] 
+ALLOWED_HOSTS = ['*']
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
@@ -42,14 +43,17 @@ OPENSTACK_NEUTRON_NETWORK = {
     'enable_fip_topology_check': False,
 }
 
-TIME_ZONE = "Asia/Tehran"	
+TIME_ZONE = "Asia/Tehran"
 
 sudo vim /etc/apache2/conf-available/openstack-dashboard.conf
 WSGIApplicationGroup %{GLOBAL}
 
-----> Finalize installation <----
+```
+### Finalize installation 
+```shell
 sudo systemctl reload apache2.service
-
-----> Verify operation for Ubuntu <-----
-
+```
+### Verify operation for Ubuntu
+```shell
 http://controller01/horizon
+```

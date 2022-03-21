@@ -1,9 +1,9 @@
-##### Install and configure Placement from PyPI #####
-----> controller <----
+## Install and configure Placement for Ubuntu
 
-sudo apt install python3-pip
-sudo pip3 install python-openstackclient
+*** it has some bug on Wallaby, use PyPi for Wallaby****
 
+### controller 
+```shell
 sudo mysql
 
 CREATE DATABASE placement;
@@ -23,25 +23,24 @@ openstack service create --name placement \
   --description "Placement API" placement
 
 openstack endpoint create --region RegionOne \
-  placement public http://controller01:8778
+  placement public http://controller2:8778
 openstack endpoint create --region RegionOne \
-  placement internal http://controller01:8778
+  placement internal http://controller2:8778
 openstack endpoint create --region RegionOne \
-  placement admin http://controller01:8778
+  placement admin http://controller2:8778
 
-pip3 install openstack-placement pymysql
+sudo apt install placement-api
 
 sudo vim /etc/placement/placement.conf
 [placement_database]
-connection = mysql+pymysql://placement:openstack@controller01/placement
+connection = mysql+pymysql://placement:openstack@controller2/placement
 
 [api]
-auth_strategy = keystone  
+auth_strategy = keystone
 
 [keystone_authtoken]
-www_authenticate_uri = http://controller01:5000/
-auth_url = http://controller01:5000/
-memcached_servers = controller01:11211
+auth_url = http://controller2:5000/v3
+memcached_servers = controller2:11211
 auth_type = password
 project_domain_name = Default
 user_domain_name = Default
@@ -49,14 +48,19 @@ project_name = service
 username = placement
 password = openstack
 
-debug = true
+sudo  su -s /bin/sh -c "placement-manage db sync" placement
 
-$ sudo apt install python3-placement
-$ placement-manage db sync
+sudo service apache2 restart
+```
 
-----> Finalize installation <----
-sudo pip install uwsgi
-sudo uwsgi -M --http :8778 --wsgi-file /usr/local/bin/ lacement-api \
-        --processes 2 --threads 10
 
-$ curl http://controller01:8778/
+### Verify Installation 
+```shell
+. admin-openrc
+placement-status upgrade check
+
+pip3 install osc-placement 
+
+openstack --os-placement-api-version 1.2 resource class list --sort-column name
+openstack --os-placement-api-version 1.6 trait list --sort-column name
+```

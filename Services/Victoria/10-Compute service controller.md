@@ -1,6 +1,8 @@
-###### Compute service ######
-----> controller <----
+## Compute service
 
+### controller
+
+```shell
 sudo mysql
 
 CREATE DATABASE nova_api;
@@ -119,11 +121,11 @@ sudo service nova-scheduler restart
 sudo service nova-conductor restart
 sudo service nova-novncproxy restart
 
----------------------------------
+```
 
-nova troubleshooting
-====================
+### nova troubleshooting
 
+```shell
 sudo su -s /bin/sh -c "nova-manage cell_v2 delete_cell --cell_uuid  00000000-0000-0000-0000-000000000000" nova
 
 sudo su -s /bin/sh -c "nova-manage api_db sync" nova
@@ -135,3 +137,4 @@ sudo su -s /bin/sh -c "nova-manage db sync" nova
 sudo su -s /bin/sh -c "nova-manage cell_v2 list_cells" nova
 
 openstack compute service list --service nova-compute
+```

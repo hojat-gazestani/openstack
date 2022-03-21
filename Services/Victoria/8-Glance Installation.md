@@ -1,6 +1,8 @@
-##### Glance Installation #####
-----> controller <----
+## Glance Installation
 
+### controller
+
+```shell
 sudo mysql
 
 CREATE DATABASE glance;
@@ -56,3 +58,4 @@ filesystem_store_datadir = /var/lib/glance/images/
 sudo su -s /bin/sh -c "glance-manage db_sync" glance
 
 sudo service glance-api restart
+```

@@ -1,6 +1,8 @@
-##### Keystone Installation Tutorial for Ubuntu #####
-----> controller <-----
+## Keystone Installation Tutorial for Ubuntu
 
+### controller
+
+```shell
 sudo mysql
 
 CREATE DATABASE keystone;
@@ -38,8 +40,11 @@ sudo keystone-manage bootstrap --bootstrap-password openstack \
 
 sudo vim /etc/apache2/apache2.conf
 ServerName controller001
+```
 
-----> Finalize the installation <----
+### Finalize the installation 
+
+```shell
 sudo service apache2 restart
 
 export OS_USERNAME=admin
@@ -49,8 +54,11 @@ export OS_USER_DOMAIN_NAME=Default
 export OS_PROJECT_DOMAIN_NAME=Default
 export OS_AUTH_URL=http://controller001:5000/v3
 export OS_IDENTITY_API_VERSION=3
+```
 
-----> Create a domain, projects, users, and roles <----
+### Create a domain, projects, users, and roles 
+
+```shell
 $ openstack domain create --description "An Example Domain" example
 
 $ openstack project create --domain default \
@@ -65,8 +73,10 @@ $ openstack user create --domain default \
 $ openstack role create myrole
 
 $ openstack role add --project myproject --user myuser myrole
+```
 
-----> Verify operation <----
+### Verify operation
+```shell
 $ unset OS_AUTH_URL OS_PASSWORD
 $ openstack --os-auth-url http://controller001:5000/v3 \
   --os-project-domain-name Default --os-user-domain-name Default \
@@ -75,8 +85,10 @@ $ openstack --os-auth-url http://controller001:5000/v3 \
 $ openstack --os-auth-url http://controller001:5000/v3 \
   --os-project-domain-name Default --os-user-domain-name Default \
   --os-project-name myproject --os-username myuser token issue
+```
 
-----> Create OpenStack client environment scripts <----
+### Create OpenStack client environment scripts
+```shell
 vim admin-openrc
 export OS_PROJECT_DOMAIN_NAME=Default
 export OS_USER_DOMAIN_NAME=Default
@@ -96,7 +108,10 @@ export OS_PASSWORD=openstack
 export OS_AUTH_URL=http://controller001:5000/v3
 export OS_IDENTITY_API_VERSION=3
 export OS_IMAGE_API_VERSION=2
+```
 
-----> Using the scripts <----
+### Using the scripts 
+```shell
 $ . admin-openrc
 $ openstack token issue
+```

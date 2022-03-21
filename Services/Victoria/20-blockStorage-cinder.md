@@ -1,4 +1,5 @@
-----> Block Storage <----
+## Block Storage
+```shell
 
 sudo apt install lvm2 thin-provisioning-tools
 
@@ -41,7 +42,10 @@ target_helper = tgtadm
 [oslo_concurrency]
 lock_path = /var/lib/cinder/tmp
 
-----> controller <----
+```
+### controller 
+```shell
+
 . admin-openrc
 openstack volume service list
 
@@ -49,7 +53,9 @@ openstack volume service list
 sudo service tgt restart
 sudo service cinder-volume restart
 
-## Block storage 
+```
+### Block storage 
+```shell
 . demo-openrc
 
 openstack volume create --size 1 volume1
@@ -63,3 +69,4 @@ openstack volume list
 
 ssh provider-instance
 sudo fdisk -l
+```

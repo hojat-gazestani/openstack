@@ -1,6 +1,9 @@
-##### Heat installation #####
-----> controller <----
-sudo mysql 
+## Heat installation
+
+### controller
+```shell
+
+sudo mysql
 
 GRANT ALL PRIVILEGES ON heat.* TO 'heat'@'localhost' \
   IDENTIFIED BY 'openstack';
@@ -17,21 +20,21 @@ openstack service create --name heat \
   --description "Orchestration" orchestration
 openstack service create --name heat-cfn \
   --description "Orchestration"  cloudformation
-  
+
 openstack endpoint create --region RegionOne \
   orchestration public http://controller01:8004/v1/%\(tenant_id\)s
 openstack endpoint create --region RegionOne \
   orchestration internal http://controller01:8004/v1/%\(tenant_id\)s
 openstack endpoint create --region RegionOne \
   orchestration admin http://controller01:8004/v1/%\(tenant_id\)s
-  
+
 openstack endpoint create --region RegionOne \
   cloudformation public http://controller01:8000/v1
 openstack endpoint create --region RegionOne \
   cloudformation internal http://controller01:8000/v1
 openstack endpoint create --region RegionOne \
   cloudformation admin http://controller01:8000/v1
-  
+
 openstack domain create --description "Stack projects and users" heat
 openstack user create --domain heat --password-prompt heat_domain_admin
 openstack role add --domain heat --user-domain heat --user heat_domain_admin admin
@@ -83,3 +86,4 @@ sudo su -s /bin/sh -c "heat-manage db_sync" heat
 
 source:
 https://docs.openstack.org/heat/victoria/install/
+```

@@ -1,7 +1,9 @@
 https://docs.openstack.org/cinder/victoria/install/
 
-##### Cinder Installation #####
-----> controller <----
+## Cinder Installation
+
+### controller
+```shell
 
 sudo mysql
 
@@ -64,7 +66,10 @@ lock_path = /var/lib/cinder/tmp
 
 # su -s /bin/sh -c "cinder-manage db sync" cinder
 
-----> compute <----
+```
+### compute 
+```shell
+
 sudo vim /etc/nova/nova.conf
 [cinder]
 os_region_name = RegionOne
@@ -72,4 +77,4 @@ os_region_name = RegionOne
 sudo service nova-api restart
 sudo service cinder-scheduler restart
 sudo service apache2 restart
-
+```

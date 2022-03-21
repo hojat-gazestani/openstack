@@ -1,8 +1,10 @@
-https://docs.openstack.org/nova/victoria/install/compute-install-ubuntu.html
+* https://docs.openstack.org/nova/victoria/install/compute-install-ubuntu.html
 
-##### compute service ######
-----> compute node <----
+##compute service
 
+### compute node
+
+```shell
 sudo apt install nova-compute -y
 
 sudo vim /etc/nova/nova.conf
@@ -48,8 +50,11 @@ password = openstack
 
 [scheduler]
 discover_hosts_in_cells_interval = 300
+```
 
-----> Finalize installation <----
+### Finalize installation
+
+```shell
 egrep -c '(vmx|svm)' /proc/cpuinfo
 
 sudo vim /etc/nova/nova-compute.conf 
@@ -57,12 +62,18 @@ sudo vim /etc/nova/nova-compute.conf
 virt_type = qemu
 
 sudo service nova-compute restart
+```
 
-----> Add the compute node to the cell database <----
+### Add the compute node to the cell database 
+
+```shell
 . admin-openrc
 openstack compute service list --service nova-compute
 
 sudo su -s /bin/sh -c "nova-manage cell_v2 discover_hosts --verbose" nova
+```
 
-----> Tshout <----
- mysql -u nova -h controller011 -popenstack
+### Tshout
+```shell
+mysql -u nova -h controller011 -popenstack
+```

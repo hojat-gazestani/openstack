@@ -5,7 +5,8 @@ connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost')
 channel = connection.channel()
 
 n = 30
-result = channel.queue_declare(queue='send_q', exclusive=True)
+result = channel.queue_declare(queue='send_q' )
+#result = channel.queue_declare(queue='send_q', exclusive=True)
 callback_queue = result.method.queue
 
 response = None
