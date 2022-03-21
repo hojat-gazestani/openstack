@@ -13,11 +13,15 @@ interface Port-channel2
 interface GigabitEthernet1/0/23
  switchport trunk encapsulation dot1q
  switchport mode trunk
+ switchport trunk allowed vlan 1,51
+ spanning-tree portfast trunk
  channel-group 2 mode active
 
 interface GigabitEthernet1/0/24
  switchport trunk encapsulation dot1q
  switchport mode trunk
+ switchport trunk allowed vlan 1,51
+ spanning-tree portfast trunk
  channel-group 2 mode active
 ```
 
