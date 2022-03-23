@@ -1,9 +1,16 @@
 ## Memcached for Ubuntu
 
 ### controller
+* 16.04
+```shell
+sudo apt install memcached python-memcache
+```
+
+* 18.04
 ```shell
 sudo apt install memcached python3-memcache -y 
-
+```
+```shell
 sudo vim /etc/memcached.conf
 -l 172.16.50.41
 ```
