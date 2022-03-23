@@ -7,19 +7,19 @@ CREATE DATABASE nova;
 CREATE DATABASE nova_cell0;
 
 GRANT ALL PRIVILEGES ON nova_api.* TO 'nova'@'localhost' \
-  IDENTIFIED BY '_PASS';
+  IDENTIFIED BY 'NOVA_DBPASS';
 GRANT ALL PRIVILEGES ON nova_api.* TO 'nova'@'%' \
-  IDENTIFIED BY '_PASS';
+  IDENTIFIED BY 'NOVA_DBPASS';
 
 GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'localhost' \
-  IDENTIFIED BY '_PASS';
+  IDENTIFIED BY 'NOVA_DBPASS';
 GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'%' \
-  IDENTIFIED BY '_PASS';
+  IDENTIFIED BY 'NOVA_DBPASS';
 
 GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'localhost' \
-  IDENTIFIED BY '_PASS';
+  IDENTIFIED BY 'NOVA_DBPASS';
 GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'%' \
-  IDENTIFIED BY '_PASS';
+  IDENTIFIED BY 'NOVA_DBPASS';
 ```
 
 ```shell
@@ -62,26 +62,21 @@ sudo apt install nova-api nova-conductor nova-consoleauth \
 ```shell
 sudo vim /etc/nova/nova.conf
 [DEFAULT]
-# ...
-transport_url = rabbit://openstack:_PASS@controller
+transport_url = rabbit://openstack:RABBIT_PASS@controller
 my_ip = 10.0.0.11
 use_neutron = True
 firewall_driver = nova.virt.firewall.NoopFirewallDriver
 
 [api_database]
-# ...
-connection = mysql+pymysql://nova:_PASS@controller/nova_api
+connection = mysql+pymysql://nova:NOVA_DBPASS@controller/nova_api
 
 [database]
-# ...
-connection = mysql+pymysql://nova:_PASS@controller/nova
+connection = mysql+pymysql://nova:NOVA_DBPASS@controller/nova
 
 [api]
-# ...
 auth_strategy = keystone
 
 [keystone_authtoken]
-# ...
 auth_url = http://controller:5000/v3
 memcached_servers = controller:11211
 auth_type = password
@@ -89,24 +84,20 @@ project_domain_name = default
 user_domain_name = default
 project_name = service
 username = nova
-password = _PASS
+password = NOVA_PASS
 
 [vnc]
 enabled = true
-# ...
 server_listen = $my_ip
 server_proxyclient_address = $my_ip
 
 [glance]
-# ...
 api_servers = http://controller:9292
 
 [oslo_concurrency]
-# ...
 lock_path = /var/lib/nova/tmp
 
 [placement]
-# ...
 os_region_name = RegionOne
 project_domain_name = Default
 project_name = service
@@ -114,7 +105,10 @@ auth_type = password
 user_domain_name = Default
 auth_url = http://controller:5000/v3
 username = placement
-password = _PASS
+password = PLACEMENT_PASS
+
+[scheduler]
+discover_hosts_in_cells_interval = 300
 ````
 
 ```shell

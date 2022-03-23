@@ -6,9 +6,9 @@ sudo mysql -u root -p
 CREATE DATABASE neutron;
 
 GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'localhost' \
-  IDENTIFIED BY '_PASS';
+  IDENTIFIED BY 'NEUTRON_DBPASS';
 GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'%' \
-  IDENTIFIED BY '_PASS';
+  IDENTIFIED BY 'NEUTRON_DBPASS';
 
 ```
 
@@ -45,7 +45,7 @@ sudo vim /etc/neutron/neutron.conf
 # ...
 core_plugin = ml2
 service_plugins =
-transport_url = rabbit://openstack:_PASS@controller
+transport_url = rabbit://openstack:RABBIT_PASS@controller
 auth_strategy = keystone
 
 notify_nova_on_port_status_changes = true
@@ -61,11 +61,11 @@ project_domain_name = default
 user_domain_name = default
 project_name = service
 username = neutron
-password = _PASS
+password = NEUTRON_PASS
 
 [database]
 # ...
-connection = mysql+pymysql://neutron:_PASS@controller/neutron
+connection = mysql+pymysql://neutron:NEUTRON_DBPASS@controller/neutron
 
 [nova]
 # ...
@@ -76,7 +76,7 @@ user_domain_name = default
 region_name = RegionOne
 project_name = service
 username = nova
-password = _PASS
+password = NOVA_PASS
 
 [oslo_concurrency]
 # ...
@@ -156,7 +156,7 @@ sudo vim /etc/neutron/neutron.conf
 core_plugin = ml2
 service_plugins = router
 allow_overlapping_ips = true
-transport_url = rabbit://openstack:_PASS@controller
+transport_url = rabbit://openstack:RABBIT_PASS@controller
 auth_strategy = keystone
 
 notify_nova_on_port_status_changes = true
@@ -164,7 +164,7 @@ notify_nova_on_port_data_changes = true
 
 [database]
 # ...
-connection = mysql+pymysql://neutron:_PASS@controller/neutron
+connection = mysql+pymysql://neutron:NEUTRON_DBPASS@controller/neutron
 
 [keystone_authtoken]
 # ...
@@ -176,7 +176,7 @@ project_domain_name = default
 user_domain_name = default
 project_name = service
 username = neutron
-password = _PASS
+password = NEUTRON_PASS
 
 [nova]
 # ...
@@ -288,7 +288,7 @@ user_domain_name = default
 region_name = RegionOne
 project_name = service
 username = neutron
-password = _PASS
+password = NEUTRON_PASS
 service_metadata_proxy = true
 metadata_proxy_shared_secret = METADATA_PASS
 ````
