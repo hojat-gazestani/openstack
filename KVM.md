@@ -10,8 +10,6 @@
 
 ## Create a KVM Guest using Virsh
 
-
-
 ### Check whether Virtualization is enabled
 
 ```shell
@@ -126,9 +124,10 @@ virsh undefine --domain mysql-server --remove-all-storage
 
 # Cookbook
 
-## 
+## Getting start
 
-### install QEMU from packages
+### Install QEMU from packages
+
 ```shell
 sudo apt-get update -y
 sudo apt-get install -y qemu
@@ -146,8 +145,12 @@ file -s debian.img
 qemu-img info debian.img
 ```
 
-### outlined to partition and create a filesystem on the blank
-image:
+
+
+### Preparing images for OS installation with qemu-nbd
+
+* outlined to partition and create a filesystem on the blank image:
+
 * associate the blank image file
 ```shell
 modprobe nbd
@@ -157,8 +160,7 @@ qemu-nbd --format=raw --connect=/dev/nbd0 debian.img
 * Create two partitions on the block device. swap,root partition
 ```shell
 sfdisk /dev/nbd0 << EOF 
-,1024,82 
-; 
+,1024,82; 
 EOF 
 
 ls -la /dev/nbd0*
@@ -172,6 +174,8 @@ file -s debian.img
 
 
 
+### Installing a custom OS on the image with debootstrap
+
 ```shell
 sudo apt install -y debootstrap
 
@@ -181,9 +185,117 @@ mount | grep mnt
 sudo debootstrap --arch=amd64 --include="openssh-server vim" stable /mnt/kvm-os http://httpredir.debian.org/debian/
  ls -lah /mnt/kvm-os
  
- mount --bind /dev/ /mnt/dev
- ls -la /mnt/dev/ | grep nbd0 
+ mount --bind /dev/ /mnt/kvm-os/dev
+ ls -la /mnt/kvm-os/dev/ | grep nbd0 
+ sudo chroot /mnt/
+ pwd
+ cat /etc/debian_version
+ mount -t proc none /proc
+ mount -t sysfs none /sys
+ apt-get install -y --force-yes linux-image-amd64 grub2
+ grub-install /dev/nbd0 --force
+ update-grub2
+ passwd
+ echo "pts/0" >> /etc/securetty
+ systemctl set-default multi-user.target
+ echo "/dev/sda2 / ext4 defaults,discard 0 0" > /etc/fstab
+ umount /proc/ /sys/ /dev/
+ exit
  
- 
+ grub-install /dev/nbd0 --root-directory=/mnt/kvm-os/ --modules="biosdisk part_msdos" --force
+ sed -i 's/nbd0p2/sda2/g' /mnt/kvm-os/boot/grub/grub.cfg 
+ umount /mnt/kvm-os/
+ qemu-nbd --disconnect /dev/nbd0 
 ```
+
+
+
+### Resizing an image
+
+```sh
+apt install kpartx
+
+qemu-img info debian.img
+qemu-img resize -f raw debian.img +10GB
+qemu-img info debian.img
+```
+
+
+
+print the name of the first unused loop device:
+
+```shell
+losetup -f
+```
+
+> /dev/loop0
+
+```she
+losetup /dev/loop1 debian.img
+```
+
+
+
+Read the partition information from the associated loop device and create device mappings:
+
+```shell
+# Read the partition information from the associated loop device
+kpartx -av /dev/loop1
+
+# Representing the partitions on the raw image:
+ls -la /dev/mapper
+
+# Obtain some information from the root partition mapping:
+tune2fs -l /dev/mapper/loop1p2
+
+# Check the filesystem on the root partition of the mapped device:
+e2fsck /dev/mapper/loop1p2 
+
+# Remove the journal from the root partition device:
+tune2fs -O ^has_journal /dev/mapper/loop1p2
+
+# Ensure that the journaling has been removed:
+tune2fs -l /dev/mapper/loop1p2 | grep "features"
+
+# Remove the partition mapping:
+kpartx -dv /dev/loop1
+
+# Detach the loop device from the image:
+losetup -d /dev/loop1
+
+# Associate the raw image with the network block device:
+qemu-nbd --format=raw --connect=/dev/nbd0 debian.img
+
+# List the available partitions
+fdisk /dev/nbd0
+p
+d
+n
+p
+2
+w
+
+# Associate the first unused loop device with the raw image file
+losetup /dev/loop1 debian.img
+
+# Read the partition information from the associated loop device and create the device mappings
+kpartx -av /dev/loop1
+
+# perform a filesystem check
+e2fsck -f /dev/mapper/loop1p2
+ 
+# Resize the filesystem on the root partition of the mapped device:
+resize2fs /dev/nbd0p2
+
+# Create the filesystem journal because we removed it earlier
+tune2fs -j /dev/mapper/loop1p2
+
+# Remove the device mappings
+kpartx -dv /dev/loop1
+losetup -d /dev/loop1
+```
+
+
+
+### Using pre-existing images
 
