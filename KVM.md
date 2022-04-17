@@ -299,3 +299,71 @@ losetup -d /dev/loop1
 
 ### Using pre-existing images
 
+```shell
+ wget https://people.debian.org/~aurel32/qemu/amd64/debian_wheezy_amd64_standard.qcow2
+ wget https://cdimage.debian.org/cdimage/openstack/archive/9.3.0/debian-9.3.0-openstack-amd64.qcow2
+ 
+ qemu-img info debian-9.3.0-openstack-amd64.qcow2
+```
+
+
+
+### Running virtual machine with qemu-system-*
+
+```shell
+# list binaries file you have
+ls -la /usr/bin/qemu-system-*
+
+# what CPU architectures QEMU supports on the host system: 
+qemu-system-x86_64 --cpu help
+
+# Start a new QEMU virtual machine using the x86_64 CPU architecture
+qemu-system-x86_64 \
+-name debian -vnc 146.20.141.254:0 \
+-cpu Nehalem \
+-m 1024 \
+-drive format=raw,index=2,file=debian.img \
+-daemonize
+
+# Ensure that the instance is running
+pgrep -lfa qemu
+
+# Terminate the Debian QEMU instance
+sudo pkill qemu
+
+```
+
+
+
+### Starting the QEMU VM with KVM support
+
+````shell
+cat /proc/cpuinfo | egrep "vmx|svm" | uniq
+
+modprobe kvm
+
+# Start a QEMU instance with KVM support
+sudo qemu-system-x86_64 -name debian -vnc 192.168.122.1:0 -m 1024 -drive format=raw,index=2,file=debian.img -enable-kvm -daemonize
+
+# Ensure that the instance is running: 
+pgrep -lfa qemu
+
+# Terminate the instance
+pkill qemu
+````
+
+
+
+### Connecting to a running instance with VNC
+
+```shell
+# Start a new KVM-accelerated qemu instance:
+sudo qemu-system-x86_64 -name debian -vnc 192.168.122.1:0 -m 1024 -drive format=raw,index=2,file=debian.img -enable-kvm -daemonize
+
+# Ensure that the instance is running: 
+pgrep -lfa qemu
+
+# Start the VNC client and connect to the VNC server on the IP address and display
+port you specified in step 1
+```
+
