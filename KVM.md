@@ -367,3 +367,171 @@ pgrep -lfa qemu
 port you specified in step 1
 ```
 
+
+
+## Install and configuring libvirt
+
+````shell
+# install the package
+sudo apt update && apt install libvirt-bin
+
+# Ensure that the libvirt daemon is running
+pgrep -lfa libvirtd
+
+# Examine the default configuration: 
+cat /etc/libvirt/libvirtd.conf | grep -vi "#" | sed '/^$/d'
+
+# Disable the security driver in QEMU 
+vim /etc/libvirt/qemu.conf
+security_driver = "none"
+
+# Restart the libvirt daemon: 
+sudo /etc/init.d/libvirt-bin restart
+
+# Examine all configuration files in the libvirt directory:
+ls -la /etc/libvirt/
+````
+
+
+
+### Defining KVM instances by XML file
+
+```shell
+# List all virtual machines
+ virsh list --all
+```
+
+
+
+```xml
+ vim kvm1.xml
+<domain type='kvm' id='1'>
+	<name>kvm1</name>
+    <memory unit='KiB'>1048576</memory>
+    <vcpu placement='static'>1</vcpu>
+    <os>
+        <type arch='x86_64' machine='pc-i440fx-trusty'>hvm</type>
+        <boot dev='hd'/>
+    </os>
+    <on_poweroff>destroy</on_poweroff>
+    <on_reboot>restart</on_reboot>
+    <on_crash>restart</on_crash>
+    <devices>
+        <emulator>/usr/bin/qemu-system-x86_64</emulator>
+        <disk type='file' device='disk'>
+        	<driver name='qemu' type='raw'/>
+        	<source file='./debian.img'/>
+        	<target dev='hda' bus='ide'/>
+        	<alias name='ide0-0-0'/>
+        	<address type='drive' controller='0' bus='0' target='0' unit='0'/>
+        </disk>
+        <interface type='network'>
+            <source network='default'/>
+            <target dev='vnet0'/>
+            <model type='rtl8139'/>
+            <alias name='net0'/>
+            <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+        </interface>
+        <graphics type='vnc' port='5900' autoport='yes' listen='192.168.122.1'>
+            <listen type='address' address='192.168.122.1'/>
+        </graphics>        
+    </devices>
+    <seclabel type='none'/>
+</domain>
+```
+
+
+
+```shell
+# Define the virtual machine
+virsh define kvm1.xml
+
+# List all instances in all states
+virsh list --all
+```
+
+
+
+### Defining KVM instances by virt-inst
+
+```shell
+# installing the package:
+sudo apt install virtinst
+
+# define and start the new instance by invoking the virt-install
+virt-install --name kvm2 --ram 1024 --disk path=/tmp/debian.img,format=raw --graphics vnc,listen=192.168.122.1 --noautoconsole --hvm --import
+
+virsh list --all
+ 
+# virtual machine definition file that was automatically generated
+cat /etc/libvirt/qemu/kvm1.xml
+```
+
+
+
+### Starting, stopping, and removing KVM instances
+
+```shell
+# List all instances in all states
+virsh list --all
+
+virsh start kvm1
+
+# Examine the running process for the virtual machine: 
+pgrep -lfa qemu
+
+# Terminate the VM and ensure its status changed from running to shut off: 
+virsh destroy kvm1
+virsh list --all
+
+# Remove the instance definition: 
+virsh undefine kvm1
+virsh list --all
+```
+
+
+
+### Inspecting and editing KVM config
+
+```shell
+# Ensure that you have a running
+virsh list
+
+# Dump the instance configuration file to standard output (stdout).
+virsh dumpxml kvm1
+
+# Save the configuration to a new file, as follows: 
+virsh dumpxml kvm1 > kvm1.xml
+
+# Edit the configuration in place and change the available memory for the VM:
+virsh edit kvm1
+```
+
+
+
+### Building new KVM instances with virt-install and using the console
+
+```shell
+# Install a new KVM virtual machine 
+virt-install --name kvm3 --ram 1024 --extra args="text console=tty0 utf8 console=ttyS0,115200" --graphics vnc,listen=192.168.122.1 --hvm --location=http://ftp.us.debian.org/debian/dists/stable/main/installer-amd64/ --disk path=/tmp/kvm1.img,size=8
+
+# Attach to the console
+virsh console kvm3
+
+# Start the newly provisioned VM
+virsh start kvm1
+
+# Using your favorite VNC client, connect to the instance
+systemctl enable serial-getty@ttyS0.service
+systemctl start serial-getty@ttyS0.service
+
+# Close the VNC session and connect to the virtual instance from the host OS
+virsh console kvm1
+	free -m
+	
+Disconnect from the console using the Ctrl + ] key 
+
+# Examine the image file created after the installation: 
+qemu-img info /tmp/kvm1.img
+```
+
