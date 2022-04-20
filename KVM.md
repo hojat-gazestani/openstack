@@ -459,7 +459,7 @@ virsh list --all
 sudo apt install virtinst
 
 # define and start the new instance by invoking the virt-install
-virt-install --name kvm2 --ram 1024 --disk path=/tmp/debian.img,format=raw --graphics vnc,listen=192.168.122.1 --noautoconsole --hvm --import
+virt-install --name kvm2 --ram 1024 --disk path=debian.img,format=raw --graphics vnc,listen=192.168.122.1 --extra-args='console=tty0' -v --hvm --import
 
 virsh list --all
  
@@ -487,6 +487,9 @@ virsh list --all
 # Remove the instance definition: 
 virsh undefine kvm1
 virsh list --all
+
+# error: Refusing to undefine while domain managed save image exists
+virsh managedsave-remove kvm1
 ```
 
 
@@ -509,11 +512,11 @@ virsh edit kvm1
 
 
 
-### Building new KVM instances with virt-install and using the console
+### Building new KVM instances with virt-install and using the console	
 
 ```shell
 # Install a new KVM virtual machine 
-virt-install --name kvm3 --ram 1024 --extra args="text console=tty0 utf8 console=ttyS0,115200" --graphics vnc,listen=192.168.122.1 --hvm --location=http://ftp.us.debian.org/debian/dists/stable/main/installer-amd64/ --disk path=/tmp/kvm1.img,size=8
+virt-install --name kvm22 --ram 1024 --extra args="text console=tty0 utf8 console=ttyS0,115200" --graphics vnc,listen=192.168.122.1 --hvm --location=http://ftp.ir.debian.org/debian/dists/stable/main/installer-amd64/ --disk path=kvm22.img,size=8
 
 # Attach to the console
 virsh console kvm3
@@ -533,5 +536,202 @@ Disconnect from the console using the Ctrl + ] key
 
 # Examine the image file created after the installation: 
 qemu-img info /tmp/kvm1.img
+```
+
+
+
+### Create A KVM Virtual Machine Using Qcow2 Image
+
+```shell
+virt-customize -a debian-9.qcow2 --root-password password:123
+
+virt-install --name debian9 --memory 2048 --vcpus 1 --disk ./debian-9.qcow2,bus=sata --import --os-variant debian9 --network default --vnc --noautoconsole 
+
+
+# List OS Variants
+osinfo-query os
+
+# To launch the same VM next time, run:
+virsh --connect qemu:///system start centos8
+```
+
+
+
+### Managing CPU and memory resources in KVM
+
+```shell
+# Get memory statistics for the running instance:
+virsh dommemstat kvm1
+
+# To increase the maximum amount of memory that can be allocated to the VM
+virsh setmaxmem kvm1 4G --config
+virsh setmaxmem kvm1 512M --config
+
+# Update the available memory for the VM to 2 GB
+virsh setmem kvm1 --size 512M
+
+virsh dumpxml kvm1 | grep memory
+
+####
+# CPUs:
+####
+
+# Get information about the guest CPUs: 
+virsh vcpuinfo kvm1
+
+# List the number of virtual CPUs used by the guest OS: 
+virsh vcpucount kvm1
+
+# Change the number of allocated CPUs to 4 for the VM
+virsh edit kvm1
+ 
+# Ensure that the CPU count update took effect: 
+virsh vcpucount kvm1
+virsh dumpxml kvm1 | grep -i cpu
+```
+
+
+
+### Attaching block devices to virtual machines
+
+```shell
+# Create a new 1 GB image file:
+dd if=/dev/zero of=/tmp/new_disk.img bs=1M count=1024
+
+# Attach the file as a new disk to the KVM instance: 
+virsh attach-disk kvm1 /tmp/new_disk.img vda --live
+
+# Connect to the KVM instance via the console: 
+virsh console kvm1
+	# Print the kernel ring buffer and check for the new block device: 
+	dmesg | grep vda
+
+	# Examine the new block device: 
+	fdisk -l /dev/vda
+
+# Dump the instance configuration from the host OS: 
+virsh dumpxml kvm1
+
+# Get information about the new disk: 
+virsh domblkstat kvm1 vda
+
+# Detach the disk: 
+virsh detach-disk kvm1 vda --live
+
+# Copy or create a new raw image: 
+cp /tmp/new_disk.img /tmp/other_disk.img
+
+# Write the following config file: 
+cat other_disk.xml
+
+# Attach the new device: 
+virsh attach-device kvm1 --live other_disk.xml
+
+# Detach the block device: 
+ virsh detach-device kvm1 other_disk.xml --live
+```
+
+
+
+### Sharing dirctory between a running VM and host OS
+
+```shell
+mkdir /tmp/shared
+touch /tmp/shared/file
+
+virsh edit kvm1
+<devices>
+    ...
+    <filesystem type='mount' accessmode='passthrough'>
+    <source dir='/home/hoji/Documents/ww/kvm/shared'/>
+    <target dir='tmp_shared'/>
+    </filesystem>
+    ...fie
+</devices>
+
+# Selinux configuration
+sudo semanage fcontext -a -t svirt_image_t "/home/hoji/Documents/ww/kvm/shared(/.*)?"
+sudo restorecon -vR /home/hoji/Documents/ww/kvm/shared
+
+virsh start kvm1
+
+virsh console kvm1
+	lsmod | grep 9p
+	mount -t 9p -o trans=virtio tmp_shared /mnt
+	mount | grep tmp_shared
+	ls -la /mnt/
+```
+
+
+
+### Autostarting KVM instances
+
+```shell
+# Enable the VM autostart: 
+virsh autostart kvm1
+
+# Obtain information for the instance: 
+virsh dominfo kvm1
+
+# Stop the running instance and ensure that it is in the shut off state: 
+virsh destroy kvm1
+virsh list --all
+
+# Stop the libvirt daemon and ensure that it is not running: 
+/etc/init.d/libvirt-bin stop
+pgrep -lfa libvirtd
+
+# Start back the libvirt daemon:
+/etc/init.d/libvirt-bin start
+
+# List all running instances: 
+virsh list --all
+
+# Disable the autostart option: 
+virsh autostart kvm1 --disable
+
+# Verify the change: 
+virsh dominfo kvm1 | grep -i autostart
+ 
+```
+
+
+
+### Working with storage pools
+
+```shell
+# Copy the raw Debian image file 
+cp /tmp/kvm1.img /var/lib/libvirt/images/
+
+# Create the following storage pool definition: 
+cat file_storage_pool.xml
+
+# Define the new storage pool
+virsh pool-define file_storage_pool.xml
+
+# List all storage pools: 
+virsh pool-list --all
+
+# Start the new storage pool and ensure that it's active: 
+virsh pool-start file_virtimages
+virsh pool-list --all
+
+# Enable the autostart feature on the storage pool: 
+virsh pool-autostart file_virtimages
+virsh pool-list --all
+ 
+# Obtain more information about the storage pool: 
+virsh pool-info file_virtimages
+
+# List all volumes that are a part of the storage pool: 
+virsh vol-list file_virtimages
+
+# Obtain information on the volume:
+virsh vol-info /var/lib/libvirt/images/kvm1.img
+
+# Start new KVM instance using the storage pool and volume
+virt-install --name kvm1 --ram 1024 --graphics vnc,listen=146.20.141.158 --hvm --disk vol=file_virtimages kvm1.img --import
+
+virsh list --all
 ```
 
