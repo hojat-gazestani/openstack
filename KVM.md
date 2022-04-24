@@ -705,6 +705,21 @@ cp /tmp/kvm1.img /var/lib/libvirt/images/
 
 # Create the following storage pool definition: 
 cat file_storage_pool.xml
+<pool type="dir">
+  <name>file_virtimages</name>
+  <target>
+    <path>/var/lib/libvirt/images</path>
+  </target>
+</pool>
+
+# Cannot access storage file, Permission denied Error in KVM Libvirt
+sudo vim /etc/libvirt/qemu.conf
+	user = "hoji"
+	group = "libvirt"
+
+sudo systemctl restart libvirtd
+sudo usermod -a -G libvirt $(whoami)
+sudo chown hoji:libvirt /var/lib/libvirt/images
 
 # Define the new storage pool
 virsh pool-define file_storage_pool.xml
@@ -730,8 +745,106 @@ virsh vol-list file_virtimages
 virsh vol-info /var/lib/libvirt/images/kvm1.img
 
 # Start new KVM instance using the storage pool and volume
-virt-install --name kvm1 --ram 1024 --graphics vnc,listen=146.20.141.158 --hvm --disk vol=file_virtimages kvm1.img --import
+virt-install --name kvm1 --ram 1024 --graphics vnc,listen=146.20.141.158 --hvm --disk vol=file_virtimages/kvm1.img --import
 
 virsh list --all
 ```
+
+
+
+### Managing volumes
+
+```shell
+# List the available storage pools: 
+virsh pool-list --all
+
+# List the available volumes, that are a part of the storage pool:
+virsh vol-list file_virtimages
+
+# Create a new volume with the specified size:
+virsh vol-create-as file_virtimages new_volume.img 9G
+
+# List the volumes on the filesystem: 
+ls -lah /var/lib/libvirt/images/
+ 
+# Obtain information about the new volume: 
+qemu-img info /var/lib/libvirt/images/new_volume.img
+ 
+# Use the virsh command to get even more information:
+virsh vol-info new_volume.img --pool file_virtimages
+
+# Dump the volume configuration: 
+virsh vol-dumpxml new_volume.img --pool file_virtimages
+ 
+# Resize the volume and display the new size: 
+virsh vol-resize new_volume.img 10G --pool file_virtimages
+virsh vol-info new_volume.img --pool file_virtimages
+
+# Delete the volume and list all available volumes in the storage pool: 
+virsh vol-delete new_volume.img --pool file_virtimages
+virsh vol-list file_virtimages
+
+# Clone the existing volume: 
+virsh vol-clone kvm1.img kvm2.img --pool file_virtimages
+virsh vol-list file_virtimages
+
+
+```
+
+
+
+### Managing secrets
+
+```shell
+# List all available secrets:
+virsh secret-list
+```
+
+
+
+```html
+# Create the following secrets definition:
+vim volume_secret.xml
+<secret ephemeral='no'>
+  <description>Passphrase for the iSCSI iscsi-target.linux-admins.net target server</description> 	   <usage type='iscsi'>
+    <target>iscsi_secret</target>
+  </usage>
+</secret>
+```
+
+
+
+```shell
+# Create the secret and ensure that it has been successfully created:
+virsh secret-define volume_secret.xml
+virsh secret-list
+
+# Set a value for the secret:
+virsh secret-set-value 7ad1c208c2c5-4723-8dc5-e2f4f576101a $(echo "some_password" | base64)
+```
+
+
+
+```html
+# Create a new iSCSI pool definition file:
+vim iscsi.xml
+<pool type='iscsi'>
+  <name>iscsi_virtimages</name>
+  <source>
+    <host name='iscsi-target.linux-admins.net'/>
+    <device path='iqn2004-04.ubuntu:ubuntu16:iscsi.libvirtkvm'/>
+    <auth type='chap' username='iscsi_user'>
+      <secret usage='iscsi_secret'/>
+    </auth>
+  </source>
+  <target>
+    <path>/dev/disk/by-path</path>
+  </target>
+</pool>
+
+```
+
+
+
+## KVM Networking with libvirt
 
