@@ -2,15 +2,13 @@
 
 
 
+# KVM
 
+## Getting start
 
-# Trick
+### Install  packages
 
-
-
-## Create a KVM Guest using Virsh
-
-### Check whether Virtualization is enabled
+#### Check whether Virtualization is enabled
 
 ```shell
 egrep -c '(vmx|svm)' /proc/cpuinfo
@@ -18,124 +16,22 @@ kvm-ok
 sudo apt install -y cpu-checker
 ```
 
-### Install KVM, Qemu, virt-manager & libvirtd daemon
-```shell
-sudo apt install -y qemu qemu-kvm libvirt-daemon libvirt-daemon-system bridge-utils virt-manager
-lsmod | grep kvm
-sudo systemctl status libvirtd.service
-```
 
-### Create a virtual machine from the command line
-```shell
-virt-install --name=linuxconfig-vm \
---vcpus=1 \
---memory=1024 \
---cdrom=/tmp/debian-9.0.0-amd64-netinst.iso \
---disk size=5 \
---os-variant=debian8
-```
-
-
-
-```shell
-root@kvmhost /tmp> virt-install \
---network bridge:br0 \
---name testmachine \
---ram=128 \
---vcpus=1 \
---disk path=/var/lib/libvirt/images/testmachine.img,size=0.2 \
---nographics \
---location /tmp/Core-current.iso \
---extra-args "console=ttyS0"
-
-osinfo-query os
-
-virsh list --all
-
-virsh edit linuxconfig-vm
-```
-
-
-
-## Delete a KVM Guest Using Virsh
-
-### List all a VM guests
-```shell
-virsh list
-virsh list --all
-```
-
-```shell
-virsh dumpxml VM_NAME
-virsh dumpxml --domain VM_NAME
-```
-
-```shell
-virsh dumpxml --domain openbsd | grep 'source file'
-```
-
-### Shutdown the guest
-```shell
-virsh shutdown VM_NAME
-virsh shutdown --domain VM_NAME
-```
-
-### force a guest virtual machine to stop
-```shell
-virsh destroy VM_NAME
-virsh destroy --domain VM_NAME
-```
-### Deleting a virtual machine
-
-
-
-```shell
-virsh undefine VM_NAME
-virsh undefine --domain VM_NAME
-
-m -rf /nfswheel/kvm/openbsd.qcow2
-```
-
-* A note about error: “cannot delete inactive domain with snapshots”
-```shell
-virsh snapshot-list --domain VM_NAME
-virsh snapshot-delete --domain VM_NAME --snapshotname
-```
-
-* Remove associated VM storage volumes and snapshots while undefineing a domain/VM
-```shell
-virsh undefine --domain {VM_NAME_HERE} --storage
-
-virsh domblklist --domain {VM_NAME_HERE}
-virsh snapshot-list --domain {VM_NAME_HERE}
-
-virsh undefine --domain {VM_NAME_HERE} --remove-all-storage
-
-virsh undefine --domain {VM_NAME_HERE} --delete-snapshots
-
-virsh undefine --domain mysql-server --remove-all-storage
-
-virsh undefine --domain mysql-server --remove-all-storage 
-```
-
-
-
-
-
-# Cookbook
-
-## Getting start
-
-### Install QEMU from packages
 
 ```shell
 sudo apt-get update -y
-sudo apt-get install -y qemu
+sudo apt-get install -y qemu qemu-kvm libvirt-daemon libvirt-daemon-system bridge-utils virt-manager
 
 dpkg --list | grep qemu
+lsmod | grep kvm
+
+sudo systemctl status libvirtd.service
 ```
 
+
+
 ### Managing disk images with qemu-img
+
 ```shell
 qemu-img -h | grep Supported
 
@@ -177,6 +73,7 @@ file -s debian.img
 ### Installing a custom OS on the image with debootstrap
 
 ```shell
+
 sudo apt install -y debootstrap
 
 sudo mount /dev/nbd0p2 /mnt/kvm-os
@@ -319,7 +216,8 @@ qemu-system-x86_64 --cpu help
 
 # Start a new QEMU virtual machine using the x86_64 CPU architecture
 qemu-system-x86_64 \
--name debian -vnc 146.20.141.254:0 \
+-name debian \
+-vnc 146.20.141.254:0 \
 -cpu Nehalem \
 -m 1024 \
 -drive format=raw,index=2,file=debian.img \
@@ -358,7 +256,13 @@ pkill qemu
 
 ```shell
 # Start a new KVM-accelerated qemu instance:
-sudo qemu-system-x86_64 -name debian -vnc 192.168.122.1:0 -m 1024 -drive format=raw,index=2,file=debian.img -enable-kvm -daemonize
+sudo qemu-system-x86_64 \
+-name debian \
+-vnc 192.168.122.1:0 \
+-m 1024 \
+-drive format=raw,index=2,file=debian.img \
+-enable-kvm \
+-daemonize
 
 # Ensure that the instance is running: 
 pgrep -lfa qemu
@@ -394,7 +298,7 @@ ls -la /etc/libvirt/
 
 
 
-### Defining KVM instances by XML file
+### Create KVM instances by XML file
 
 ```shell
 # List all virtual machines
@@ -445,23 +349,77 @@ ls -la /etc/libvirt/
 ```shell
 # Define the virtual machine
 virsh define kvm1.xml
+```
 
-# List all instances in all states
+
+
+#### Dump xml
+
+````shell
+virsh dumpxml VM_NAME
+virsh dumpxml --domain VM_NAME
+
+virsh dumpxml --domain openbsd | grep 'source file'
+````
+
+
+
+#### List VM guests
+
+```shell
+virsh list
 virsh list --all
 ```
 
 
 
-### Defining KVM instances by virt-inst
+### Create KVM instances by virt-inst
 
 ```shell
 # installing the package:
 sudo apt install virtinst
 
-# define and start the new instance by invoking the virt-install
-virt-install --name kvm2 --ram 1024 --disk path=debian.img,format=raw --graphics vnc,listen=192.168.122.1 --extra-args='console=tty0' -v --hvm --import
+virt-install --name <VM-NAME> --memory <GUEST-RAM> \
+# Guest storage
+	--disk 
+	--filesystem
+# Installation method
+	--location
+	--cdrom
+	--pxe
+	--import
+	--boot
 
-virsh list --all
+
+```
+
+
+
+#### Create a virtual machine from an ISO image
+
+```shell
+virt-install \
+--name centos \
+--memory 2048 \
+--vcpus 2 \
+--disk size=8 \
+--cdrom /home/hoji/Downloads/ISO/CentOS-7-x86_64-DVD-2009.iso \
+--os-variant centos7.0
+```
+
+
+
+#### Create KVM instance by invoking the virt-install
+
+```shell
+virt-install \
+--name kvm2 \
+--ram 1024 \
+--disk path=debian.img,format=raw \
+--graphics vnc,listen=192.168.122.1 \
+--extra-args='console=tty0' \
+-v --hvm \
+--import
  
 # virtual machine definition file that was automatically generated
 cat /etc/libvirt/qemu/kvm1.xml
@@ -469,54 +427,27 @@ cat /etc/libvirt/qemu/kvm1.xml
 
 
 
-### Starting, stopping, and removing KVM instances
+#### Create KVM instances with virt-install and using the console	
 
 ```shell
-# List all instances in all states
-virsh list --all
+# Installing a virtual machine from the network
+virt-install \ 
+  --name guest1-rhel7 \ 
+  --memory 2048 \ 
+  --vcpus 2 \ 
+  --disk size=8 \ 
+  --location http://example.com/path/to/os \ 
+  --os-variant rhel7 
 
-virsh start kvm1
-
-# Examine the running process for the virtual machine: 
-pgrep -lfa qemu
-
-# Terminate the VM and ensure its status changed from running to shut off: 
-virsh destroy kvm1
-virsh list --all
-
-# Remove the instance definition: 
-virsh undefine kvm1
-virsh list --all
-
-# error: Refusing to undefine while domain managed save image exists
-virsh managedsave-remove kvm1
-```
-
-
-
-### Inspecting and editing KVM config
-
-```shell
-# Ensure that you have a running
-virsh list
-
-# Dump the instance configuration file to standard output (stdout).
-virsh dumpxml kvm1
-
-# Save the configuration to a new file, as follows: 
-virsh dumpxml kvm1 > kvm1.xml
-
-# Edit the configuration in place and change the available memory for the VM:
-virsh edit kvm1
-```
-
-
-
-### Building new KVM instances with virt-install and using the console	
-
-```shell
-# Install a new KVM virtual machine 
-virt-install --name kvm22 --ram 1024 --extra args="text console=tty0 utf8 console=ttyS0,115200" --graphics vnc,listen=192.168.122.1 --hvm --location=http://ftp.ir.debian.org/debian/dists/stable/main/installer-amd64/ --disk path=kvm22.img,size=8
+# Install KMV instances with virt-install and define console
+virt-install \
+--name kvm22 \
+--ram 1024 \
+--disk path=kvm22.img,size=8 \
+--extra args="text console=tty0 utf8 console=ttyS0,115200" \
+--graphics vnc,listen=192.168.122.1 \
+--hvm \
+--location=http://ftp.ir.debian.org/debian/dists/stable/main/installer-amd64/ 
 
 # Attach to the console
 virsh console kvm3
@@ -540,9 +471,18 @@ qemu-img info /tmp/kvm1.img
 
 
 
-### Create A KVM Virtual Machine Using Qcow2 Image
+#### Create KVM Virtual Machine Using Qcow2 Image
 
 ```shell
+# Importing a virtual machine image
+virt-install \ 
+  --name centos \ 
+  --memory 2048 \ 
+  --vcpus 2 \ 
+  --disk /path/to/imported/disk.qcow \ 
+  --import \ 
+  --os-variant centos7.0
+
 virt-customize -a debian-9.qcow2 --root-password password:123
 
 virt-install --name debian9 --memory 2048 --vcpus 1 --disk ./debian-9.qcow2,bus=sata --import --os-variant debian9 --network default --vnc --noautoconsole 
@@ -553,6 +493,137 @@ osinfo-query os
 
 # To launch the same VM next time, run:
 virsh --connect qemu:///system start centos8
+```
+
+
+
+####  Create a virtual machine using PXE
+
+```shell
+virt-install \ 
+  --name guest1-rhel7 \ 
+  --memory 2048 \ 
+  --vcpus 2 \ 
+  --disk size=8 \ 
+  --network=bridge:br0 \ 
+  --pxe \ 
+  --os-variant rhel7 
+```
+
+
+
+####  Create a virtual machine with Kickstart
+
+```shell
+virt-install \ 
+  --name guest1-rhel7 \ 
+  --memory 2048 \ 
+  --vcpus 2 \ 
+  --disk size=8 \ 
+  --location http://example.com/path/to/os \ 
+  --os-variant rhel7 \
+  --initrd-inject /path/to/ks.cfg \ 
+  --extra-args="ks=file:/ks.cfg console=tty0 console=ttyS0,115200n8" 
+```
+
+
+
+#### Create a virtual machine and scpcify networks
+
+```shell
+virt-install \
+--name testmachine \
+--ram=128 \
+--vcpus=1 \
+--disk path=/var/lib/libvirt/images/testmachine.img,size=0.2 \
+--nographics \
+--location /tmp/Core-current.iso \
+--extra-args "console=ttyS0" \
+--network bridge:br0 \
+
+osinfo-query os
+```
+
+
+
+### Starting, stopping, and removing KVM instances
+
+```shell
+# List all instances in all states
+virsh list --all
+
+virsh start kvm1
+
+# Examine the running process for the virtual machine: 
+pgrep -lfa qemu
+
+# Terminate the VM and ensure its status changed from running to shut off: 
+virsh destroy kvm1
+virsh list --all
+
+# Shutdown the guest
+virsh shutdown VM_NAME
+virsh shutdown --domain VM_NAME
+
+# Force a guest to stop
+virsh destroy VM_NAME
+virsh destroy --domain VM_NAME
+
+# Deleting a guest
+virsh undefine kvm1
+virsh undefine --domain kvm1
+
+rm -rf /nfswheel/kvm/openbsd.qcow2
+virsh list --all
+
+# error: Refusing to undefine while domain managed save image exists
+virsh managedsave-remove kvm1
+```
+
+
+
+* A note about error: “cannot delete inactive domain with snapshots”
+
+```shell
+virsh snapshot-list --domain VM_NAME
+virsh snapshot-delete --domain VM_NAME --snapshotname
+```
+
+* Remove associated VM storage volumes and snapshots while undefineing a domain/VM
+
+```shell
+virsh undefine --domain {VM_NAME_HERE} --storage
+
+virsh domblklist --domain {VM_NAME_HERE}
+virsh snapshot-list --domain {VM_NAME_HERE}
+
+virsh undefine --domain {VM_NAME_HERE} --remove-all-storage
+
+virsh undefine --domain {VM_NAME_HERE} --delete-snapshots
+
+virsh undefine --domain mysql-server --remove-all-storage
+
+virsh undefine --domain mysql-server --remove-all-storage 
+```
+
+
+
+
+
+### Inspecting and editing KVM config
+
+```shell
+# Ensure that you have a running
+virsh list
+
+# Dump the instance configuration file to standard output (stdout).
+virsh dumpxml kvm1
+
+# Save the configuration to a new file, as follows: 
+virsh dumpxml kvm1 > kvm1.xml
+
+# Edit the configuration in place and change the available memory for the VM:
+virsh edit kvm1
 ```
 
 
@@ -848,3 +919,1157 @@ vim iscsi.xml
 
 ## KVM Networking with libvirt
 
+
+
+### The Linux bridge 
+
+#### Book 
+
+
+
+##### Load module
+
+```shell
+# check whether 802.1d Ethernet bridging options is enabled
+cat /boot/config-`uname -r` | grep -i bridg
+
+# verify that the module is loaded 
+lsmod | grep bridge
+
+# obtain more information about its version and features
+modinfo bridge
+```
+
+
+
+##### Install linux bridge, Delete and Create new Virtual bridge, Add Vnet to bridge
+
+```shell
+sudo apt install bridge-utils
+ 
+# Build a new KVM instance
+virt-install --name kvm1 --ram 1024 --disk path=debian.img,format=raw --graphics vnc,listen=192.168.122.1 --noautoconsole --hvm --import
+  
+# List all the available bridge devices: 
+brctl show
+
+# Bring the virtual bridge down, delete it, and ensure that it's been deleted:
+ifconfig virbr0 down
+brctl delbr virbr0
+brctl show
+
+# Create a new bridge and bring it up: 
+brctl addbr virbr0
+brctl show
+ifconfig virbr0 up
+
+# Assign an IP address to bridge:
+ip addr add 192.168.122.1 dev virbr0
+ip addr show virbr0
+
+# List the virtual interfaces on the host OS: 
+ip a s | grep vnet
+
+# Add the virtual interface vnet0 to the bridge:
+sudo ip link add vnet0 type dummy
+brctl addif virbr0 vnet0
+brctl show virbr0
+
+# Enable the Spanning Tree Protocol (STP) on bridge and obtain more information:
+brctl stp virbr0 on
+brctl showstp virbr0
+```
+
+
+
+* From inside the KVM instance,
+
+  ```shell
+  ssh KVM-instance
+  
+  # bring the interface up
+  ifconfig eth0 up
+  
+  # request an IP address
+  dhclient eth0
+  
+  # test connectivity to the host OS: 
+  ip a s eth0
+  ping 192.168.122.1 -c 3
+  ```
+
+
+
+##### Configuration file, manage service
+
+```shell
+# Linux bridge name and IP address defined in:
+sudo cat /etc/libvirt/qemu/networks/default.xml
+
+# dnsmasq service configuration specified:
+sudo cat /var/lib/libvirt/dnsmasq/default.conf 
+
+# See DHCP server is running on the host OS and it configuration
+pgrep -lfa dnsmasq
+virsh net-edit default
+```
+
+
+
+```shell
+# examine the table of MAC addresses the bridge knows about
+brctl showmacs virbr0
+virsh console kvm1
+ip a s eth0
+```
+
+
+
+When the bridge sees a frame on one of its ports, it records the time then after a set amount of time not seeing the same MAC address again, it will remove the record from the its CAM table,  We can set the time limit in seconds before the bridge will expire the MAC address entry by executing the following command: 
+
+```shell
+brctl setageing virbr0 600
+```
+
+
+
+##### Build the brctl from source
+
+```shell
+cd /usr/src/
+apt-get update && apt-get install build-essential automake pkg-config git
+git clone git://git.kernel.org/pub/scm/linux/kernel/git/shemminger/bridge-utils.git
+cd bridge-utils/
+autoconf
+./configure && make && make install
+brctl --version
+
+```
+
+
+
+#### Site 
+
+##### Method 1: Creating Bridge Network using Virtual Machine Manager (NATed)
+
+Open Virtual Machine Manager, and go to **Edit > Connection Details > Virtual Networks**
+
+
+
+[![virtual machine manager virtual networks](https://computingforgeeks.com/wp-content/uploads/2019/04/virtual-machine-manager-virtual-networks.png?ezimgfmt=rs:696x270/rscb23/ng:webp/ngcb23)](data:image/svg+xml,)
+
+
+Configure a new network interface by clicking the **+** at the bottom of the window. Give the virtual network a name.
+
+[![virtual machine manager network name](https://computingforgeeks.com/wp-content/uploads/2019/04/virtual-machine-manager-network-name.png?ezimgfmt=rs:696x593/rscb23/ng:webp/ngcb23)](data:image/svg+xml,)
+
+Click the Forward button, on next window, provide virtual network information.
+
+[![virtual machine manager network information](https://computingforgeeks.com/wp-content/uploads/2019/04/virtual-machine-manager-network-information.png?ezimgfmt=rs:696x593/rscb23/ng:webp/ngcb23)](data:image/svg+xml,)
+
+Click forward and choose if to enable IPv6.
+
+[![virtual machine manager ipv6](https://computingforgeeks.com/wp-content/uploads/2019/04/virtual-machine-manager-ipv6.png?ezimgfmt=rs:696x593/rscb23/ng:webp/ngcb23)](data:image/svg+xml,)
+
+Select the network type and forwarding policy.
+
+
+
+[![virtual machine manager choose route](https://computingforgeeks.com/wp-content/uploads/2019/04/virtual-machine-manager-choose-route.png?ezimgfmt=rs:696x593/rscb23/ng:webp/ngcb23)](data:image/svg+xml,)
+
+Finish the setting and save your configurations. The new Virtual network should show on the overview page.
+
+[![virtual machine manager network created](https://computingforgeeks.com/wp-content/uploads/2019/04/virtual-machine-manager-network-created.png?ezimgfmt=rs:696x389/rscb23/ng:webp/ngcb23)](data:image/svg+xml,)
+
+A bridge on the host system is automatically created for the network.
+
+```
+$ brctl show virbr4      
+bridge name	bridge id		STP enabled	interfaces
+virbr4		8000.525400c2410a	yes		virbr4-nic
+```
+
+
+
+##### Method 2: Create KVM bridge with virsh command.
+
+Create a new bridge XML file.
+
+```
+vim br10.xml
+```
+
+Add bridge details to the file.
+
+```
+<network>
+  <name>br10</name>
+  <forward mode='nat'>
+    <nat>
+      <port start='1024' end='65535'/>
+    </nat>
+  </forward>
+  <bridge name='br10' stp='on' delay='0'/>
+  <ip address='192.168.30.1' netmask='255.255.255.0'>
+    <dhcp>
+      <range start='192.168.30.50' end='192.168.30.200'/>
+    </dhcp>
+  </ip>
+</network>
+```
+
+To define a network from an XML file without starting it, use:
+
+
+
+```
+$ sudo virsh net-define  br10.xml
+Network br1 defined from br10.xml
+```
+
+To start a (previously defined) inactive network, use:
+
+```
+$ sudo virsh net-start br10
+Network br10 started
+```
+
+To set network to autostart at service start:
+
+```
+$ sudo virsh net-autostart br10
+Network br10 marked as autostarted
+```
+
+Check to Confirm if autostart flag is turned to `yes` – Persistent should read yes as well.
+
+```
+$ sudo virsh net-list --all
+ Name              State    Autostart   Persistent
+----------------------------------------------------
+ br10              active   yes         yes
+ default           active   yes         yes
+ docker-machines   active   yes         yes
+ fed290            active   no          yes
+ vagrant-libvirt   active   no          yes
+```
+
+Confirm bridge creation and IP address.
+
+```
+$ ip addr show dev br10
+28: br10: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN group default qlen 1000
+    link/ether 52:54:00:94:00:f5 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.30.1/24 brd 192.168.30.255 scope global br10
+       valid_lft forever preferred_lft forever
+```
+
+
+
+##### Method 3: Create a bridge by editing network scripts (CentOS / RHEL / Fedora):
+
+Below script will create a bridge called br10.
+
+```
+sudo vim /etc/sysconfig/network-scripts/ifcfg-br10
+```
+
+With:
+
+```
+DEVICE=br10
+STP=no
+TYPE=Bridge
+BOOTPROTO=none
+DEFROUTE=yes
+NAME=br10
+ONBOOT=yes
+DNS1=8.8.8.8
+DNS2=192.168.30.1
+IPADDR=192.168.30.3
+PREFIX=24
+GATEWAY=192.168.30.1
+```
+
+
+
+The configuration of *eth0* interface that I’m bridging to will be:
+
+```
+$ cat /etc/sysconfig/network-scripts/ifcfg-eno1 
+DEVICE=eth0
+TYPE=Ethernet
+ONBOOT=yes
+BRIDGE=br10
+```
+
+Restart your network daemon.
+
+```shell
+sudo systemctl disable NetworkManager && sudo systemctl stop NetworkManager
+sudo systemctl restart network.service
+```
+
+
+
+```
+$ ip addr show dev br10
+28: br10: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN group default qlen 1000
+    link/ether 52:54:00:94:00:f5 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.30.1/24 brd 192.168.30.255 scope global br10
+       valid_lft forever preferred_lft forever
+```
+
+
+
+##### Method 4: Create a bridge by editing network scripts (Debian / Ubuntu):
+
+Configure Bridging interface:
+
+```
+$ sudo vim  /etc/network/interfaces
+auto br10 
+iface br10 inet static
+address 192.168.1.10
+network 192.168.1.1
+netmask 255.255.255.0
+broadcast 192.168.1.255
+gateway 192.168.1.1
+dns-nameservers 192.168.1.1
+bridge_ports eth0
+bridge_stp off
+```
+
+Disable all lines on eth0 interface section to look something like below:
+
+```
+auto eth0
+iface eth0 inet manual
+```
+
+Restart your networking service.
+
+```
+ sudo systemctl restart networking.service
+```
+
+
+
+##### Method 5: Using Nmcli tool
+
+Use the `nmcli` network management command line tool to  create a Linux bridge on the desired interface. Let’s first list all  available connections.
+
+```
+$ sudo nmcli connection show 
+NAME                UUID                                  TYPE      DEVICE 
+enp1s0              498869bb-0d88-4a4c-a83a-c491d1040b0b  ethernet  enp1s0 
+Wired connection 1  0977f29f-fa2e-3d7f-831c-6f41f8782be3  ethernet  enp7s0 
+```
+
+Since my bridge will be created on the second device `enp7s0`, I’ll delete the existing connection then create a bridge with this device.
+
+```
+$ sudo nmcli connection delete 0977f29f-fa2e-3d7f-831c-6f41f8782be3
+Connection 'Wired connection 1' (0977f29f-fa2e-3d7f-831c-6f41f8782be3) successfully deleted.
+```
+
+`1.` Save bridge related information to variables.
+
+```
+BR_NAME="br10"
+BR_INT="enp7s0"
+SUBNET_IP="192.168.30.10/24"
+GW="192.168.30.1"
+DNS1="8.8.8.8"
+DNS2="8.8.4.4"
+```
+
+Where:
+
+- **BR_NAME**: The name of the bridge to be created.
+- **BR_INT**: the physical network device to be used as bridge slave.
+- **SUBNET_IP**: IP address and subnet assigned to the bridge created.
+- **GW**: The IP address of the default gateway
+- **DNS1** and **DNS2**: IP addresses of DNS servers to be used.
+
+`2.` Define new bridge connection.
+
+```
+sudo nmcli connection add type bridge autoconnect yes con-name ${BR_NAME} ifname ${BR_NAME}
+```
+
+Output:
+
+```
+Connection 'br0' (be6d4520-0257-49c6-97c2-f515d6554980) successfully added.
+```
+
+`3.` Modify bridge to add IP address, Gateway and DNS
+
+```
+sudo nmcli connection modify ${BR_NAME} ipv4.addresses ${SUBNET_IP} ipv4.method manual
+sudo nmcli connection modify ${BR_NAME} ipv4.gateway ${GW}
+sudo nmcli connection modify ${BR_NAME} ipv4.dns ${DNS1} +ipv4.dns ${DNS2}
+```
+
+`4.` Add the network device as bridge slave.
+
+```
+sudo nmcli connection delete ${BR_INT}
+sudo nmcli connection add type bridge-slave autoconnect yes con-name ${BR_INT} ifname ${BR_INT} master ${BR_NAME}
+```
+
+Sample output.
+
+```
+Connection 'enp7s0' (f033dbc9-a90e-4d4c-83a9-63fd7ec1cdc1) successfully added.
+```
+
+Check connections.
+
+```
+$ sudo nmcli connection show 
+NAME    UUID                                  TYPE      DEVICE 
+br0     be6d4520-0257-49c6-97c2-f515d6554980  bridge    br0    
+enp1s0  498869bb-0d88-4a4c-a83a-c491d1040b0b  ethernet  enp1s0 
+enp7s0  f033dbc9-a90e-4d4c-83a9-63fd7ec1cdc1  ethernet  enp7s0 
+```
+
+#### Step 2: Bring up network bridge
+
+Once the network bridge connection has been created, bring it up.
+
+```
+$ sudo nmcli connection up br10
+Connection successfully activated (master waiting for slaves) (D-Bus active path: /org/freedesktop/NetworkManager/ActiveConnection/5)
+```
+
+View bridge details by running.
+
+```
+sudo nmcli connection show br10
+```
+
+The `ip addr` command should give output similar to below.
+
+```
+$ ip ad
+3: enp7s0:  mtu 1500 qdisc fq_codel master br10 state UP group default qlen 1000
+     link/ether 52:54:00:a2:f6:a8 brd ff:ff:ff:ff:ff:ff
+ 4: br10:  mtu 1500 qdisc noqueue state UP group default qlen 1000
+     link/ether 52:54:00:a2:f6:a8 brd ff:ff:ff:ff:ff:ff
+     inet 192.168.122.10/24 brd 192.168.122.255 scope global noprefixroute br10
+        valid_lft forever preferred_lft forever
+     inet6 fe80::4f2f:ce6d:dc6b:2101/64 scope link noprefixroute 
+        valid_lft forever preferred_lft forever
+```
+
+Congratulations!!. You have successfully created and configured Bridge Networking for KVM  on a Linux system. Check KVM related articles below.
+
+
+
+
+
+### The Open vSwitch	
+
+#### Remove Linux bridge, Install OVS, Add Vnet to OVS
+
+```shell
+# Remove the existing Linux bridge
+brctl show
+ifconfig virbr0 down
+brctl delbr virbr0
+brctl show
+
+# unload the kernel module for the Linux bridge before using OVS
+root@kvm:/usr/src# sudo modprobe -r bridge
+
+# Install the OVS package on Ubuntu: 
+sudo apt-get install openvswitch-switch -y
+ 
+# Ensure that the OVS processes are running: 
+pgrep -lfa switch
+
+# Ensure that the OVS kernel module has been loaded: 
+lsmod | grep switch
+
+# List the available OVS switches: 
+sudo ovs-vsctl show
+
+# Create a new OVS switch: 
+sudo ovs-vsctl add-br virbr1
+sudo ovs-vsctl show
+
+# Add the interface of the running KVM instance to the OVS switch:
+sudo ovs-vsctl add-port virbr1 vnet0
+sudo ovs-vsctl show
+
+# Configure an IP address on the OVS switch: 
+sudo ip addr add 192.168.122.1/24 dev virbr1
+ip addr show virbr1
+ 
+# Configure an IP address inside the KVM guest
+virsh console kvm1
+ifconfig eth0 up && ip addr add 192.168.122.210/24 dev eth0
+ip addr show eth0
+ping 192.168.122.1
+
+# query to database engine
+sudo ovsdb-client list-dbs
+sudo ovsdb-client list-tables
+```
+
+
+
+#### Remove OVS Vnet, Delete OVS switch
+
+```shell
+# To remove the KVM virtual interface from the OVS switch
+ovs-vsctl del-port virbr1 vnet0
+
+# To completely delete the OVS switch
+ovs-vsctl del-br virbr1 && ovs-vsctl show e5164e3e-7897-4717-b766-eae1918077b0
+```
+
+
+
+### Configuring NAT forwarding network
+
+
+
+#### How to do it
+
+```shell
+# List all available networks: 
+virsh net-list --all
+
+# Dump the configuration of the default network:
+virsh net-dumpxml default
+
+# Compare that with the XML definition file for the default network: 
+cat /etc/libvirt/qemu/networks/default.xml
+
+# List all running instances on the host: 
+virsh list --all
+
+# Ensure that the KVM instances are connected to the default Linux bridge: 
+brctl show
+```
+
+
+
+```html
+# Create a new NAT network definition:
+vim nat_net.xml
+<network>
+  <name>nat_net</name>
+  <bridge name="virbr1"/>
+  <forward/>
+  <ip address="10.10.10.1" netmask="255.255.255.0">
+    <dhcp>
+      <range start="10.10.10.2" end="10.10.10.254"/>
+    </dhcp>
+  </ip>
+</network>
+```
+
+
+
+```shell
+# Define the new network:
+virsh net-define nat_net.xml
+virsh net-list --all
+
+# Start the new network and enable autostarting
+virsh net-start nat_net
+virsh net-autostart nat_net
+virsh net-list
+
+# Obtain more information about the new network: 
+virsh net-info nat_net
+
+# Edit the XML definition of the kvm1 instance and change the name of the source network:  
+virsh edit kvm1
+  ...
+  <interface type='network'>
+    ...
+    <source network='nat_net'/>
+    ...
+  </interface>
+...
+
+# Restart the KVM guest:
+virsh destroy kvm1
+virsh start kvm1
+
+# List all software bridges on the host: 
+brctl show
+```
+
+
+
+```shell
+# Connect to the KVM instances and check the IP address of the eth0 interface
+virsh console kvm1
+ip a s eth0 | grep inet
+ifconfig eth0 up && dhclient eth0
+ping 10.10.10.1 -c 3
+```
+
+
+
+```shell
+# On the host OS, examine which DHCP services are running: 
+pgrep -lfa dnsmasq
+
+# Check the IP of the new bridge interface: 
+ip a s virbr1
+
+# List the iptables rules for the NAT table: 
+iptables -L -n -t nat
+```
+
+
+
+### Configuring bridged network
+
+```shell
+ifdown eth1
+
+# Edit the network configuration file - Debian/Ubuntu: 
+vim /etc/network/interfaces
+autovirbr2
+iface virbr2 inet static
+	address 192.168.1.2
+	netmask 255.255.255.0
+	network 192.168.1.0
+	broadcast 192.168.1.255
+	gateway 192.168.1.1
+	bridge_ports eth1
+	
+# Edit the network configuration file -  RedHat/CentOS
+vim /etc/sysconfig/ifcfg-eth1
+DEVICE=eth1
+NAME=eth1
+NM_CONTROLLED=yes
+ONBOOT=yes
+TYPE=Ethernet
+BRIDGE=virbr2
+
+vim /etc/sysconfig/ifcfg-bridge_net
+DEVICE=virbr2
+NAME=virbr2
+NM_CONTROLLED=yes
+ONBOOT=yes
+TYPE=Bridge
+STP=on
+IPADDR=192.168.1.2
+NETMASK=255.255.255.0
+GATEWAY=192.168.1.1
+
+# Start the new interface up:
+ifup virbr2
+
+# Disable sending packets to iptables that originate from the guest VMs: 
+sysctl -w net.bridge.bridge-nf-call-iptables=0  # net.bridge.bridge-nf-call-iptables = 0
+sysctl -w net.bridge.bridge-nf-call-iptables=0  # net.bridge.bridge-nf-call-iptables = 0
+sysctl -w net.bridge.bridge-nf-call-arptables=0 # net.bridge.bridge-nf-call-arptables = 0
+
+# List all bridges on the host: 
+brctl show
+
+# Edit the XML definition for the KVM instance:
+virsh edit kvm1
+...
+	<interface type='bridge'>
+		<source bridge='virbr2'/>
+	</interface>
+...
+
+# Restart the KVM instance: 
+virsh destroy kvm1
+virsh start kvm1
+```
+
+
+
+### Configuring PCI passthrough network
+
+```shell
+# Enumerate all devices on the host OS: 
+virsh nodedev-list --tree
+
+# List all PCI Ethernet adapters:
+lspci | grep Ethernet
+
+# Obtain more information about NIC that the eth1 device is using:
+virsh nodedev-dumpxml pci_0000_03_00_1
+
+# Convert the domain, bus, slot, and function values to hexadecimal:
+printf %x 0
+printf %x 3
+printf %x 0
+printf %x 1
+
+# Create a new libvirt network definition file: 
+vim passthrough_net.xml
+<network>
+	<name>passthrough_net</name>
+	<forward mode='hostdev' managed='yes'>
+		<pf dev='eth1'/>
+	</forward>
+</network>
+
+# Define, start, and enable autostarting on the new libvirt network: 
+virsh net-define passthrough_net.xml
+virsh net-start passthrough_net
+virsh net-autostart passthrough_net
+virsh net-list
+
+# Edit the XML definition for the KVM guest:
+ virsh edit kvm1
+ ...
+<devices>
+	...
+	<interface type='hostdev' managed='yes'>
+		<source>
+			<address type='pci' domain='0x0' bus='0x00'slot='0x07' function='0x0'/>
+		</source>
+		<virtualport type='802.1Qbh' />
+	</interface>
+	<interface type='network'>
+		<source network='passthrough_net'>
+	</interface>
+	...
+</devices>
+...
+
+# Restart the KVM instance:
+virsh destroy kvm1
+virsh start kvm1
+
+# List the Virtual Functions (VFs) provided by SR-IOV NIC: 
+virsh net-dumpxml passthrough_net
+```
+
+
+
+### Manipulating network interfaces
+
+```xml
+# Create a new bridge interface configuration file: 
+vim test_bridge.xml
+<interface type='bridge' name='test_bridge'>
+	<start mode="onboot"/>
+	<protocol family='ipv4'>
+		<ip address='192.168.1.100' prefix='24'/>
+	</protocol>
+	<bridge>
+		<interface type='ethernet' name='vnet0'>
+		<mac address='fe:54:00:55:9b:d6'/>
+</interface>
+</bridge>
+</interface>
+```
+
+
+
+```shell
+# Define the new interface: 
+virsh iface-define test_bridge.xml
+virsh iface-list --all
+
+# Start the new bridge interface: 
+virsh iface-start test_bridge
+virsh iface-list --all | grep test_bridge
+
+# List all bridge devices on the host:
+brctl show
+
+# Check the active network configuration of the new bridge: 
+ip a s test_bridge
+
+# Obtain the MAC address of bridge: 
+virsh iface-mac test_bridge
+
+# Obtain the name of the bridge based by providing its MAC address:
+ virsh iface-name 4a:1e:48:e1:e7:de
+ 
+# Destroy the interface, as follows: 
+virsh iface-destroy test_bridge
+virsh iface-list --all | grep test_bridge
+virsh iface-undefine test_bridge
+virsh iface-list --all | grep test_bridge
+```
+
+
+
+## KVM Libvirt Storage Pools
+
+### Types of storage pools
+
+1. **Directory pool**: format types such as raw, qcow, qcow2, dmg, vmdk, vpc or ISO images.
+2. **Filesystem pool**: Use a block device (E.g. partition or LVM group) .
+3. **Network filesystem pool** - Use a network filesystem (E.g. `cifs`, `glusterfs`, `nfs` etc.) 
+4. **Logical volume pool** - Use an LVM volume group as a pool for storing volumes.
+5. **Disk pool** - Use a physical disk as a pool. The volumes can be created by adding partitions to the disk.
+6. **iSCSI pool** - Use an iSCSI target to store volumes. All volumes should be pre-allocated on the iSCSI server.
+7. iSCSI direct pool - This is a variant of the iSCSI pool. Instead of using iscsiadm, it uses `libiscsi`. It requires a host, a path which is the target IQN, and an initiator IQN.
+8. SCSI pool - Use an SCSI host bus adapter in almost the same way as an iSCSI target.
+9. RBD pool - This storage driver provides a pool which contains all RBD  images in a RADOS pool. RBD (RADOS Block Device) is part of the Ceph  distributed storage project.
+10. Sheepdog pool - Use Sheepdog Cluster as a pool to store volumes.
+11. Gluster pool - Use Gluster distributed file system as a pool.
+12. ZFS pool - Use ZFS filesystem as a pool.
+13. Vstorage pool - Use Virtuozzo distributed software-defined storage as a pool.
+
+
+
+### Change KVM Libvirt Default Storage Pool Location
+
+Default location is `/var/lib/libvirt/images/` for images.
+
+* Tools to change default location
+  1. `virsh` command line program.
+  2. graphical `Virt-manager` 
+  3. **Cockpit** web console.
+
+#### Change KVM Libvirt default storage pool location using virsh program
+
+*  power off all running guests.
+
+```shell
+virsh list --all
+virsh shutdown <vm-name>
+```
+
+
+
+* List all the configured storage pools in your KVM host machine:
+
+```she
+virsh pool-list 
+```
+
+
+
+* view the details of the default storage
+
+```shell
+virsh pool-info default
+```
+
+
+
+* display the path of the default storage pool
+
+```shell
+virsh pool-dumpxml default | grep -i path
+```
+
+
+
+* Stop and undefine the default storage pool 
+
+```shell
+virsh pool-destroy default
+virsh pool-undefine default
+```
+
+
+
+* If there is no default Storage pool exists for any reason, you can create one
+
+```shell
+virsh pool-define-as --name default --type dir --target /NEW/PATH/FOR/images
+```
+
+
+
+* Edit the default storage pool
+* create it and assign sufficient permission to the new path directory
+
+```shell
+virsh pool-edit default 
+	...
+	<path>/NEW/PATH/FOR/images</path>
+	...
+
+```
+
+
+
+* Finally, start the default storage pool:
+
+```shell
+virsh pool-start default
+```
+
+
+
+* Set storage pool to start automatically on system boot:
+
+```shell
+virsh pool-autostart default
+```
+
+
+
+* Verify if the libvirt storage pool path has been changed or not with command:
+
+```shell
+virsh pool-dumpxml default | grep -i path
+```
+
+
+
+* Check the storage pool state:
+
+```shell
+virsh pool-list 
+```
+
+
+
+* Restart libvirtd service:
+
+```shell
+sudo systemctl restart libvirtd
+```
+
+
+
+*  We need to do one last thing. Copy all VM images from old storage path to the new one:
+
+```shell
+sudo mv /var/lib/libvirt/images/archlinux.qcow2 /NEW/PATH/FOR/images
+```
+
+
+
+#### Change KVM Libvirt default storage pool location using Virt-manager
+
+* Open Virt-manager application. Right click on QEMU/KVM and click **Details** option.
+* View KVM connection details
+
+[![View KVM connection details](https://ostechnix.com/wp-content/uploads/2021/06/View-KVM-connection-details.png)](https://ostechnix.com/wp-content/uploads/2021/06/View-KVM-connection-details.png)   
+
+
+
+You can also click **Edit-> Connection details** from the Virt-manager interface. 
+
+* Under the **Storage** section, you will see the default storage pool location.
+
+[![KVM Libvirt default storage pool location](https://ostechnix.com/wp-content/uploads/2021/06/KVM-Libvirt-default-storage-pool-location.png)](https://ostechnix.com/wp-content/uploads/2021/06/KVM-Libvirt-default-storage-pool-location.png)KVM Libvirt default storage pool location
+
+* Click **Stop Pool** and then **Delete Pool** options in the bottom left pane.
+
+[![Stop and delete KVM Libvirt default storage pool](https://ostechnix.com/wp-content/uploads/2021/06/Stop-and-delete-KVM-Libvirt-default-storage-pool.png)](https://ostechnix.com/wp-content/uploads/2021/06/Stop-and-delete-KVM-Libvirt-default-storage-pool.png)Stop and delete KVM Libvirt default storage pool
+
+
+
+* Click the **plus (+)** sign on the bottom left pane to create a new storage pool for use by the virtual machines.
+
+Enter the name for the storage pool (E.g. `default` in my case). Choose the type of the pool. In our case, I have selected **Filesystem Directory**. Specify the target location and click Finish.
+
+[![Create new KVM Libvirt storage pool](https://ostechnix.com/wp-content/uploads/2021/06/Create-new-KVM-Libvirt-storage-pool.png)](https://ostechnix.com/wp-content/uploads/2021/06/Create-new-KVM-Libvirt-storage-pool.png)Create new KVM Libvirt storage pool
+
+* Now the new Storage is active. Check the **Autostart** box to automatically start the new storage pool at system boot.
+
+[![New KVM Libvirt storage pool location](https://ostechnix.com/wp-content/uploads/2021/06/New-KVM-Libvirt-storage-pool-location.png)](https://ostechnix.com/wp-content/uploads/2021/06/New-KVM-Libvirt-storage-pool-location.png)New KVM Libvirt storage pool location
+
+* Move all the VM images from the old storage directory to the new one.
+
+```
+$ sudo mv /var/lib/libvirt/images/archlinux.qcow2 /home/sk/.local/share/libvirt/images/
+```
+
+**1.2.7.** Finally, restart libvirtd service:
+
+```
+$ sudo systemctl restart libvirtd
+```
+
+
+
+#### Troubleshooting
+
+`Cannot access storage file, Permission denied Error in KVM Libvirt`
+
+
+
+Today, I started my Arch Linux virtual machine using `virsh start` command and ended up with this error - `Failed to start domain 'Archlinux_default' error: Cannot access storage file  '/home/sk/.local/share/libvirt/images/Archlinux_default.img' (as  uid:107, gid:107): Permission denied`. It is actually a [Vagrant](https://ostechnix.com/vagrant-tutorial-getting-started-with-vagrant/) machine created with KVM Libvirt provider.
+
+Then, I tried again to start the VM using `vagrant up` command. It also displayed the same error.
+
+  
+
+```
+ Bringing machine 'default' up with 'libvirt' provider…
+ ==> default: Checking if box 'archlinux/archlinux' version '20210601.24453' is up to date…
+ ==> default: Starting domain.
+ There was an error talking to Libvirt. The error message is shown
+ below:
+ Call to virDomainCreateWithFlags failed: Cannot access storage file '/home/sk/.local/share/libvirt/images/Archlinux_default.img' (as uid:107, gid:107): Permission denied
+```
+
+[![Failed to start domain, cannot access storage file, permission denied error in vagrant, virsh command](https://ostechnix.com/wp-content/uploads/2021/06/Failed-to-start-domain-cannot-access-storage-file-permission-denied-error-in-vagrant-virsh-command.png)](https://ostechnix.com/wp-content/uploads/2021/06/Failed-to-start-domain-cannot-access-storage-file-permission-denied-error-in-vagrant-virsh-command.png)Failed to start domain, cannot access storage file, permission denied error
+
+Just to be sure, I tried one more time to start the VM from [Virt-manager](https://ostechnix.com/how-to-manage-kvm-virtual-machines-with-virt-manager/) GUI application. This time also it did return the same error.
+
+[![Failed to start domain, cannot access storage file, permission denied error in virt-manager](https://ostechnix.com/wp-content/uploads/2021/06/Failed-to-start-domain-cannot-access-storage-file-permission-denied-error-in-virt-manager.png)](https://ostechnix.com/wp-content/uploads/2021/06/Failed-to-start-domain-cannot-access-storage-file-permission-denied-error-in-virt-manager.png)Failed to start domain, cannot access storage file, permission denied error in virt-manager
+
+All the error messages explicitly says that the the `qemu` user does not have read permission to the Libvirt storage directory.
+
+In this brief tutorial, allow me to show you how to fix "error: Failed to  start domain ... error: Cannot access storage file .... (as uid:107,  gid:107): Permission denied" in KVM Libvirt.
+
+##### Fix "Cannot access storage file, Permission denied Error" in KVM Libvirt
+
+This is one of the common KVM Libvirt error. This error will usually occur after **[changing path of the Libvirt's default storage directory](https://ostechnix.com/how-to-change-kvm-libvirt-default-storage-pool-location/)**. 
+
+##### Method 1:
+
+**Step 1:** Edit `/etc/libvirt/qemu.conf` file:
+
+```
+$ sudo nano /etc/libvirt/qemu.conf
+```
+
+**Step 2:** Find the `user` and `group` directives. By default, both are set to `"root"`.
+
+```
+ [...] 
+ Some examples of valid values are:
+ #
+ user = "qemu"   # A user named "qemu"
+ user = "+0"     # Super user (uid=0)
+ user = "100"    # A user named "100" or a user with uid=100
+ #
+ #user = "root"
+ The group for QEMU processes run by the system instance. It can be
+ specified in a similar way to user.
+ #group = "root"
+ [...]
+```
+
+Uncomment both lines and replace `root` with your username and group with `libvirt` as shown below:
+
+```
+ [...] 
+ Some examples of valid values are:
+ #
+ user = "qemu"   # A user named "qemu"
+ user = "+0"     # Super user (uid=0)
+ user = "100"    # A user named "100" or a user with uid=100
+ #
+ user = "sk"
+ The group for QEMU processes run by the system instance. It can be
+ specified in a similar way to user.
+ group = "libvirt"
+ [...]
+```
+
+[![Configure user and group for kvm libvirt](https://ostechnix.com/wp-content/uploads/2021/06/Configure-user-and-group-for-kvm-libvirt.png)](https://ostechnix.com/wp-content/uploads/2021/06/Configure-user-and-group-for-kvm-libvirt.png)Configure user and group for kvm libvirt
+
+Press `CTRL+O` and press `ENTER` to save the changes and press `CTRL+X` to exit the file.
+
+**Step 3:** Restart `libvirtd` service:
+
+```
+$ sudo systemctl restart libvirtd
+```
+
+**Step 4:** Please make sure the user is a member of the `libvirt` group. If not, add the user to `libvirt` group using command:
+
+```
+$ sudo usermod -a -G libvirt $(whoami)
+```
+
+**Step 5:** Finally start the VM:
+
+```
+$ virsh start
+```
+
+If you prefer to use vagrant, run this instead:
+
+```
+$ vagrant up
+```
+
+This time the Virtual machine should start.
+
+**Step 6:** Check the VM status:
+
+```
+$ virsh list
+```
+
+Or,
+
+```
+$ vagrant status
+```
+
+[![Check kvm libvirt virtual machine status](https://ostechnix.com/wp-content/uploads/2021/06/Check-kvm-libvirt-virtual-machine-status.png)](https://ostechnix.com/wp-content/uploads/2021/06/Check-kvm-libvirt-virtual-machine-status.png)Check kvm libvirt virtual machine status
+
+##### Method 2:
+
+The another to way to fix KVM Libvirt permission issue is by setting proper ACL permission to the Libvirt storage pool directory. In my case, my  storage pool directory is located in `$HOME` directory.
+
+**Step 1:** Let us get the current ACL permissions to the `$HOME` directory.
+
+```
+$ sudo getfacl -e /home/sk/
+```
+
+**Sample output:**
+
+```
+ getfacl: Removing leading '/' from absolute path names
+ file: home/sk/
+ owner: sk
+ group: sk
+ user::rwx
+ user:qemu:--x            #effective:--x
+ group::---            #effective:---
+ mask::--x
+ other::---
+```
+
+As you see in the above output, the `qemu` user doesn't has **read** permission to the storage pool location. In some distributions, the user name might be `libvirt-qemu`.
+
+**Step 2:** Set the read and executable permission for the user `qemu` using command:
+
+```
+$ sudo setfacl -m u:qemu:rx /home/sk/
+```
+
+Replace `qemu` and `/home/sk/` with your own.
+
+Now, the qemu user has read and executable permission over the storage pool directory. You can verify it using command:
+
+```
+$ sudo getfacl -e /home/sk/
+```
+
+**Sample output:**
+
+```
+ getfacl: Removing leading '/' from absolute path names
+ file: home/sk/
+ owner: sk
+ group: sk
+ user::rwx
+ user:qemu:r-x            #effective:--x
+ group::---            #effective:---
+ mask::--x
+ other::---
+```
+
+**Step 3:** Restart libvirtd service:
+
+```
+$ sudo systemctl restart libvirtd
+```
+
+Now the Libvirt guest machines will start without any issue.
