@@ -399,12 +399,12 @@ virt-install --name <VM-NAME> --memory <GUEST-RAM> \
 
 ```shell
 virt-install \
---name centos \
---memory 2048 \
+--name UbuS16-1 \
+--memory 1024 \
 --vcpus 2 \
---disk size=8 \
---cdrom /home/hoji/Downloads/ISO/CentOS-7-x86_64-DVD-2009.iso \
---os-variant centos7.0
+--disk size=10 \
+--cdrom ~/Downloads/ISO/ubuntu-16.04.7-server-amd64.iso \
+--os-variant ubuntu16.04
 ```
 
 
@@ -475,17 +475,26 @@ qemu-img info /tmp/kvm1.img
 
 ```shell
 # Importing a virtual machine image
-virt-install \ 
-  --name centos \ 
-  --memory 2048 \ 
-  --vcpus 2 \ 
-  --disk /path/to/imported/disk.qcow \ 
-  --import \ 
-  --os-variant centos7.0
+
+virt-install \
+--name DebS9-1 \
+--memory 1024 \
+--vcpus 2 \
+--disk ~/Documents/ww/kvm/images/debian-9.qcow2 \
+--import \
+--os-variant debian9
 
 virt-customize -a debian-9.qcow2 --root-password password:123
 
-virt-install --name debian9 --memory 2048 --vcpus 1 --disk ./debian-9.qcow2,bus=sata --import --os-variant debian9 --network default --vnc --noautoconsole 
+virt-install \
+--name debian9 \
+--memory 2048 \
+--vcpus 1 \
+--disk ./debian-9.qcow2,bus=sata \
+--import \
+--os-variant debian9 \
+--network default \
+--vnc --noautoconsole 
 
 
 # List OS Variants
@@ -585,8 +594,12 @@ virsh managedsave-remove kvm1
 * A note about error: “cannot delete inactive domain with snapshots”
 
 ```shell
+virsh snapshot-list UbuS16-1
 virsh snapshot-list --domain VM_NAME
 virsh snapshot-delete --domain VM_NAME --snapshotname
+
+virsh snapshot-create UbuS16-1
+virsh snapshot-revert --snapshotname 1651481979 UbuS16-1
 ```
 
 * Remove associated VM storage volumes and snapshots while undefineing a domain/VM
@@ -2073,3 +2086,407 @@ $ sudo systemctl restart libvirtd
 ```
 
 Now the Libvirt guest machines will start without any issue.
+
+
+
+## Provision VMs on KVM with Terraform
+
+### Install Terraform
+
+```
+# Debian / Ubuntu systems
+sudo apt update
+sudo apt install wget curl unzip
+
+# RHEL based systems
+sudo yum install curl wget unzip
+```
+
+
+
+Download terraform
+
+```
+TER_VER=`curl -s https://api.github.com/repos/hashicorp/terraform/releases/latest | grep tag_name | cut -d: -f2 | tr -d \"\,\v | awk '{$1=$1};1'`
+wget https://releases.hashicorp.com/terraform/${TER_VER}/terraform_${TER_VER}_linux_amd64.zip
+```
+
+
+
+extract and move *terraform* binary file to the **/usr/local/bin** directory.
+
+```
+unzip terraform_${TER_VER}_linux_amd64.zip
+sudo mv terraform /usr/local/bin/
+
+which terraform
+terraform --version
+```
+
+
+
+### Install Terraform KVM provider
+
+```shell
+vim main.tf
+terraform {
+  required_providers {
+    libvirt = {
+      source = "dmacvicar/libvirt"
+    }
+  }
+}
+
+provider "libvirt" {
+  # Configuration options
+}
+```
+
+
+
+```shell
+terraform init
+cd ~/.terraform.d
+mkdir plugins
+```
+
+
+
+### Install Terraform KVM provider on Linux
+
+*Linux 64-bit system:*
+
+```
+curl -s https://api.github.com/repos/dmacvicar/terraform-provider-libvirt/releases/latest \
+  | grep browser_download_url \
+  | grep linux_amd64.zip \
+  | cut -d '"' -f 4 \
+  | wget -i -
+```
+
+
+
+Extract the file downloaded:
+
+```
+# 64-bit Linux
+unzip terraform-provider-libvirt_*_linux_amd64.zip
+rm -f terraform-provider-libvirt_*_linux_amd64.zip
+```
+
+
+
+Move `terraform-provider-libvirt` binary file to the `~/.terraform.d/plugins `directory.
+
+```
+mkdir -p ~/.terraform.d/plugins/
+mv terraform-provider-libvirt_* ~/.terraform.d/plugins/terraform-provider-libvirt
+```
+
+
+
+### Using Terraform To Provision VMs on KVM
+
+```
+mkdir -p ~/projects/terraform
+cd ~/projects/terraform
+```
+
+
+
+For automatic installation of KVM Provider, define like below:
+
+
+
+```
+$ vim main.tf
+terraform {
+  required_providers {
+    libvirt = {
+      source = "dmacvicar/libvirt"
+    }
+  }
+}
+
+provider "libvirt" {
+  ## Configuration options
+  uri = "qemu:///system"
+  #alias = "server2"
+  #uri   = "qemu+ssh://root@192.168.100.10/system"
+}
+```
+
+
+
+Thereafter, run terraform init command to initialize the environment:
+
+```
+$ terraform init
+```
+
+
+
+We can now create `libvirt.tf` file for your VM deployment on KVM.
+
+
+
+```shell
+vim libvirt.tf
+# Defining VM Volume
+resource "libvirt_volume" "centos7-qcow2" {
+  name = "centos7.qcow2"
+  pool = "default" # List storage pools using virsh pool-list
+  source = "https://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.qcow2"
+  #source = "./CentOS-7-x86_64-GenericCloud.qcow2"
+  format = "qcow2"
+}
+
+# Define KVM domain to create
+resource "libvirt_domain" "centos7" {
+  name   = "centos7"
+  memory = "2048"
+  vcpu   = 2
+
+  network_interface {
+    network_name = "default" # List networks with virsh net-list
+  }
+
+  disk {
+    volume_id = "${libvirt_volume.centos7-qcow2.id}"
+  }
+
+  console {
+    type = "pty"
+    target_type = "serial"
+    target_port = "0"
+  }
+
+  graphics {
+    type = "spice"
+    listen_type = "address"
+    autoport = true
+  }
+}
+
+# Output Server IP
+output "ip" {
+  value = "${libvirt_domain.centos7.network_interface.0.addresses.0}"
+}
+```
+
+
+
+Generate and show Terraform execution plan
+
+
+
+```
+terraform plan
+```
+
+
+
+Then build your Terraform infrastructure if desired state is confirmed to be correct.
+
+
+
+```
+ terraform apply
+ ...
+ Enter a value: yes
+```
+
+
+
+Press “**yes**” to confirm execution. Below is my terraform execution output.
+
+Confirm VM creation with `virsh` command.
+
+```
+$ sudo virsh  list
+ Id   Name       State
+--------------------------
+ 7    centos7    running
+```
+
+
+
+et Instance IP address.
+
+```
+$ sudo virsh net-dhcp-leases default 
+ Expiry Time           MAC address         Protocol   IP address           Hostname   Client ID or DUID
+------------------------------------------------------------------------------------------------------------------------------------------------
+ 2019-03-24 16:11:18   52:54:00:3e:15:9e   ipv4       192.168.122.61/24    -          -
+ 2019-03-24 15:30:18   52:54:00:8f:8c:86   ipv4       192.168.122.198/24   rhel8      ff:61:69:21:bd:00:02:00:00:ab:11:0e:9c:c6:63:ee:7d:c8:d1
+```
+
+My instance IP is `192.168.122.61`. I can ping the instance.
+
+```
+$  ping -c 1 192.168.122.61 
+PING 192.168.122.61 (192.168.122.61) 56(84) bytes of data.
+64 bytes from 192.168.122.61: icmp_seq=1 ttl=64 time=0.517 ms
+
+--- 192.168.122.61 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.517/0.517/0.517/0.000 ms
+```
+
+To destroy your infrastructure, run:
+
+
+
+```
+$ terraform destroy
+...
+Enter a value: yes
+```
+
+
+
+### Using cloud-init with Terraform Libvirt provider
+
+we can use [libvirt_cloudinit_disk](https://github.com/dmacvicar/terraform-provider-libvirt/blob/master/website/docs/r/cloudinit.html.markdown) resource to pass user data to the instance.
+
+Create Cloud init configuration file.
+
+
+
+```
+$ vim cloud_init.cfg
+#cloud-config
+# vim: syntax=yaml
+#
+# ***********************
+# 	---- for more examples look at: ------
+# ---> https://cloudinit.readthedocs.io/en/latest/topics/examples.html
+# ******************************
+#
+# This is the configuration syntax that the write_files module
+# will know how to understand. encoding can be given b64 or gzip or (gz+b64).
+# The content will be decoded accordingly and then written to the path that is
+# provided.
+#
+# Note: Content strings here are truncated for example purposes.
+ssh_pwauth: True
+chpasswd:
+  list: |
+     root: StrongRootPassword
+  expire: False
+
+users:
+  - name: jmutai # Change me
+    ssh_authorized_keys:
+      - ssh-rsa AAAAXX #Chageme
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    shell: /bin/bash
+    groups: wheel
+```
+
+- This will set root password to `StrongRootPassword`
+- Add user named `jmutai` with specified Public SSH keys
+- The user will be added to wheel group and be allowed to run sudo commands without password.
+
+Edit `libvirt.tf` to use Cloud init configuration file.
+
+
+
+```
+# Defining VM Volume
+resource "libvirt_volume" "centos7-qcow2" {
+  name = "centos7.qcow2"
+  pool = "default"
+  source = "https://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.qcow2"
+  #source = "./CentOS-7-x86_64-GenericCloud.qcow2"
+  format = "qcow2"
+}
+
+# get user data info
+data "template_file" "user_data" {
+  template = "${file("${path.module}/cloud_init.cfg")}"
+}
+
+# Use CloudInit to add the instance
+resource "libvirt_cloudinit_disk" "commoninit" {
+  name = "commoninit.iso"
+  pool = "default" # List storage pools using virsh pool-list
+  user_data      = "${data.template_file.user_data.rendered}"
+}
+
+# Define KVM domain to create
+resource "libvirt_domain" "centos7" {
+  name   = "centos7"
+  memory = "2048"
+  vcpu   = 2
+
+  network_interface {
+    network_name = "default"
+  }
+
+  disk {
+    volume_id = "${libvirt_volume.centos7-qcow2.id}"
+  }
+
+  cloudinit = "${libvirt_cloudinit_disk.commoninit.id}"
+
+  console {
+    type = "pty"
+    target_type = "serial"
+    target_port = "0"
+  }
+
+  graphics {
+    type = "spice"
+    listen_type = "address"
+    autoport = true
+  }
+}
+
+# Output Server IP
+output "ip" {
+  value = "${libvirt_domain.centos7.network_interface.0.addresses.0}"
+}
+```
+
+Re-initialize Terraform working directory.
+
+
+
+```
+$ terraform init
+```
+
+
+
+Then create the Virtual Machine and its resources using apply command:
+
+
+
+```
+terraform plan
+terraform apply
+```
+
+
+
+Or use `virsh` command to get the server IP address.
+
+```
+$ sudo virsh net-dhcp-leases default
+ Expiry Time           MAC address         Protocol   IP address           Hostname   Client ID or DUID
+---------------------------------------------------------------------------------------------------------
+ 2019-03-24 16:41:32   52:54:00:22:45:57   ipv4       192.168.122.219/24   -          -
+```
+
+Try login to the instance as root user and password set.
+
+
+
+Check if ssh user created can login with SSH key and run sudo without password.
+
+
+
+```
+$ ssh jmutai@192.168.122.219
+```
