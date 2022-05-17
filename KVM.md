@@ -409,6 +409,22 @@ virt-install \
 
 
 
+#### VMware
+
+```
+virt-install --virt-type=kvm --name=esxi1 \                       ─╯
+--cpu host-passthrough \
+--ram 4096 --vcpus=4 \
+--virt-type=kvm --hvm \
+--cdrom VMware-VMvisor-Installer-7.0U3d-19482537.x86_64.iso \
+--network default,model=e1000 \
+--graphics vnc --video qxl \
+--disk pool=default,size=80,sparse=true,bus=ide,format=qcow2 \
+--boot cdrom,hd --noautoconsole --force
+```
+
+
+
 #### Create KVM instance by invoking the virt-install
 
 ```shell
@@ -502,6 +518,25 @@ osinfo-query os
 
 # To launch the same VM next time, run:
 virsh --connect qemu:///system start centos8
+```
+
+
+
+#### KVM Import an OVA Template
+
+```
+tar xvf xenial-server-cloudimg-amd64.ova
+
+qemu-img convert -O qcow2 ubuntu-xenial-16.04-cloudimg.vmdk ubuntu-xenial-16.04-cloudimg.qcow2
+virt-customize   -a ubuntu-xenial-16.04-cloudimg.qcow2 --root-password password:123
+
+virt-install \
+> --name UbuS16 \
+> --memory 4096 \
+> --vcpus 4 \
+> --disk ubuntu-xenial-16.04-cloudimg.qcow2,bus=sata \
+> --import \
+> --os-variant ubuntu16.04
 ```
 
 
@@ -2490,3 +2525,10 @@ Check if ssh user created can login with SSH key and run sudo without password.
 ```
 $ ssh jmutai@192.168.122.219
 ```
+
+
+
+## Migrating KVM Instances
+
+
+
