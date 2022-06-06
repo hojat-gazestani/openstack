@@ -6,9 +6,9 @@ sudo mysql
 CREATE DATABASE keystone;
 
 GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'localhost' \
-IDENTIFIED BY 'xi6gileechi7Aem';
+IDENTIFIED BY 'KEYSTONE_DBPASS';
 GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'%' \
-IDENTIFIED BY 'xi6gileechi7Aem';
+IDENTIFIED BY 'KEYSTONE_DBPASS';
 
 
 ```shell
@@ -16,7 +16,7 @@ sudo apt install keystone  apache2 libapache2-mod-wsgi
 
 sudo vim /etc/keystone/keystone.conf
 [database]
-connection = mysql+pymysql://keystone:xi6gileechi7Aem@TE-AZ-CN-01/keystone
+connection = mysql+pymysql://keystone:KEYSTONE_DBPASS@TE-AZ-CN-01/keystone
 
 [token]
 provider = fernet
@@ -54,7 +54,7 @@ sudo service apache2 restart
 
 export OS_USERNAME=admin
 export OS_PASSWORD=
-xport OS_PROJECT_NAME=admin
+export OS_PROJECT_NAME=admin
 export OS_USER_DOMAIN_NAME=Default
 export OS_PROJECT_DOMAIN_NAME=Default
 export OS_AUTH_URL=http://TE-AZ-CN-01:5000/v3

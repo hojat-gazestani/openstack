@@ -37,7 +37,7 @@ sudo vim  /etc/glance/glance-api.conf
 
 [database]
 # ...
-connection = mysql+pymysql://glance:GLANCE_DBPASS@controller/glanc
+connection = mysql+pymysql://glance:GLANCE_DBPASS@controller/glance
 
 [keystone_authtoken]
 auth_uri = http://controller:5000
