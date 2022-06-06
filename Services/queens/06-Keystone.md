@@ -16,7 +16,7 @@ sudo apt install keystone  apache2 libapache2-mod-wsgi
 
 sudo vim /etc/keystone/keystone.conf
 [database]
-connection = mysql+pymysql://keystone:KEYSTONE_DBPASS@TE-AZ-CN-01/keystone
+connection = mysql+pymysql://keystone:KEYSTONE_DBPASS@controller/keystone
 
 [token]
 provider = fernet
@@ -32,9 +32,9 @@ sudo keystone-manage credential_setup --keystone-user keystone --keystone-group 
 ```
 ```shell
 # keystone-manage bootstrap --bootstrap-password jihoo3gioChiHo4 \
-  --bootstrap-admin-url http://TE-AZ-CN-01:5000/v3/ \
-  --bootstrap-internal-url http://TE-AZ-CN-01:5000/v3/ \
-  --bootstrap-public-url http://TE-AZ-CN-01:5000/v3/ \
+  --bootstrap-admin-url http://controller:5000/v3/ \
+  --bootstrap-internal-url http://controller:5000/v3/ \
+  --bootstrap-public-url http://controller:5000/v3/ \
   --bootstrap-region-id RegionOne
 
 ```
@@ -44,7 +44,7 @@ sudo keystone-manage credential_setup --keystone-user keystone --keystone-group 
 ```shell
 sudo vim /etc/apache2/apache2.conf
 
-ServerName TE-AZ-CN-01
+ServerName controller
 ```
 
 ### Finalize the installation
@@ -57,7 +57,7 @@ export OS_PASSWORD=
 export OS_PROJECT_NAME=admin
 export OS_USER_DOMAIN_NAME=Default
 export OS_PROJECT_DOMAIN_NAME=Default
-export OS_AUTH_URL=http://TE-AZ-CN-01:5000/v3
+export OS_AUTH_URL=http://controller:5000/v3
 export OS_IDENTITY_API_VERSION=3
 
 ```
@@ -86,11 +86,11 @@ openstack role add --project demo --user demo user
 ```shell
 unset OS_AUTH_URL OS_PASSWORD
 
-openstack --os-auth-url http://TE-AZ-CN-01:5000/v3 \
+openstack --os-auth-url http://controller:5000/v3 \
   --os-project-domain-name Default --os-user-domain-name Default \
   --os-project-name admin --os-username admin token issue
 
-openstack --os-auth-url http://TE-AZ-CN-01:5000/v3 \
+openstack --os-auth-url http://controller:5000/v3 \
   --os-project-domain-name Default --os-user-domain-name Default \
   --os-project-name demo --os-username demo token issue
 ```
@@ -103,7 +103,7 @@ export OS_USER_DOMAIN_NAME=Default
 export OS_PROJECT_NAME=admin
 export OS_USERNAME=admin
 export OS_PASSWORD=ADMIN_PASS
-export OS_AUTH_URL=http://TE-AZ-CN-01:5000/v3
+export OS_AUTH_URL=http://controller:5000/v3
 export OS_IDENTITY_API_VERSION=3
 export OS_IMAGE_API_VERSION=2
 
@@ -114,7 +114,7 @@ export OS_USER_DOMAIN_NAME=Default
 export OS_PROJECT_NAME=demo
 export OS_USERNAME=demo
 export OS_PASSWORD=DEMO_PASS
-export OS_AUTH_URL=http://TE-AZ-CN-01:5000/v3
+export OS_AUTH_URL=http://controller:5000/v3
 export OS_IDENTITY_API_VERSION=3
 export OS_IMAGE_API_VERSION=2
 ```
