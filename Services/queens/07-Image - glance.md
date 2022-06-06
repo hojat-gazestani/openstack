@@ -6,9 +6,9 @@ sudo mysql -u root -p
 CREATE DATABASE glance;
 
 GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'localhost' \
-  IDENTIFIED BY 'puegoogh0Ci2gi7';
+  IDENTIFIED BY 'GLANCE_DBPASS';
 GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'%' \
-  IDENTIFIED BY 'puegoogh0Ci2gi7';
+  IDENTIFIED BY 'GLANCE_DBPASS';
 ```
 
 ```shell
