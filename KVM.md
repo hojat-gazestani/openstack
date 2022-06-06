@@ -590,6 +590,110 @@ osinfo-query os
 
 
 
+#### Create Ubuntu 22.04 KVM Guest From Cloud Image
+
+```shell
+sudo mkdir /var/lib/libvirt/images/templates
+wget https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
+
+sudo mv -i jammy-server-cloudimg-amd64.img \
+  /var/lib/libvirt/images/templates/ubuntu-22-server.qcow2
+  
+  
+sudo apt update \
+  && sudo apt install cloud-utils whois -y
+  
+VM_NAME="UbuS22-nextCloud-1"
+USERNAME="ubuntu"
+PASSWORD="Password"
+
+sudo mkdir /var/lib/libvirt/images/$VM_NAME \
+  && sudo qemu-img convert \
+  -f qcow2 \
+  -O qcow2 \
+  /var/lib/libvirt/images/templates/ubuntu-22-server.qcow2 \
+  /var/lib/libvirt/images/$VM_NAME/root-disk.qcow2
+  
+sudo qemu-img resize \
+  /var/lib/libvirt/images/$VM_NAME/root-disk.qcow2 \
+  100G
+  
+  
+sudo echo "#cloud-config
+system_info:
+  default_user:
+    name: $USERNAME
+    home: /home/$USERNAME
+
+password: $PASSWORD
+chpasswd: { expire: False }
+hostname: $VM_NAME
+
+# configure sshd to allow users logging in using password 
+# rather than just keys
+ssh_pwauth: True
+" | sudo tee /var/lib/libvirt/images/$VM_NAME/cloud-init.cfg
+
+
+sudo cloud-localds \
+  /var/lib/libvirt/images/$VM_NAME/cloud-init.iso \
+  /var/lib/libvirt/images/$VM_NAME/cloud-init.cfg
+  
+  
+sudo virt-install \
+  --name $VM_NAME \
+  --memory 8192 \
+  --disk /var/lib/libvirt/images/$VM_NAME/root-disk.qcow2,device=disk,bus=virtio \
+  --disk /var/lib/libvirt/images/$VM_NAME/cloud-init.iso,device=cdrom \
+  --os-type linux \
+  --os-variant ubuntu16.04 \
+  --virt-type kvm \
+  --graphics none \
+  --network network=my-net,model=virtio \
+  --import
+  
+# Cleanup
+
+sudo rm /var/lib/libvirt/images/$VM_NAME/cloud-init.iso \
+  && sudo rm /var/lib/libvirt/images/$VM_NAME/cloud-init.cfg
+  
+sudo virsh edit $VM_NAME
+
+
+# Then remove this section:
+<disk type='file' device='cdrom'>
+  <driver name='qemu' type='raw'/>
+  <source file='/var/lib/libvirt/images/template-ubuntu-22/cloud-init.iso'/>
+  <target dev='sda' bus='sata'/>
+  <readonly/>
+  <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+</disk>
+
+# A Note About Cloning
+# Delete match and mac address lines
+vim /etc/netplan/50-cloud-init.yaml
+network:
+    ethernets:
+        enp1s0:
+            dhcp4: true
+            match:
+                macaddress: 52:54:00:c2:9e:bc
+            set-name: enp1s0
+    version: 2
+    
+# add lines
+network:
+    ethernets:
+        enp1s0:
+            dhcp4: true
+    version: 2
+
+```
+
+
+
+
+
 ### Starting, stopping, and removing KVM instances
 
 ```shell
@@ -2531,4 +2635,397 @@ $ ssh jmutai@192.168.122.219
 ## Migrating KVM Instances
 
 
+
+## Using Python to Build and Manage KVM Instances 
+
+```shell
+# see that the virsh command uses various libvirt shared libraries
+ldd /usr/bin/virsh | grep libvirt
+
+# list of functions, classes, and methods that the Python libvirt module provides,
+pydoc libvirt
+```
+
+
+
+### Installing and using the Python libvirt library
+
+```shell
+# Install the Python development packages pip and virtualenv : 
+apt-get install python-pip python-dev pkg-config build-essential autoconf libvirt-dev
+pip install virtualenv
+
+# Create a new Python virtual environment and activate it: 
+mkdir kvm_python
+virtualenv kvm_python/
+source kvm_python/bin/activate
+
+# Install the libvirt module: 
+pip install libvirt-python
+pip freeze
+python --version
+
+# Install iPython and start it:
+apt-get install ipython
+ipython
+```
+
+
+
+### Defining KVM instances with Python
+
+```python
+import libvirt
+```
+
+
+
+```xml
+ xmlconfig = """
+
+<domain type='kvm' id='1'>
+	<name>kvm_python</name>
+	<memory unit='KiB'>1048576</memory>
+	<currentMemory unit='KiB'>1048576</currentMemory>
+	<vcpu placement='static'>1</vcpu>
+	<resource>
+		<partition>/machine</partition>
+	</resource>
+	<os>
+		<type arch='x86_64' machine='pc-i440fx-trusty'>hvm</type>
+		<boot dev='hd'/>
+	</os>
+	<features>
+		<acpi/>
+		<apic/>
+		<pae/>
+	</features>
+	<clock offset='utc'/>
+	<on_poweroff>destroy</on_poweroff>
+	<on_reboot>restart</on_reboot>
+	<on_crash>restart</on_crash>
+	<devices>
+		<emulator>/usr/bin/qemu-system-x86_64</emulator>
+		<disk type='file' device='disk'>
+			<driver name='qemu' type='raw'/>
+			<source file='/tmp/debian.img'/>
+			<backingStore/>
+			<target dev='hda' bus='ide'/>
+			<alias name='ide0-0-0'/>
+			<address type='drive' controller='0' bus='0' target='0'
+unit='0'/>
+		</disk>
+		<controller type='usb' index='0'>
+			<alias name='usb'/>
+			<address type='pci' domain='0x0000' bus='0x00' slot='0x01'
+function='0x2'/>
+		</controller>
+		<controller type='pci' index='0' model='pci-root'>
+			<alias name='pci.0'/>
+		</controller>
+		<controller type='ide' index='0'>
+			<alias name='ide'/>
+			<address type='pci' domain='0x0000' bus='0x00' slot='0x01'
+function='0x1'/>
+		</controller>
+		<interface type='network'>
+			<mac address='52:54:00:da:02:01'/>
+			<source network='default' bridge='virbr0'/>
+			<target dev='vnet0'/>
+			<model type='rtl8139'/>
+			<alias name='net0'/>
+			<address type='pci' domain='0x0000' bus='0x00' slot='0x03'
+function='0x0'/>
+		</interface>
+		<serial type='pty'>
+			<source path='/dev/pts/5'/>
+			<target port='0'/>
+			<alias name='serial0'/>
+		</serial>
+		<console type='pty' tty='/dev/pts/5'>
+			<source path='/dev/pts/5'/>
+			<target type='serial' port='0'/>
+			<alias name='serial0'/>
+		</console>
+		<input type='mouse' bus='ps2'/>
+		<input type='keyboard' bus='ps2'/>
+		<graphics type='vnc' port='5900' autoport='yes'
+listen='0.0.0.0'>
+			<listen type='address' address='0.0.0.0'/>
+		</graphics>
+		<video>
+			<model type='cirrus' vram='16384' heads='1'/>
+			<alias name='video0'/>
+			<address type='pci' domain='0x0000' bus='0x00' slot='0x02'
+function='0x0'/>
+		</video>
+		<memballoon model='virtio'>
+			<alias name='balloon0'/>
+			<address type='pci' domain='0x0000' bus='0x00' slot='0x04'
+function='0x0'/>
+		</memballoon>
+	</devices>
+</domain>
+"""
+
+ xmlconfig = """
+<domain type='kvm'>
+  <name>UbuS16-2</name>
+  <uuid>8dc4e848-24d7-4f03-97cc-795e7d61ac50</uuid>
+  <metadata>
+    <libosinfo:libosinfo xmlns:libosinfo="http://libosinfo.org/xmlns/libvirt/domain/1.0">
+      <libosinfo:os id="http://ubuntu.com/ubuntu/16.04"/>
+    </libosinfo:libosinfo>
+  </metadata>
+  <memory unit='KiB'>1048576</memory>
+  <currentMemory unit='KiB'>1048576</currentMemory>
+  <vcpu placement='static'>2</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc-i440fx-5.2'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+    <vmport state='off'/>
+  </features>
+  <cpu mode='host-model' check='partial'/>
+  <clock offset='utc'>
+    <timer name='rtc' tickpolicy='catchup'/>
+    <timer name='pit' tickpolicy='delay'/>
+    <timer name='hpet' present='no'/>
+  </clock>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <pm>
+    <suspend-to-mem enabled='no'/>
+    <suspend-to-disk enabled='no'/>
+  </pm>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source file='/home/hoji/.local/share/libvirt/images/UbuS16-1.qcow2'/>
+      <target dev='vda' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
+    </disk>
+    <disk type='file' device='cdrom'>
+      <driver name='qemu' type='raw'/>
+      <target dev='hda' bus='ide'/>
+      <readonly/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <controller type='usb' index='0' model='ich9-ehci1'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x7'/>
+    </controller>
+    <controller type='usb' index='0' model='ich9-uhci1'>
+      <master startport='0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0' multifunction='on'/>
+    </controller>
+    <controller type='usb' index='0' model='ich9-uhci2'>
+      <master startport='2'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x1'/>
+    </controller>
+    <controller type='usb' index='0' model='ich9-uhci3'>
+      <master startport='4'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x2'/>
+    </controller>
+    <controller type='pci' index='0' model='pci-root'/>
+    <controller type='ide' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
+    </controller>
+    <controller type='virtio-serial' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
+    </controller>
+    <interface type='user'>
+      <mac address='52:54:00:5f:5c:28'/>
+      <model type='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </interface>
+    <serial type='pty'>
+      <target type='isa-serial' port='0'>
+        <model name='isa-serial'/>
+      </target>
+    </serial>
+    <console type='pty'>
+      <target type='serial' port='0'/>
+    </console>
+    <channel type='spicevmc'>
+      <target type='virtio' name='com.redhat.spice.0'/>
+      <address type='virtio-serial' controller='0' bus='0' port='1'/>
+    </channel>
+    <input type='tablet' bus='usb'>
+      <address type='usb' bus='0' port='1'/>
+    </input>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <graphics type='spice' autoport='yes'>
+      <listen type='address'/>
+      <image compression='off'/>
+    </graphics>
+    <sound model='ich6'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+    </sound>
+    <video>
+      <model type='qxl' ram='65536' vram='65536' vgamem='16384' heads='1' primary='yes'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </video>
+    <redirdev bus='usb' type='spicevmc'>
+      <address type='usb' bus='0' port='2'/>
+    </redirdev>
+    <redirdev bus='usb' type='spicevmc'>
+      <address type='usb' bus='0' port='3'/>
+    </redirdev>
+    <memballoon model='virtio'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x08' function='0x0'/>
+    </memballoon>
+  </devices>
+</domain>
+"""
+```
+
+
+
+```python
+# Obtain a connection to the hypervisor:
+conn = libvirt.open('qemu:///system')
+
+# Define the new instance without starting it: 
+instance = conn.defineXML(xmlconfig)
+
+# List the defined instances on the host: 
+instances = conn.listDefinedDomains()
+
+print 'Defined instances: {}'.format(instances) Defined instances: ['kvm_python']
+```
+
+
+
+```bash
+# Ensure the instance has been defined, using the virsh command:
+virsh list --all
+```
+
+
+
+```python
+vim kvm.py
+import libvirt
+xmlconfig = """
+
+<domain type='kvm' id='1'>
+	<name>kvm_python</name>
+	<memory unit='KiB'>1048576</memory>
+	<currentMemory unit='KiB'>1048576</currentMemory>
+	<vcpu placement='static'>1</vcpu>
+	<resource>
+		<partition>/machine</partition>
+	</resource>
+	<os>
+		<type arch='x86_64' machine='pc-i440fx-trusty'>hvm</type>
+		<boot dev='hd'/>
+	</os>
+	<features>
+		<acpi/>
+		<apic/>
+		<pae/>
+	</features>
+	<clock offset='utc'/>
+	<on_poweroff>destroy</on_poweroff>
+	<on_reboot>restart</on_reboot>
+	<on_crash>restart</on_crash>
+	<devices>
+		<emulator>/usr/bin/qemu-system-x86_64</emulator>
+		<disk type='file' device='disk'>
+			<driver name='qemu' type='raw'/>
+			<source file='/tmp/debian.img'/>
+			<backingStore/>
+			<target dev='hda' bus='ide'/>
+			<alias name='ide0-0-0'/>
+			<address type='drive' controller='0' bus='0' target='0'
+unit='0'/>
+		</disk>
+		<controller type='usb' index='0'>
+			<alias name='usb'/>
+			<address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x2'/>
+		</controller>
+		<controller type='pci' index='0' model='pci-root'>
+			<alias name='pci.0'/>
+		</controller>
+		<controller type='ide' index='0'>
+			<alias name='ide'/>
+			<address type='pci' domain='0x0000' bus='0x00' slot='0x01'
+function='0x1'/>
+		</controller>
+		<interface type='network'>
+			<mac address='52:54:00:da:02:01'/>
+			<source network='default' bridge='virbr0'/>
+			<target dev='vnet0'/>
+			<model type='rtl8139'/>
+			<alias name='net0'/>
+			<address type='pci' domain='0x0000' bus='0x00' slot='0x03'
+function='0x0'/>
+		</interface>
+		<serial type='pty'>
+			<source path='/dev/pts/5'/>
+			<target port='0'/>
+			<alias name='serial0'/>
+		</serial>
+		<console type='pty' tty='/dev/pts/5'>
+			<source path='/dev/pts/5'/>
+			<target type='serial' port='0'/>
+			<alias name='serial0'/>
+		</console>
+		<input type='mouse' bus='ps2'/>
+		<input type='keyboard' bus='ps2'/>
+		<graphics type='vnc' port='5900' autoport='yes'
+listen='0.0.0.0'>
+			<listen type='address' address='0.0.0.0'/>
+		</graphics>
+		<video>
+			<model type='cirrus' vram='16384' heads='1'/>
+			<alias name='video0'/>
+			<address type='pci' domain='0x0000' bus='0x00' slot='0x02'
+function='0x0'/>
+		</video>
+		<memballoon model='virtio'>
+			<alias name='balloon0'/>
+			<address type='pci' domain='0x0000' bus='0x00' slot='0x04'
+function='0x0'/>
+		</memballoon>
+	</devices>
+</domain>
+"""
+
+conn = libvirt.open('qemu:///system')
+if conn == None:
+	print('Failed to connecto to the hypervizor')
+	exit(1)
+
+instance = conn.defineXML(xmlconfig)
+if instance == None:
+	print('Failed to define the instance')
+	exit(1)
+
+instances = conn.listDefinedDomains()
+print('Defined instances: {}'.format(instances))
+
+conn.close()
+```
+
+
+
+```bash
+python kvm.py
+```
+
+
+
+Starting, stopping, and deleting KVM instances with Python 
+
+
+
+```
+```
 
