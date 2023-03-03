@@ -36,11 +36,11 @@ openstack service create --name nova \
 
 
 openstack endpoint create --region RegionOne \
-  compute public http://controller011:8774/v2.1
+  compute public http://controller01:8774/v2.1
 openstack endpoint create --region RegionOne \
-  compute internal http://controller011:8774/v2.1
+  compute internal http://controller01:8774/v2.1
 openstack endpoint create --region RegionOne \
-  compute admin http://controller011:8774/v2.1
+  compute admin http://controller01:8774/v2.1
 
 
 sudo apt install nova-api nova-conductor nova-novncproxy nova-scheduler -y
@@ -48,22 +48,22 @@ sudo apt install nova-api nova-conductor nova-novncproxy nova-scheduler -y
 sudo vim /etc/nova/nova.conf
 
 [DEFAULT]
-transport_url = rabbit://openstack:openstack@controller011:5672/
+transport_url = rabbit://openstack:openstack@controller01:5672/
 my_ip = 192.168.57.50
 
 [api_database]
-connection = mysql+pymysql://nova:openstack@controller011/nova_api
+connection = mysql+pymysql://nova:openstack@controller01/nova_api
 
 [database]
-connection = mysql+pymysql://nova:openstack@controller011/nova
+connection = mysql+pymysql://nova:openstack@controller01/nova
 
 [api]
 auth_strategy = keystone
 
 [keystone_authtoken]
-www_authenticate_uri = http://controller011:5000/
-auth_url = http://controller011:5000/
-memcached_servers = controller011:11211
+www_authenticate_uri = http://controller01:5000/
+auth_url = http://controller01:5000/
+memcached_servers = controller01:11211
 auth_type = password
 project_domain_name = Default
 user_domain_name = Default
@@ -81,7 +81,7 @@ enabled = false
 [spice]
 agent_enabled = False
 enabled = True
-html5proxy_base_url = http://controller011:6082/spice_auto.html
+html5proxy_base_url = http://controller01:6082/spice_auto.html
 html5proxy_host = 0.0.0.0
 html5proxy_port = 6082
 keymap = en-us
@@ -89,7 +89,7 @@ server_listen = 127.0.0.1
 server_proxyclient_address = 127.0.0.1
 
 [glance]
-api_servers = http://controller011:9292
+api_servers = http://controller01:9292
 
 [oslo_concurrency]
 lock_path = /var/lib/nova/tmp
@@ -100,14 +100,14 @@ project_domain_name = Default
 project_name = service
 auth_type = password
 user_domain_name = Default
-auth_url = http://controller011:5000/v3
+auth_url = http://controller01:5000/v3
 username = placement
 password = openstack
 
 sudo su -s /bin/sh -c "nova-manage api_db sync" nova
 
 sudo su -s /bin/sh -c "nova-manage cell_v2 map_cell0" nova
-#sudo su -s /bin/sh -c "nova-manage cell_v2 create_cell --name=cell1 --transport-url rabbit://openstack:****@controller011:5672/ --database_connection mysql+pymysql://nova:****@controller011/nova  --verbose" nova 
+#sudo su -s /bin/sh -c "nova-manage cell_v2 create_cell --name=cell1 --transport-url rabbit://openstack:****@controller01:5672/ --database_connection mysql+pymysql://nova:****@controller01/nova  --verbose" nova 
 sudo  su -s /bin/sh -c "nova-manage cell_v2 create_cell --name=cell1 --verbose" nova
 
 sudo su -s /bin/sh -c "nova-manage db sync" nova

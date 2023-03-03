@@ -8,7 +8,7 @@ sudo apt install memcached python-memcache
 
 * 18.04
 ```shell
-sudo apt install memcached python3-memcache -y 
+sudo apt install memcached python3-memcache etcd   -y 
 ```
 ```shell
 sudo vim /etc/memcached.conf

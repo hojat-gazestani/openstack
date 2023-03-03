@@ -28,8 +28,8 @@ openstack network list
 openstack security group list
 
 openstack server create --flavor m1.nano --image cirros \
-  --nic net-id=PROVIDER_NET_ID --security-group default \
-  --key-name mykey provider-instance
+  --nic net-id=fb091613-8249-4cfa-90d5-04fa9acc31d4 --security-group default \
+  --key-name mykey provider-in
 
 openstack server list
 

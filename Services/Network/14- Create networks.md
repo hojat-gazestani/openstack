@@ -17,7 +17,6 @@ openstack subnet create --network provider \
 ```
 ### Self-service network
 ```shell
-
 openstack network create selfservice
 
 openstack subnet create --network selfservice \
@@ -27,7 +26,6 @@ openstack subnet create --network selfservice \
 openstack router create router
 openstack router add subnet router selfservice
 openstack router set router --external-gateway provider
-
 ```
 ### Verify operation
 ```shell
@@ -35,6 +33,4 @@ openstack router set router --external-gateway provider
 controller$ ip netns
 
 openstack port list --router router
-
-
 ```
