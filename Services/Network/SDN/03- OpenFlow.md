@@ -15,8 +15,11 @@
 * Operations, Administration, and Management of the switch (OF-Config)
 * Parse Packets and decide what you want to do with it (match, instructions, action
 
-[Openflow controller message exchange]
+* Openflow controller message exchange
+
+![!Openflow controller message exchange](https://github.com/hojat-gazestani/openstack/blob/main/PIC/05-Openflow_controller_message_exchange.png)
 
 
+* Packet matching
 
-[Packet matching]
+![Packet matching](https://github.com/hojat-gazestani/openstack/blob/main/PIC/06-Openflow_controller_message_exchange_wireshark.png)
