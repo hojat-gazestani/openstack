@@ -23,4 +23,3 @@ ceph config set global osd_pool_default_pg_autoscale_mode <mode>
 ```
 
 ## no autoscale for all pool  
-This is for test
