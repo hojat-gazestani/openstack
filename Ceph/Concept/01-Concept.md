@@ -31,12 +31,12 @@
 
 + Ceph Monitor
 
--  (ceph-mon) maintains maps of the cluster state
-  - monitor map,
-  - manager map,
-  - OSD map,
-  - MDS map,
-  - CRUSH map.
+*  (ceph-mon) maintains maps of the cluster state
+  * monitor map,
+  * manager map,
+  * OSD map,
+  * MDS map,
+  * CRUSH map.
 
 + Ceph Manager
 
