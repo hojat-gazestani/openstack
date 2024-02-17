@@ -31,13 +31,13 @@
 
 ### Ceph Monitor
 
-  -  (ceph-mon) maintains maps of the cluster state
-    - monitor map,
-    - manager map,
-    - OSD map,
-    - MDS map,
-    - CRUSH map
-    - Authentication between daemons and clients.
+-  (ceph-mon) maintains maps of the cluster state
+  - monitor map,
+  - manager map,
+  - OSD map,
+  - MDS map,
+  - CRUSH map
+  - Authentication between daemons and clients.
 
 
 > Ceph stores data as objects within logical storage pools. Using the CRUSH algorithm, Ceph calculates which placement group (PG) should contain the object, and which OSD should store the placement group. The CRUSH algorithm enables the Ceph Storage Cluster to scale, rebalance, and recover dynamically.
