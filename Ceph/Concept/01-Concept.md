@@ -37,8 +37,9 @@
     - OSD map,
     - MDS map,
     - CRUSH map
+    
       > Ceph stores data as objects within logical storage pools. Using the CRUSH algorithm, Ceph calculates which placement group (PG) should contain the object, and which OSD should store the placement group. The CRUSH algorithm enables the Ceph Storage Cluster to scale, rebalance, and recover dynamically.
-      
+
     - Authentication between daemons and clients.
 
 
