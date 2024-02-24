@@ -21,12 +21,6 @@
 ## Type of Storages
 
 ### Object Storage
-# Data
-
-- Availability and Failover
-- Scalability (Vertical, Horizontal)
-- Sharing
-- Performance
 
 ### Block Storage
 
