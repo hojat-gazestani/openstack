@@ -21,11 +21,24 @@
 ## Type of Storages
 
 ### Object Storage
+```txt
+RestAPI
+POST, PUT, GET
+
+```
 
 ### Block Storage
+```txt
+dev/sda mount(Library) on OS
+ext4
+ntfs
+```
 
 ### File Storage
 
+```txt
+SMB, file Sharing
+```
 ## Ceph Storage Cluster
 
 ### Ceph Monitor
