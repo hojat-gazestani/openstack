@@ -1,0 +1,9 @@
+skip_list:
+  - metadata
+
+warn_list:
+  - risky-file-permissions
+  - risky-shell-pipe
+  - unnamed-task
+  - no-handler
+  - var-naming
