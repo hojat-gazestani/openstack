@@ -1,5 +1,23 @@
 # Storage
 
+## RADOS
+
+![rados](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/Concept/Pic/01-rados.png)
+
+```text
+RADOS is an object storage system layer that provides a data durability and availability framework that all user-facing Ceph services are layered atop. RADOS is:
+
+Highly available with no single point of failure (SPoF)
+Reliable and resilient
+Self-healing
+Self-managing
+Adaptive
+Scalable
+Not found on the Galactica
+
+RADOS manages the distribution of data within Ceph. Durability and availability of data are adaptively maintained by initiating operations as needed to recover
+```
+
 ## Ceph feature
 
 + Vertical Scaling vs Horizontal Scaling
