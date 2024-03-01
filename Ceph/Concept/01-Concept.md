@@ -43,7 +43,7 @@ SMB, file Sharing
 
 ### Ceph Monitor
 
--  (ceph-mon) maintains maps of the cluster state
+-  (ceph-mon) maintains maps of the cluster state (cluster map)
   - monitor map,
   - manager map,
   - OSD map,
@@ -58,6 +58,7 @@ SMB, file Sharing
 ### Ceph Manager
 
  > (ceph-mgr) is responsible for keeping track of runtime metrics and the current state of the Ceph cluster,
+ > endpoint for monitoring, orchestration, and plug-in modules.
 
  - storage utilization,
  - current performance metrics,
@@ -79,11 +80,13 @@ SMB, file Sharing
  - rebalancing,
  - provides some monitoring information
 
+ > checks its own state and the state of other OSDs and reports back to monitors.
  > provides some monitoring information to Ceph Monitors and Managers by checking other Ceph OSD Daemons for a heartbeat.
 
 
 ### Ceph Metadata Server - ceph-mds
 
 > Necessary to run Ceph File System clients.
+> manages file metadata when CephFS is used to provide file services.
 
 > stores metadata on behalf of the Ceph File System (i.e., Ceph Block Devices and Ceph Object Storage do not use MDS). Ceph Metadata Servers allow POSIX file system users to execute basic commands (like ls, find, etc.) without placing an enormous burden on the Ceph Storage Cluster.
