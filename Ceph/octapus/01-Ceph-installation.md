@@ -46,10 +46,10 @@ PASTE KEY HERE
 ```sh
 
 
-ceph orch host add ceph02 192.168.1.2 
-ceog orch host list
+ceph orch host add ceph02 192.168.1.2
+ceph orch host ls
 ceph orch host add ceph03 192.168.1.3
-ceog orch host list
+ceog orch host ls
 
 ceph orch host label add ceph02 _admin
 ceph orch host label add ceph03 _admin
@@ -70,7 +70,7 @@ ceph -s		# health OK
 ```
 
 ```txt
-OSD status:	
+OSD status:
 	up
 	in
 	out
@@ -100,7 +100,7 @@ Placement group map:
 
 pool -> pg :
 			pg_num 		32, 64, 128
-			pgp_num		auto scailing 
+			pgp_num		auto scailing
 
 Search: setting the number of pgs ceph
 
@@ -116,7 +116,7 @@ ceph osd pool create bdpooltest 64 # 64 placement group
 ceph osd pool ls detail
 # replication size 3
 # pg_num 64
-# pgp_num 64 
+# pgp_num 64
 # autoscalig_mode on
 
 # initial pool as block device
@@ -137,7 +137,7 @@ rdb ls --pool bdpooltest -l
 ```sh
 ceph auth ls
 ceph auth add client.test mon 'allow r' osd 'allow rwx pool=bdpooltest'
-ceph auth get client.test 
+ceph auth get client.test
 ```
 
 ## Ceph client
@@ -148,7 +148,7 @@ ceph auth get client.test
 apt update
 apt search ceph-common
 
-#search ceph add repository 
+#search ceph add repository
 CEPH_RELEASE=18.2.0
 CEPH_RELEASE=17.2.6
 
@@ -190,13 +190,13 @@ vim /etc/ceph/client.test.keyring # defualt /etc/ceph/ceph.keyring
 # PAST here
 ```
 
-- On the client 
+- On the client
 ```sh
 lsmod | grep rdb
 modprobe rdb
 lsmod | grep rdb
 
-rdb ls --pool bdpooltest # See if ceph working on client 
+rdb ls --pool bdpooltest # See if ceph working on client
 rdb ls -k /etc/ceph/client.test.keyring --pool bdpooltest
 rdb --help
 rdb ls -c /etc/ceph/ceph.conf -k /etc/ceph/client.test.keyring --pool bdpooltest
@@ -213,9 +213,9 @@ rdb -n client.test device map --pool bdpooltest bdvolumetest
 file /dev/rdb0
 
 mkfs.ext4 /dev/rdb0
-fdisk -l 
+fdisk -l
 mount /dev/rdb0 /mnt
-df -h 
+df -h
 cd /mnt
 ls
 dd if=/dev/random of=/.bigfile bs=100M count=10
@@ -255,7 +255,7 @@ systemctl restart rdbmap.service
 ls /dev/rdb
 
 vim /etc/fstab
-/dev/rdb/bdpooltest/bdvolumetest	/opt 	ext4 	noauto 0 0 
+/dev/rdb/bdpooltest/bdvolumetest	/opt 	ext4 	noauto 0 0
 ```
 
 ## CRUSH MAP, Placement group
@@ -278,11 +278,11 @@ Object storage
 	API
 	Bucket
 
-PIC-1 
+PIC-1
 ```
 - On server
 ```sh
-ceph -s 
+ceph -s
 ceph orch ls
 ceph orch apply rgw tgwtest
 ceph orch ps
@@ -320,7 +320,7 @@ radosgw-admin bucket stats
 
 - On client
 ```sh
-aws --profile johndoe --endpoint-url https://192.168.1.2 put-object --bucket bucket0 --key testfile --body /etc/services 
+aws --profile johndoe --endpoint-url https://192.168.1.2 put-object --bucket bucket0 --key testfile --body /etc/services
 
 aws --profile johndoe --endpoint-url https://192.168.1.2 list-objects
 
@@ -338,10 +338,3 @@ ceph orch ps
 ceph orch rm rgw.tg
 
 ```
-
-
-
-
-
-
-

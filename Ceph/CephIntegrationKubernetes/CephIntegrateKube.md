@@ -58,7 +58,7 @@ kubectl apply -f csi-config-map.yaml
 ```
 
 ```sh
-$ cat <<EOF > csi-kms-config-map.yaml
+cat <<EOF > csi-kms-config-map.yaml
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -104,7 +104,7 @@ metadata:
   namespace: default
 stringData:
   userID: kubernetes
-  userKey: AQD9o0Fd6hQRChAAt7fMaSZXduT3NWEqylNpmg==
+  userKey: AQBlcuhlxlhFKRAAN9LKY3oGmRA9UxOO1o7epg==
 EOF
 
 kubectl apply -f csi-rbd-secret.yaml
@@ -137,7 +137,7 @@ metadata:
    name: csi-rbd-sc
 provisioner: rbd.csi.ceph.com
 parameters:
-   clusterID: b9127830-b0cc-4e34-aa47-9d1a2e9949a8
+   clusterID: ff90b61b-9e53-45ca-a7a1-966a6b5e0696
    pool: kubernetes
    imageFeatures: layering
    csi.storage.k8s.io/provisioner-secret-name: csi-rbd-secret
