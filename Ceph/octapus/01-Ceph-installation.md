@@ -120,16 +120,17 @@ ceph osd pool ls detail
 # autoscalig_mode on
 
 # initial pool as block device
-rdb pool init bdpooltest
+rbd pool init bdpooltest
 ceph osd pool ls detail
-# application rdb
+# application rbd
 ```
 
 - Creating volume
 ```sh
 # create volume
-rdb create --size 10G --pool bdpooltest bdvolumetest
-rdb ls --pool bdpooltest -l
+rbd create --size 10G --pool bdpooltest bdvolumetest
+rbd ls --pool bdpooltest -l
+rbd --pool bdpooltest rm bdvolumetest
 
 ```
 
@@ -161,7 +162,7 @@ apt search ceph-common
 apt install ceph-common
 ceph -v
 ls /etc/ceph/
-rdbmap
+rbdmap
 ```
 
 - On the server
@@ -186,35 +187,31 @@ ceph auth get client.test
 
 - On ther client
 ```sh
-vim /etc/ceph/client.test.keyring # defualt /etc/ceph/ceph.keyring
+vim /etc/ceph/ceph.keyring # defualt /etc/ceph/ceph.keyring
 # PAST here
 ```
 
 - On the client
 ```sh
-lsmod | grep rdb
-modprobe rdb
-lsmod | grep rdb
+lsmod | grep rbd
+modprobe rbd
+lsmod | grep rbd
 
-rdb ls --pool bdpooltest # See if ceph working on client
-rdb ls -k /etc/ceph/client.test.keyring --pool bdpooltest
-rdb --help
-rdb ls -c /etc/ceph/ceph.conf -k /etc/ceph/client.test.keyring --pool bdpooltest
-rdb ls -c /etc/ceph/ceph.conf -k /etc/ceph/client.test.keyring -n client.test --pool bdpooltest
+rbd ls -c /etc/ceph/ceph.conf -k /etc/ceph/ceph.keyring -n client.test --pool bdpooltest
 
-rdb ls -n client.test --pool bdpooltest
+rbd ls -n client.test --pool bdpooltest
 ```
 
 - Map the volume on OS to recogonize as a device
 ```sh
-rdb --help | grep map
+rbd --help | grep map
 
-rdb -n client.test device map --pool bdpooltest bdvolumetest
-file /dev/rdb0
+rbd -n client.test device map --pool bdpooltest bdvolumetest
+file /dev/rbd0
 
-mkfs.ext4 /dev/rdb0
+mkfs.ext4 /dev/rbd0
 fdisk -l
-mount /dev/rdb0 /mnt
+mount /dev/rbd0 /mnt
 df -h
 cd /mnt
 ls
@@ -228,34 +225,34 @@ ceph device ls
 ```
 
 ## Permanent Mount Block device
-- search: how to boot ceph rdb
+- search: how to boot ceph rbd
 - on server
 ```sh
-rdb  ls --pool bdpooltest -l
+rbd  ls --pool bdpooltest -l
 ```
 
 - on client
 ```sh
-rdb -n client.test ls --pool bdpooltest -l
-rdb -n client.test mapp --pool bdpooltest bdvolumetest
+rbd -n client.test ls --pool bdpooltest -l
+rbd -n client.test mapp --pool bdpooltest bdvolumetest
 df -h
-mount /dev/rdb0 /opt	# it is not permanent
+mount /dev/rbd0 /opt	# it is not permanent
 ```
 
 ```sh
-systemctl status rdbmap.service
-systemctl cat rdbmap.service
+systemctl status rbdmap.service
+systemctl cat rbdmap.service
 
-cat /etc/ceph/rdbmap
-vim /etc/ceph/rdbmap
+cat /etc/ceph/rbdmap
+vim /etc/ceph/rbdmap
 bdpooltest/bdvolumetest id=test,keyring=/etc/ceph/ceph.keyring
 
-systemctl status rdbmap.service
-systemctl restart rdbmap.service
-ls /dev/rdb
+systemctl status rbdmap.service
+systemctl restart rbdmap.service
+ls /dev/rbd
 
 vim /etc/fstab
-/dev/rdb/bdpooltest/bdvolumetest	/opt 	ext4 	noauto 0 0
+/dev/rbd/bdpooltest/bdvolumetest	/opt 	ext4 	noauto 0 0
 ```
 
 ## CRUSH MAP, Placement group
