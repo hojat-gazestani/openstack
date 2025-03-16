@@ -177,10 +177,12 @@
 - How much data replication ( reliability level ) you need ?
 	
 
-
+[first]: https://google.com/
 
 # Sources:
-[](https://ceph.io/en/news/blog/2014/zero-to-hero-guide-for-ceph-cluster-planning/)
-[](https://ceph.io/community/part-3-rhcs-bluestore-performance-scalability-3-vs-5-nodes/)
-[](https://medium.com/@adam.goossens/so-you-want-to-build-a-ceph-cluster-7ff9a033411d)
-[](https://louwrentius.com/understanding-ceph-open-source-scalable-storage.html)
+
+[cphe1]: https://ceph.io/en/news/blog/2014/zero-to-hero-guide-for-ceph-cluster-planning/
+[ceph1]: https://ceph.io/community/part-3-rhcs-bluestore-performance-scalability-3-vs-5-nodes/
+[medium]: https://medium.com/@adam.goossens/so-you-want-to-build-a-ceph-cluster-7ff9a033411d
+[louwerntius]: https://louwrentius.com/understanding-ceph-open-source-scalable-storage.html
+

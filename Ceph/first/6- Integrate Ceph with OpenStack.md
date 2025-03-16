@@ -1,6 +1,6 @@
-Initial Ceph polls and auth
---------------------------
+# Initial Ceph polls and auth
 
+```sh
 controller01 {glance-api} $ sudo apt-get install python3-rbd python3-rados
 controller01 {glance-api}  / compute-node {nova-compute} / block-storage {cinder-backup+cinder-volume} $ sudo apt-get install ceph-common
 
@@ -17,7 +17,7 @@ ceph-mon-01 $ sudo rbd pool init images
 ceph-mon-01 $ sudo rbd pool init backups
 ceph-mon-01 $ sudo rbd pool init vms
 
-[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[
+# [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[
 client.glance   mon 'allow r' 
 		osd 'allow class-read object_prefix rbd_children, allow rwx pool=images'
 
@@ -72,10 +72,11 @@ ceph $ scp /etc/ceph/ceph.conf root@pod0-spare:/etc/ceph/
 ceph $ scp /etc/ceph/ceph.client.admin.keyring root@pod0-spare:/etc/ceph/
 ceph $ ceph auth get-key client.cinder | ssh root@pod0-spare tee /etc/ceph/client.cinder.key
 
-]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]
+# ]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]
+```
 
-Glance Integration
-------------------
+# Glance Integration
+```sh
 controller01/ceph-mon-01 $ sudo vim /etc/ceph/ceph.conf
 [client.images]
 keyring = /etc/ceph/ceph.client.images.keyring
@@ -101,9 +102,10 @@ controller01 $ glance image-create --name "Cirros 0.3.4" --disk-format raw --con
 ceph-mon-01 $ sudo rbd ls images
 
 ceph-mon-01 $ sudo rbd info images/a55e9417-67af-43c5-a342-85d2c4c483f7
+```
 
-Cinder Integration with Ceph
-----------------------------
+# Cinder Integration with Ceph
+```sh
 block01 $ sudo vim /etc/ceph/ceph.conf
 [client.volumes]
 #keyring = /etc/ceph/ceph.client.volumes.keyring
@@ -147,10 +149,10 @@ ceph-mon-01  $ sudo rbd ls volumes
 volume-d251bb74-5c5c-4c40-a15b-2a4a17bbed8b
 
 ceph-mon-01  $ sudo rbd info volumes/volume-d251bb74-5c5c-4c40-a15b-2a4a17bbed8b
+```
 
-
-Nova Integration with Ceph
---------------------------
+# Nova Integration with Ceph
+```sh
 controller01  # sudo apt list installed python3-rbd ceph-common
 
 controller01  # sudo vim /etc/ceph/ceph.conf
@@ -184,21 +186,24 @@ controller01  # sudo nova boot --flavor m1.small --nic net-id=4683d03d-30fc-4dd1
 controller01  # sudo nova list
 
 ceph-mon-01  $ sudo rbd -p vms ls
+```
 
-Troubleshooting
----------------
+# Troubleshooting
+```sh
 controller01  ceph(keystone_admin)]# nova image-list
   
 [root@controller01  ceph(keystone_admin)]# rbd -p images snap unprotect cf56345e-1454-4775-84f6-781912ce242b@snap
 [root@controller01  ceph(keystone_admin)]# rbd -p images snap rm cf56345e-1454-4775-84f6-781912ce242b@snap
 [root@controller01  ceph(keystone_admin)]# glance image-delete cf56345e-1454-4775-84f6-781912ce242b
+```
 
 Source:
 https://superuser.openstack.org/articles/ceph-as-storage-for-openstack/
 
-Block Devices and OpenStack
-===========================
-The nodes running glance-api, cinder-volume, nova-compute and cinder-backup act as Ceph clients. Each requires the ceph.conf file
+
+# Block Devices and OpenStack
+```sh
+# The nodes running glance-api, cinder-volume, nova-compute and cinder-backup act as Ceph clients. Each requires the ceph.conf file
 
 ssh {your-openstack-server} sudo tee /etc/ceph/ceph.conf </etc/ceph/ceph.conf
 
@@ -302,11 +307,12 @@ cinder create --image-id {id of image} --display-name {name of volume} {size of 
 
 qemu-img convert -f {source-format} -O {output-format} {source-filename} {output-filename}
 qemu-img convert -f qcow2 -O raw precise-cloudimg.img precise-cloudimg.raw
-
+```
 
 Source:
 https://docs.ceph.com/en/latest/rbd/rbd-openstack/
 
+```sh
 ###############################################################################################################
 ceph → libvrit → librbd → qemu
 
@@ -393,6 +399,7 @@ rbd -p volumes info `cat volume-id`
 openstack volume delete test
 openstack volume list
 cat volume-id
+```
 
 Sources:
 https://access.redhat.com/documentation/en-us/red_hat_ceph_storage/2/html/ceph_block_device_to_openstack_guide/configuring_openstack_to_use_ceph

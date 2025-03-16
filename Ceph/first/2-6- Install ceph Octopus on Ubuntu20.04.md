@@ -1,3 +1,4 @@
+```sh
 ssh root@ceph-mon-01 
 
 sudo vim /etc/hosts
@@ -167,6 +168,6 @@ ceph orch daemon add osd ceph-osd-02:/dev/sdb
 ceph orch daemon add osd ceph-osd-03:/dev/sdb
 
 ceph -s
-
+```
 Source:
 https://computingforgeeks.com/install-ceph-storage-cluster-on-ubuntu-linux-servers/
