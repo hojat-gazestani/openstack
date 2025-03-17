@@ -27,6 +27,8 @@ cephadm bootstrap --mon-ip *<mon-ip>*
 cephadm shell
 ceph --version
 ceph -s
+ceph -w
+ceph df
 ```
 
 ## adding host
