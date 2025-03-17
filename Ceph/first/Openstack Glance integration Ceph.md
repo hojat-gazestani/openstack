@@ -1,3 +1,4 @@
+```sh
 controller01 $ sudo apt-get install python3-rbd ceph-common
 controller01 $ sudo mkdir /etc/ceph
 
@@ -38,3 +39,4 @@ controller01 $ openstack image list
 
 ceph-mon-01 $ sudo rbd ls images
 ceph-mon-01 $ sudo rbd info images/a55e9417-67af-43c5-a342-85d2c4c483f7
+```
