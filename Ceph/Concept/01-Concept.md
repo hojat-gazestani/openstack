@@ -108,3 +108,11 @@ SMB, file Sharing
 > manages file metadata when CephFS is used to provide file services.
 
 > stores metadata on behalf of the Ceph File System (i.e., Ceph Block Devices and Ceph Object Storage do not use MDS). Ceph Metadata Servers allow POSIX file system users to execute basic commands (like ls, find, etc.) without placing an enormous burden on the Ceph Storage Cluster.
+
+# Ceph clients
+
+## librados
+
+- Using `librdos` native protocol client directly interact with Ceph
+
+![librados](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/Concept/Pic/librados.png)
