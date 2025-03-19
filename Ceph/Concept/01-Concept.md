@@ -129,6 +129,13 @@ SMB, file Sharing
 ## eracure
 
 
+# Placement group
+
+## Mapping PGs to OSDs
+
+![PG-to-OSD]()
+
+
 # Network
 
 - Ceph Clients make requests directly to Ceph OSD Daemons. Ceph OSD Daemons perform data replication on behalf of Ceph Clients, which means replication and other factors impose additional loads on Ceph Storage Cluster networks.
