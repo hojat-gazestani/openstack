@@ -148,11 +148,11 @@ SMB, file Sharing
 
 - erasure coding enhances storage efficiency by distributing additional parity information alongside data fragments.
 
-![replica]()
+![replica](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/Concept/Pic/replica-erasure.png)
 
 - In contrast to conventional data replication methods that involve storing complete copies on separate nodes
 
-![mine]()
+![mine](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/Concept/Pic/replica-vs-erasure.jpg)
 
 ## Replica
 
