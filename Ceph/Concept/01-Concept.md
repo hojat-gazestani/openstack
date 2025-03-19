@@ -40,9 +40,13 @@ RADOS manages the distribution of data within Ceph. Durability and availability 
 
 - Recived data will be stored as RADOS objects in OSDs.
 
-![objects]()
+![objects](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/Concept/Pic/ceph-objects.png)
 
-![binary]()
+- Ceph OSD Daemons store data as objects in a flat namespace.
+- An object has an identifier, binary data, and metadata consisting of name/value pairs.
+- For example, CephFS uses metadata to store file attributes such as the file owner, the created date, and the last modified date.
+
+![binary](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/Concept/Pic/binary.png)
 
 ## Type of Storages
 
