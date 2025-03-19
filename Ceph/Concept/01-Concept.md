@@ -125,3 +125,18 @@ SMB, file Sharing
 - pool size 3 with create 3 copy of data or 3 replication
 
 ![replica](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/Concept/Pic/replica.png)
+
+## eracure
+
+
+# Network
+
+- Ceph Clients make requests directly to Ceph OSD Daemons. Ceph OSD Daemons perform data replication on behalf of Ceph Clients, which means replication and other factors impose additional loads on Ceph Storage Cluster networks.
+
+- Public network: client, front-side
+
+- Cluster network: private, replication, back-side
+
+[source](https://docs.ceph.com/en/reef/rados/configuration/network-config-ref/)
+
+![netowrk](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/Concept/Pic/network.png)
