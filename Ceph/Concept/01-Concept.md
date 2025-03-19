@@ -144,6 +144,16 @@ SMB, file Sharing
 
 ![pool-pg](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/Concept/Pic/Pools.png)
 
+## Replica vs Erasure
+
+- erasure coding enhances storage efficiency by distributing additional parity information alongside data fragments.
+
+![replica]()
+
+- In contrast to conventional data replication methods that involve storing complete copies on separate nodes
+
+![mine]()
+
 ## Replica
 
 - pool size 3 with create 3 copy of data or 3 replication
