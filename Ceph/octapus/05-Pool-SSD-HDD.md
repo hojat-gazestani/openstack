@@ -1,5 +1,7 @@
 # Create Pools for SSD and HDD
 
+## Steps to Create Pools for SSD and HDD
+
 1. Verify OSD Classes
 
 ```sh
@@ -47,14 +49,14 @@ ceph osd pool application enable hdd_pool rbd
 ceph osd pool application enable ssd_pool rbd
 ```
 
-6. Example Output After Setup
+##  Example Output After Setup
 ```sh
 ceph osd crush rule ls
 
 ceph osd pool ls detail
 ```
 
-7. Using the Pools
+## Using the Pools
 
 ```sh
 # For RBD (Block Storage)

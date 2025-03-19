@@ -5,6 +5,7 @@
 
 - Ceph automatically promotes hot data to the cache tier (SSD) and demotes cold data to the base tier (HDD).
 
+## Steps to Set Up SSD as a Cache Tier for HDD
 
 1. Create the Base Tier (HDD Pool)
 
@@ -67,7 +68,7 @@ ceph osd tier set-overlay hdd_pool ssd_cache_pool
 ceph osd dump | grep tier
 ```
 
-# Example Configuration
+## Example Configuration
 
 - Base Tier (HDD Pool):
 ```sh
@@ -93,7 +94,7 @@ ceph osd pool set ssd_cache_pool min_write_recency_for_promote 2
 ceph osd tier set-overlay hdd_pool ssd_cache_pool
 ```
 
-# Monitoring and Managing Cache Tiering
+## Monitoring and Managing Cache Tiering
 
 1. Check Cache Tier Status:
 ```sh
@@ -118,7 +119,7 @@ ceph osd tier remove-overlay hdd_pool
 ceph osd tier remove hdd_pool ssd_cache_pool
 ```
 
-# Advantages of Cache Tiering
+## Advantages of Cache Tiering
 
 
 - **Improved Performance**: Frequently accessed data is served from the faster SSD tier.
@@ -128,7 +129,7 @@ ceph osd tier remove hdd_pool ssd_cache_pool
 - **Automatic Data Management**: Ceph automatically promotes and demotes data based on access patterns.
 
 
-# Considerations
+## Considerations
 
 1. Writeback Mode Risks:
     - In writeback mode, data is written to the cache tier first. If the cache tier fails before data is flushed to the base tier, data loss can occur.
