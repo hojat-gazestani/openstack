@@ -133,7 +133,12 @@ SMB, file Sharing
 
 ## Mapping PGs to OSDs
 
-![PG-to-OSD]()
+- Each Pool has number of PGs within it.
+- CRUSH dynamically maps PGs to OSDs
+- The dynamic approach provide a abstraction and indirection layer between Ceph OSD Daemons and Ceph Clients
+- If the Ceph Client “knew” which Ceph OSD Daemons were storing which objects, a tight coupling would exist between the Ceph Client and the Ceph OSD Daemon
+
+![PG-to-OSD](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/Concept/Pic/PlacementGrouop.png)
 
 
 # Network
