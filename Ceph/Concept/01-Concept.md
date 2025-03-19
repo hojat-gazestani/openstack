@@ -152,3 +152,19 @@ SMB, file Sharing
 [source](https://docs.ceph.com/en/reef/rados/configuration/network-config-ref/)
 
 ![netowrk](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/Concept/Pic/network.png)
+
+
+# Authentication with cephx
+
+- cephx uses shared secret keys for authentication, meaning both the client and Ceph Monitors have a copy of the client’s secret key. 
+- the `client.admin` user invokes `ceph auth get-or-create-key` from the command line to generate a user name and secret key
+
+![cephx-key](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/Concept/Pic/cephx-key.png)
+
+- After creating a ticket on a session, The client decrypts the ticket and uses it to sign requests to OSDs and metadata servers throughout the cluster. 
+
+![cephx-ticket](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/Concept/Pic/cephx-ticket.png)
+
+- Each message sent between a client and a server after the initial authentication is signed using a ticket that the monitors, OSDs, and metadata servers can verify with their shared secret. 
+
+![cephx-req-res](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/Concept/Pic/cephx-req-res.png)
