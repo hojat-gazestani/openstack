@@ -136,6 +136,10 @@ SMB, file Sharing
 
 ![pool](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/Concept/Pic/Pools.png)
  
+- Ceph Clients retrieve a Cluster Map from a Ceph Monitor, and write RADOS objects to pools. The way that Ceph places the data in the pools is determined by the pool’s size or number of replicas, the CRUSH rule, and the number of placement groups in the pool
+
+![map](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/Concept/Pic/cluster-map.png)
+
 ## Replica
 
 - pool size 3 with create 3 copy of data or 3 replication
