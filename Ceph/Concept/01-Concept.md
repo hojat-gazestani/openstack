@@ -36,6 +36,14 @@ RADOS manages the distribution of data within Ceph. Durability and availability 
 
 + Peer to Peer
 
+# Storing data
+
+- Recived data will be stored as RADOS objects in OSDs.
+
+![objects]()
+
+![binary]()
+
 ## Type of Storages
 
 ### Object Storage
