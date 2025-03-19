@@ -75,17 +75,27 @@ capabilities:  authorizing an authenticated user to exercise the functionality o
 
 # Metadata Server Caps:
 
-	
-
 # Managing Users
 
 ```sh
 ceph auth ls
-ceph auth get {TYPE.ID} : ceph auth get client.admin
-ceph auth export {TYPE.ID
+
+ceph auth get {TYPE.ID} 
+ceph auth get client.admin
+
+ceph auth export {TYPE.ID}
 ```
 
 ## Add a User
+
+- Creating user
+```sh
+ceph auth ls
+ceph auth add client.test mon 'allow r' osd 'allow rwx pool=bdpooltest'
+ceph auth get client.test
+ceph auth print-key
+```
+
 ```sh
 ceph auth add client.john mon 'allow r' osd 'allow rw pool=liverpool'
 ceph auth get-or-create client.paul mon 'allow r' osd 'allow rw pool=liverpool'
@@ -106,6 +116,7 @@ ceph auth caps client.brian-manager mon 'allow *' osd 'allow *'
 
 ```sh
 ceph auth del {TYPE}.{ID}
+ceph auth del client.test
 
 ceph auth print-key {TYPE}.{ID}	
 ```

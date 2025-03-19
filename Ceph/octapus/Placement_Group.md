@@ -1,6 +1,0 @@
-# Placement Group
-
-```sh
-
-
-```
