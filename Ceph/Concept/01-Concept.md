@@ -132,6 +132,10 @@ SMB, file Sharing
 
 # Pool
 
+- Pools in logical partition distributed over OSDs
+
+![pool](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/Concept/Pic/Pools.png)
+ 
 ## Replica
 
 - pool size 3 with create 3 copy of data or 3 replication
