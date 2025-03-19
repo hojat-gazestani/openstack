@@ -140,6 +140,10 @@ SMB, file Sharing
 
 ![map](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/Concept/Pic/cluster-map.png)
 
+- PGs in a pool are related to different OSDs
+
+![pool-pg](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/Concept/Pic/Pools.png)
+
 ## Replica
 
 - pool size 3 with create 3 copy of data or 3 replication
@@ -159,6 +163,10 @@ SMB, file Sharing
 - If the Ceph Client “knew” which Ceph OSD Daemons were storing which objects, a tight coupling would exist between the Ceph Client and the Ceph OSD Daemon
 
 ![PG-to-OSD](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/Concept/Pic/PlacementGrouop.png)
+
+## rebalancing
+
+- When you add a Ceph OSD Daemon to a Ceph Storage Cluster, the cluster map gets updated with the new OSD
 
 
 # Network
