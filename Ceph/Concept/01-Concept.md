@@ -133,9 +133,9 @@ SMB, file Sharing
 
 - Ceph Clients make requests directly to Ceph OSD Daemons. Ceph OSD Daemons perform data replication on behalf of Ceph Clients, which means replication and other factors impose additional loads on Ceph Storage Cluster networks.
 
-- Public network: client, front-side
+- *Public network* : client, front-side
 
-- Cluster network: private, replication, back-side
+- * Cluster network *: private, replication, back-side
 
 [source](https://docs.ceph.com/en/reef/rados/configuration/network-config-ref/)
 
