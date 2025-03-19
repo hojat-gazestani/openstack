@@ -168,6 +168,7 @@ SMB, file Sharing
 
 - When you add a Ceph OSD Daemon to a Ceph Storage Cluster, the cluster map gets updated with the new OSD
 
+![rebalancing](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/Concept/Pic/rebalancing.png)
 
 # Network
 
