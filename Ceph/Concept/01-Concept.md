@@ -116,3 +116,12 @@ SMB, file Sharing
 - Using `librdos` native protocol client directly interact with Ceph
 
 ![librados](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/Concept/Pic/librados.png)
+
+
+# Pool
+
+## Replica
+
+- pool size 3 with create 3 copy of data or 3 replication
+
+![replica](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/Concept/Pic/replica.png)
