@@ -12,6 +12,10 @@ ceph df
 ceph osd stat
 ceph osd dump
 ceph osd tree
+
+ceph orch daemon stop osd.7
+ceph orch ps
+ceph orch daemon start osd.7
 ```
 
 ```sh
@@ -62,3 +66,4 @@ ceph pg dump pool
 
 ceph pg dump -o /opt/pg --format=json
 ```
+
