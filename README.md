@@ -1,10 +1,24 @@
 # openstack
 
+## YouTbe Playlist
 
+| Episode | Name                                                                 | Github   | Youtube                               |
+| ------- | ---------------------------------------------------------------------| -------- | ------------------------------------- |
+| 000     | install Ubuntu on Virtual-box                                        | [link](https://github.com/hojat-gazestani/openstack/tree/main/Environment) | [watch](https://youtu.be/d78p9gBvyhk) |
+| 001     | Openstack Preparing  lab   | -                                       | - | [watch](https://youtu.be/vnS4Ft9CLk8) |
+| 002     | Openstack environments - how to configure the controller node        | [link](https://github.com/hojat-gazestani/openstack/tree/main/Environment
+) | [watch](https://youtu.be/AiND3TQSccg) |
+| 003     | Openstack services installation ( keystone,  glance,   placement)    | [link](https://github.com/hojat-gazestani/openstack/tree/main/Services
+) | [watch](https://youtu.be/G9HBo3Jz_0Q) |
+| 004     | Openstack services nova                                              | [link](https://github.com/hojat-gazestani/openstack/tree/main/Services/Xena
+) | [watch](https://youtu.be/s6WViHUwmJY) |
+| 005     | The Openstack conceptual and logical architecture,                   | -        | [watch](https://youtu.be/EhNTDI5L6ts) |
+| 006     | Install and configure neutron                                        | [link](https://github.com/hojat-gazestani/openstack/tree/main/Services/Network
+) | [watch](https://youtu.be/j81KrBMNPag) |
 
 # Ceph
 
-### Video lists
+## YouTbe Playlist
 
 | Episode | Name                                                                                | Github   | Youtube                               |
 | ------- | ------------------------------------------------------------------------------------| -------- | ------------------------------------- |
