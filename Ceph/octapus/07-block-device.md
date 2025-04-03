@@ -1,20 +1,21 @@
 # Block device 
 
 ```sh
-ceph osd pool create bdpooltest 
+ceph osd pool create test-pool 
 ceph osd pool ls detail
 
-rdb pool init bdpooltest
+rdb pool init test-pool
+ceph osd pool ls detail # Application rdb
 ceph osd pool ls detail | grep application 
 
-rdb create --size 10G --pool bdpooltest dbvolumetest
-rdb ls --pool bdpooltest -l
+rdb create --size 10G --pool test-pool test-volume
+rdb ls --pool test-pool -l
 ```
 
 # Cephx
 ```sh
 ceph auth ls
-ceph auth add client.test mon 'allow r' osd 'allow rwx bdpooltest'
+ceph auth add client.test mon 'allow r' osd 'allow rwx pool=test-pool'
 cehp auth get client.test
 # COPUY AUTH
 ceph config generate-minimal-config     # cat /etc/ceph/ceph.config
@@ -22,9 +23,6 @@ ceph config generate-minimal-config     # cat /etc/ceph/ceph.config
 ```
 
 # Client
-
-
-
 ```sh
 CEPH_RELEASE=19.2.1
 curl --silent --remote-name --location https://download.ceph.com/rpm-${CEPH_RELEASE}/el9/noarch/cephadm
@@ -44,8 +42,8 @@ vim /etc/ceph/ceph.keyring
 lsmod | grep rdb
 modprobe rdb
 
-rdb -c /etc/ceph/ceph.config -k /etc/ceph/ceph.keyring -n client.test ls pool --pool bdpooltest -l 
-rdb -n -n client.test device map --pool bdpooltest dbvolumetest
+rdb -c /etc/ceph/ceph.config -k /etc/ceph/ceph.keyring -n client.test ls pool --pool test-pool -l 
+rdb -n -n client.test device map --pool test-pool test-volume
 # /dev/rdb0
 
 sudo mkfs.ext4 /dev/rdb0
