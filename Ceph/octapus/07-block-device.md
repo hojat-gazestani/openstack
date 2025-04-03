@@ -16,9 +16,9 @@ rbd ls --pool test-pool -l
 ```sh
 ceph auth ls
 ceph auth add client.test mon 'allow r' osd 'allow rwx pool=test-pool'
-cehp auth get client.test
+ceph auth get client.test
 # COPUY AUTH
-ceph config generate-minimal-config     # cat /etc/ceph/ceph.config
+ceph config generate-minimal-conf     # cat /etc/ceph/ceph.config
 # COPY CONFIG
 ```
 
