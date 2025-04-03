@@ -4,12 +4,12 @@
 ceph osd pool create test-pool 
 ceph osd pool ls detail
 
-rdb pool init test-pool
-ceph osd pool ls detail # Application rdb
+rbd pool init test-pool
+ceph osd pool ls detail # Application rbd
 ceph osd pool ls detail | grep application 
 
-rdb create --size 10G --pool test-pool test-volume
-rdb ls --pool test-pool -l
+rbd create --size 10G --pool test-pool test-volume
+rbd ls --pool test-pool -l
 ```
 
 # Cephx
@@ -39,15 +39,15 @@ vim /etc/ceph/ceph.keyring
 ```
 
 ```sh
-lsmod | grep rdb
-modprobe rdb
+lsmod | grep rbd
+modprobe rbd
 
-rdb -c /etc/ceph/ceph.config -k /etc/ceph/ceph.keyring -n client.test ls pool --pool test-pool -l 
-rdb -n -n client.test device map --pool test-pool test-volume
-# /dev/rdb0
+rbd -c /etc/ceph/ceph.config -k /etc/ceph/ceph.keyring -n client.test ls pool --pool test-pool -l 
+rbd -n -n client.test device map --pool test-pool test-volume
+# /dev/rbd0
 
-sudo mkfs.ext4 /dev/rdb0
+sudo mkfs.ext4 /dev/rbd0
 fdisk -l
-mount /dev/rdb0 /mnt 
+mount /dev/rbd0 /mnt 
 df -h
 ```
