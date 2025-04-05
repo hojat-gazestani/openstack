@@ -31,7 +31,7 @@ sudo ./cephadm add-repo --release squid
 sudo apt update -y
 sudo apt install ceph-common -y
 ceph -v
-sudo vim /etc/ceph/ceph.config
+sudo vim /etc/ceph/ceph.conf
 # PASTE CONFIG
 
 sudo vim /etc/ceph/ceph.keyring
@@ -42,7 +42,7 @@ sudo vim /etc/ceph/ceph.keyring
 lsmod | grep rbd
 modprobe rbd
 
-rbd -c /etc/ceph/ceph.config -k /etc/ceph/ceph.keyring -n client.test ls pool --pool test-pool -l 
+rbd -c /etc/ceph/ceph.conf -k /etc/ceph/ceph.keyring -n client.test ls pool --pool test-pool -l 
 rbd -n -n client.test device map --pool test-pool test-volume
 # /dev/rbd0
 
