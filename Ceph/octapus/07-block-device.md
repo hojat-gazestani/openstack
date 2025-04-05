@@ -28,13 +28,13 @@ CEPH_RELEASE=19.2.1
 curl --silent --remote-name --location https://download.ceph.com/rpm-${CEPH_RELEASE}/el9/noarch/cephadm
 chmod +x cephadm
 sudo ./cephadm add-repo --release squid
-apt update -y
-apt install ceph-common -y
+sudo apt update -y
+sudo apt install ceph-common -y
 ceph -v
-vim /etc/ceph/ceph.config
+sudo vim /etc/ceph/ceph.config
 # PASTE CONFIG
 
-vim /etc/ceph/ceph.keyring
+sudo vim /etc/ceph/ceph.keyring
 # PASTE AUTH
 ```
 
