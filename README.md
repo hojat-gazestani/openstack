@@ -27,5 +27,6 @@
 | 007     | Add extra monitor nodes                                                             | -        | [watch](https://youtu.be/Pr5ao4cijqc) |
 | 008     | Add storage to linux virtual box machine,                                           | -        | [watch](https://youtu.be/LCHXYsrcOPo) |
 | 009     | Deploy Ceph OSDs                                                                    | -        | [watch](https://youtu.be/ZzkzDWfCxGU) |
+| 010     |  Ceph Block Device Tutorial Create Map & Mount RBD in Linux                         | -        | [watch](https://youtu.be/8zBwOgSZ5mA) |
 
 
