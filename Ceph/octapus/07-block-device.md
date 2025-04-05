@@ -43,11 +43,17 @@ lsmod | grep rbd
 modprobe rbd
 
 rbd -c /etc/ceph/ceph.conf -k /etc/ceph/ceph.keyring -n client.test ls pool --pool test-pool -l 
-rbd -n client.test device map --pool test-pool test-volume
+sudo rbd -n client.test device map --pool test-pool test-volume
 # /dev/rbd0
 
 sudo mkfs.ext4 /dev/rbd0
 fdisk -l
-mount /dev/rbd0 /mnt 
+sudo mount /dev/rbd0 /mnt 
 df -h
 ```
+
+```sh
+sudo umount /dev/rdb0
+sudo rbd unmap /dev/rbd0
+```
+
