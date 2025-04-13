@@ -55,7 +55,7 @@ ceph osd pool ls detail
 ```sh
 # Sets up internal RBD metadata in the pool
 rbd pool init hdd_pool
-rbd pool init ssh_pool
+rbd pool init ssd_pool
 
 # list any RBD images, which confirms the pool is functional and metadata is in place.
 rados -p hdd_pool ls
