@@ -78,3 +78,46 @@ rbd ls --pool ssd_pool -l
 rbd ls --pool hdd_pool -l
 ```
 
+7. CephX client 
+- On ceph cluster
+```sh
+ceph auth ls
+ceph auth add client.hdd mon 'allow r' osd 'allow rwx pool=hdd_pool'
+ceph auth get client.hdd
+
+
+ceph auth ls
+ceph auth add client.ssd mon 'allow r' osd 'allow rwx pool=ssd_pool'
+ceph auth get client.ssd
+```
+
+- On clients
+```sh
+sudo vim /etc/ceph/ceph.conf
+# PASTE CONFIG
+
+sudo vim /etc/ceph/ceph.keyring
+# PASTE AUTH
+```
+
+8. Mount and mapp on client
+
+```sh
+rbd -c /etc/ceph/ceph.conf -k /etc/ceph/ceph.keyring -n client.hdd ls pool --pool hdd_pool -l
+sudo rbd -n client.hdd device map --pool hdd_pool  hdd_volume
+sudo mkfs.ext4 /dev/rbd0
+fdisk -l
+sudo mount /dev/rbd0 /mnt 
+df -h
+sudo umount /dev/rdb0
+sudo rbd unmap /dev/rbd0
+
+rbd -c /etc/ceph/ceph.conf -k /etc/ceph/ceph.keyring -n client.ssd ls pool --pool ssd_pool -l
+sudo rbd -n client.ssd device map --pool ssd_pool ssd_volume
+sudo mkfs.ext4 /dev/rbd1
+fdisk -l
+sudo mount /dev/rbd1 /mnt 
+df -h
+sudo umount /dev/rdb1
+sudo rbd unmap /dev/rbd1
+```
