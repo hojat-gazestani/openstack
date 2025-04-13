@@ -67,6 +67,14 @@ rados -p hdd_pool getomapval rbd_directory rbd_id.myimage -
 # Registers the pools as being used by the RBD application
 ceph osd pool application enable hdd_pool rbd
 ceph osd pool application enable ssd_pool rbd
+```
 
+6. Create Volume
+
+```sh
+rbd create --size 10G --pool test-pool ssd-volume
+rbd create --size 10G --pool test-pool hddvolume
+rbd ls --pool ssd-pool -l
+rbd ls --pool hdd-pool -l
 ```
 
