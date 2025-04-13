@@ -72,9 +72,9 @@ ceph osd pool application enable ssd_pool rbd
 6. Create Volume
 
 ```sh
-rbd create --size 10G --pool test-pool ssd-volume
-rbd create --size 10G --pool test-pool hddvolume
-rbd ls --pool ssd-pool -l
-rbd ls --pool hdd-pool -l
+rbd create --size 10G --pool ssd_pool ssd_volume
+rbd create --size 10G --pool hdd_pool hdd_volume
+rbd ls --pool ssd_pool -l
+rbd ls --pool hdd_pool -l
 ```
 
