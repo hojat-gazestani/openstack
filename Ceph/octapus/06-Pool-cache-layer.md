@@ -213,7 +213,7 @@ sudo vim /etc/ceph/ceph.keyring
 
 ## Mount and mapp on client
 ```sh
-rbd -c /etc/ceph/ceph.conf -k /etc/ceph/ceph.keyring -n client.cache ls pool --pool ssh_cache_pool -l
+rbd -c /etc/ceph/ceph.conf -k /etc/ceph/ceph.keyring -n client.cache ls pool --pool ssd_cache_pool -l
 sudo rbd -n client.cache device map --pool ssd_cache_pool  ssd_cache_volume
 sudo mkfs.ext4 /dev/rbd0
 fdisk -l
