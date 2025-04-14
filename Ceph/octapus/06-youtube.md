@@ -100,8 +100,6 @@ ceph osd tier set-overlay hdd_pool ssd_cache_pool
 ceph osd dump | grep tier
 ```
 
-## Example Configuration
-
 - Tiering Setup:
 ```sh
 ceph osd tier add hdd_pool ssd_cache_pool
@@ -122,30 +120,6 @@ ceph osd pool set ssd_cache_pool cache_min_evict_age 1800  # 30 minutes
 ceph osd pool set ssd_cache_pool target_max_bytes 100000000000  # 100GB
 ```
 
-## Monitoring and Managing Cache Tiering
-
-1. Check Cache Tier Status:
-```sh
-ceph df
-```
-
-2. Flush Cache:
-```sh
-rados -p ssd_cache_pool cache-flush-evict-all
-```
-
-- Adjust Cache Parameters:
-
-```txt
-adjust cache parameters (e.g., target_max_bytes, hit_set_count) based on your workload and performance requirements.
-```
-
-3. Disable Cache Tiering:
-
-```sh
-ceph osd tier remove-overlay hdd_pool
-ceph osd tier remove hdd_pool ssd_cache_pool
-```
 
 ## Advantages of Cache Tiering
 
@@ -168,12 +142,6 @@ ceph osd tier remove hdd_pool ssd_cache_pool
 
 3. Workload Suitability:
     - Cache tiering works best for workloads with a high degree of locality (e.g., frequently accessed data). For random or write-heavy workloads, the benefits may be limited.
-
-## Init the pool
-```sh
-rbd pool init ssd_cache_pool
-ceph osd pool application enable ssd_cache_pool rbd
-```
 
 ## Create volume
 ```sh

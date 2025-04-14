@@ -29,5 +29,6 @@
 | 009     | Deploy Ceph OSDs                                                                    | -        | [watch](https://youtu.be/ZzkzDWfCxGU) |
 | 010     | Ceph Block Device Tutorial Create Map & Mount RBD in Linux                          | [link](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/octapus/07-block-device.md)        | [watch](https://youtu.be/8zBwOgSZ5mA) |
 | 011     | How to Configure Ceph Storage Tiering SSD vs HDD Pools  Linux Client Setup          | [link](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/octapus/05-Pool-SSD-HDD.md)        | [watch](https://youtu.be/9MmiQdu4kIY) |
+| 012     | Ceph Performance Boost SSD as Cache for HDD Writeback Mode                          | [link](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/octapus/06-Pool-cache-layer.md)    | [watch](https://youtu.be/6yNx8SPeYYU) |
 
 
