@@ -5,19 +5,33 @@
 
 - Ceph automatically promotes hot data to the cache tier (SSD) and demotes cold data to the base tier (HDD).
 
+## Create CRUSH Rules for SSD and HDD
+```sh
+ceph osd crush class ls
+ceph osd crush rule list
+ceph osd crush rule dump
+
+ceph osd crush rule create-replicated hdd_rule default host hdd
+ceph osd crush rule create-replicated ssd_rule default host ssd
+```
+
 ## Steps to Set Up SSD as a Cache Tier for HDD
 
 1. Create the Base Tier (HDD Pool)
 
 ```sh
-ceph osd pool create hdd_pool 128 128
+ceph osd pool create hdd_pool 128 128 crush_rule=hdd_rule
 ```
 
 2. Create the Cache Tier (SSD Pool)
 ```sh
-ceph osd pool create ssd_cache_pool 128 128
+ceph osd pool create ssd_cache_pool 128 128 crush_rule=ssd_rule
 ```
-
+- Verification
+```sh
+ceph osd pool get hdd_pool crush_rule
+ceph osd pool get ssd_cache_pool crush_rule
+```
 3. Set Up Cache Tiering
 ```sh
 ceph osd tier add hdd_pool ssd_cache_pool
