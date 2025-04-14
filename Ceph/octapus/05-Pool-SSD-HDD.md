@@ -89,6 +89,9 @@ ceph auth get client.hdd
 ceph auth ls
 ceph auth add client.ssd mon 'allow r' osd 'allow rwx pool=ssd_pool'
 ceph auth get client.ssd
+# COPUY AUTH
+ceph config generate-minimal-conf     # cat /etc/ceph/ceph.config
+# COPY CONFIG
 ```
 
 - On clients
