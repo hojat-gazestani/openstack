@@ -20,12 +20,12 @@ ceph osd crush rule create-replicated ssd_rule default host ssd
 1. Create the Base Tier (HDD Pool)
 
 ```sh
-ceph osd pool create hdd_pool 128 128 crush_rule=hdd_rule
+ceph osd pool create hdd_pool 128 128 hdd_rule
 ```
 
 2. Create the Cache Tier (SSD Pool)
 ```sh
-ceph osd pool create ssd_cache_pool 128 128 crush_rule=ssd_rule
+ceph osd pool create ssd_cache_pool 128 128 ssd_rule
 ```
 - Verification
 ```sh
