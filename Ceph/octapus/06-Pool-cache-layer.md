@@ -56,6 +56,24 @@ ceph osd pool set ssd_cache_pool min_read_recency_for_promote 2
 
 # Minimum number of hits required to promote data.
 ceph osd pool set ssd_cache_pool min_write_recency_for_promote 2
+
+# object-based cache limit
+ceph osd pool set ssd_cache_pool target_max_objects 1000000  # Adjust based on expected object size
+
+# cache eviction thresholds
+ceph osd pool set ssd_cache_pool cache_target_dirty_ratio 0.4
+ceph osd pool set ssd_cache_pool cache_target_full_ratio 0.8
+
+ceph osd pool set ssd_cache_pool hit_set_type bloom
+ceph osd pool set ssd_cache_pool hit_set_fpp 0.05  # 5% false positive rate
+
+# writeback safety
+ceph osd pool set ssd_cache_pool cache_min_flush_age 600  # 10 minutes
+ceph osd pool set ssd_cache_pool cache_min_evict_age 1800  # 30 minutes
+
+# Performance monitoring
+ceph osd pool set ssd_cache_pool target_max_bytes 100000000000  # 100GB
+
 ```
 
 6. Enable Overlay
@@ -92,6 +110,14 @@ ceph osd pool set ssd_cache_pool hit_set_period 300
 ceph osd pool set ssd_cache_pool min_read_recency_for_promote 2
 ceph osd pool set ssd_cache_pool min_write_recency_for_promote 2
 ceph osd tier set-overlay hdd_pool ssd_cache_pool
+ceph osd pool set ssd_cache_pool target_max_objects 1000000  # Adjust based on expected object size
+ceph osd pool set ssd_cache_pool cache_target_dirty_ratio 0.4
+ceph osd pool set ssd_cache_pool cache_target_full_ratio 0.8
+ceph osd pool set ssd_cache_pool hit_set_type bloom
+ceph osd pool set ssd_cache_pool hit_set_fpp 0.05  # 5% false positive rate
+ceph osd pool set ssd_cache_pool cache_min_flush_age 600  # 10 minutes
+ceph osd pool set ssd_cache_pool cache_min_evict_age 1800  # 30 minutes
+ceph osd pool set ssd_cache_pool target_max_bytes 100000000000  # 100GB
 ```
 
 ## Monitoring and Managing Cache Tiering
@@ -140,3 +166,45 @@ ceph osd tier remove hdd_pool ssd_cache_pool
 
 3. Workload Suitability:
     - Cache tiering works best for workloads with a high degree of locality (e.g., frequently accessed data). For random or write-heavy workloads, the benefits may be limited.
+
+## Init the pool
+```sh
+rbd pool init ssd_cache_pool
+ceph osd pool application enable ssd_cache_pool rbd
+```
+
+## Create volume
+```sh
+rbd create --size 10G --pool ssd_cache_pool ssd_cache_volume
+rbd ls --pool ssd_cache_pool -l
+```
+
+## CephX client
+```
+ceph auth add client.cache mon 'allow r' osd 'allow rwx pool=ssd_cache_pool'
+ceph auth get client.cache
+# COPUY AUTH
+ceph config generate-minimal-conf     # cat /etc/ceph/ceph.config
+# COPY CONFIG
+```
+
+## Client config
+```sh
+sudo vim /etc/ceph/ceph.conf
+# PASTE CONFIG
+
+sudo vim /etc/ceph/ceph.keyring
+# PASTE AUTH
+```
+
+## Mount and mapp on client
+```sh
+rbd -c /etc/ceph/ceph.conf -k /etc/ceph/ceph.keyring -n client.cache ls pool --pool ssh_cache_pool -l
+sudo rbd -n client.cache device map --pool ssh_cache_pool  ssd_cache_volume
+sudo mkfs.ext4 /dev/rbd0
+fdisk -l
+sudo mount /dev/rbd0 /mnt 
+df -h
+sudo umount /dev/rdb0
+sudo rbd unmap /dev/rbd0
+```
