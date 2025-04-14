@@ -27,6 +27,7 @@
 | 007     | Add extra monitor nodes                                                             | -        | [watch](https://youtu.be/Pr5ao4cijqc) |
 | 008     | Add storage to linux virtual box machine,                                           | -        | [watch](https://youtu.be/LCHXYsrcOPo) |
 | 009     | Deploy Ceph OSDs                                                                    | -        | [watch](https://youtu.be/ZzkzDWfCxGU) |
-| 010     |  Ceph Block Device Tutorial Create Map & Mount RBD in Linux                         | [link](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/octapus/07-block-device.md)        | [watch](https://youtu.be/8zBwOgSZ5mA) |
+| 010     | Ceph Block Device Tutorial Create Map & Mount RBD in Linux                          | [link](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/octapus/07-block-device.md)        | [watch](https://youtu.be/8zBwOgSZ5mA) |
+| 011     | How to Configure Ceph Storage Tiering SSD vs HDD Pools  Linux Client Setup          | [link](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/octapus/05-Pool-SSD-HDD.md)        | [watch](https://youtu.be/9MmiQdu4kIY) |
 
 
