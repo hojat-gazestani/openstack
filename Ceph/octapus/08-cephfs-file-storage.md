@@ -21,7 +21,7 @@ ceph auth get client.foo
 ```sh
 apt install ceph-fuse ceph-common ceph-fuse
 
-vim /etc/ceph/client.key
+vim /etc/ceph/client.keyring
 # Paste key here
 
 ceph-fuse --id foo /mnt/cephfs/test
