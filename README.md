@@ -30,5 +30,6 @@
 | 010     | Ceph Block Device Tutorial Create Map & Mount RBD in Linux                          | [link](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/octapus/07-block-device.md)        | [watch](https://youtu.be/8zBwOgSZ5mA) |
 | 011     | How to Configure Ceph Storage Tiering SSD vs HDD Pools  Linux Client Setup          | [link](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/octapus/05-Pool-SSD-HDD.md)        | [watch](https://youtu.be/9MmiQdu4kIY) |
 | 012     | Ceph Performance Boost SSD as Cache for HDD Writeback Mode                          | [link](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/octapus/06-Pool-cache-layer.md)    | [watch](https://youtu.be/6yNx8SPeYYU) |
+| 013     | CephFS Guide Create Authorize and Mount Cluster File System Permission Management on Ubuntu Linux  | [link](https://medium.com/@hojat_gazestani/the-complete-cephfs-tutorial-for-2024-2d0e3d161fa4)    | [watch](https://youtu.be/vNAjlogwbtk) |
 
 
