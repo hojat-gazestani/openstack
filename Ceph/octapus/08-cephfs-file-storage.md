@@ -20,6 +20,10 @@ ceph auth get client.foo
 # Client side
 ```sh
 apt install ceph-fuse ceph-common ceph-fuse
+
+vim /etc/ceph/client.key
+# Paste key here
+
 ceph-fuse --id foo /mnt/cephfs/test
 ```
 
