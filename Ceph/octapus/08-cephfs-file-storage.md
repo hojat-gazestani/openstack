@@ -21,7 +21,7 @@ ceph auth get client.foo
 ```sh
 apt install ceph-fuse ceph-common ceph-fuse
 
-vim /etc/ceph/client.keyring
+vim /etc/ceph/client.key
 # Paste key here
 
 ceph-fuse --id foo /mnt/cephfs/test
@@ -93,3 +93,38 @@ client1# echo test1 > /mnt/cephfs/test.txt
 
 osd-node1# shutdown # or shutdown an OSD
 ```
+- Test cephfs user permission
+```sh
+root@client1# mkdir /mnt/test
+root@client1# ceph-fuse --id foo /mnt/test/
+
+root@client1# cd /mnt/test/
+root@client1# echo cleint1 >> foo.txt
+
+root@client2# mkdir /mnt/test
+root@client2# ceph-fuse --id bar /mnt/test/
+
+root@client2# cd /mnt/test/
+root@client2:# echo clien2 >> foo.txt
+bash: foo.txt: Permission denied        # bar user dont have permission to change 
+
+root@client2:# cat foo.txt              # but can read
+client2
+client22
+client223
+c1
+```
+
+- Test simountanencly access to the cephfs volume
+
+```sh
+root@client1# mkdir /mnt/test
+root@client1# ceph-fuse --id foo /mnt/test/
+
+root@client1# ls /mnt/test/
+root@client1# foo.txt
+root@client1# echo c1 >> foo.txt
+
+root@client2:/mnt/test# watch -d -n 1 "cat foo.txt"
+```
+
