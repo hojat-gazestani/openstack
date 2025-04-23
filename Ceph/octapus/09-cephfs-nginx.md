@@ -96,8 +96,8 @@ include /mnt/cephfs/nginx/*.conf;
 ```sh
 sudo vim /mnt/cephfs/nginx/ceph.conf
 server {
-    listen 8080 default_server;
-    listen [::]:8080 default_server;
+    listen 80 default_server;
+    listen [::]:80 default_server;
 
 
     root /mnt/cephfs/var/www/html;
