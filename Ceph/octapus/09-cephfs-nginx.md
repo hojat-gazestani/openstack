@@ -101,7 +101,7 @@ http {
         listen 80 default_server;
         listen [::]:80 default_server;
 
-        root /mnt/cephfs/var/www/html;
+        root /mnt/cephfs/nginx/var/www/html;
 
         index ceph.html index.html index.htm index.nginx-debian.html;
 
