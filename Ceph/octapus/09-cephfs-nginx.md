@@ -95,22 +95,22 @@ include /mnt/cephfs/nginx/*.conf;
 
 ```sh
 sudo vim /mnt/cephfs/nginx/ceph.conf
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
 
+http {
+    server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
 
-    root /mnt/cephfs/var/www/html;
+        root /mnt/cephfs/var/www/html;
 
-    index ceph.html index.html index.htm index.nginx-debian.html;
+        index ceph.html index.html index.htm index.nginx-debian.html;
 
-    server_name _;
+        server_name _;
 
-    location / {
-        try_files $uri $uri/ =404;
+        location / {
+            try_files $uri $uri/ =404;
+        }
     }
-
-
 }
 ```
 
