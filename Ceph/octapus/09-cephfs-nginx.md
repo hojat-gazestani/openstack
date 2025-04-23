@@ -117,7 +117,7 @@ http {
 📝 Edit Content on Node A `/mnt/cephfs/nginx/ceph.conf`.
 
 ```sh
-vim /mnt/cephfs/var/www/html/ceph.html
+vim /mnt/cephfs/nginx/var/www/html/ceph.html
 "Hello from Ceph!"
 ```
 
