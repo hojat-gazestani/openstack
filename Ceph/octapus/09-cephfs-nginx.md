@@ -102,7 +102,7 @@ server {
 
     root /mnt/cephfs/var/www/html;
 
-    index index.html index.htm index.nginx-debian.html;
+    index ceph.html index.html index.htm index.nginx-debian.html;
 
     server_name _;
 
