@@ -1,5 +1,5 @@
 # Cephfs Nginx
-![scenario]()
+![scenario](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/octapus/PICs/09-ceph-nginx.png)
 📡 Cluster Monitoring Commands
 
 Here are monitoring commands to observe the health and state of ceph cluster and cephfs. These tools help you to keep an eye on the cluster status and changes.
