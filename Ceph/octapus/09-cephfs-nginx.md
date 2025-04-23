@@ -45,7 +45,7 @@ Copy ceph cluster config
 
 apt install ceph-fuse ceph-common ceph-fuse
 
-vim /etc/ceph/client.key
+vim /etc/ceph/ceph.keyring
 # Paste key here
 cleint1 # vim /etc/ceph/ceph.conf
 # Paste cluster config here
