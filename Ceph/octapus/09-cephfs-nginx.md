@@ -53,7 +53,7 @@ cleint1 # vim /etc/ceph/ceph.conf
 
 ✅ Mount CephFS on both nodes at `/mnt/cephfs`.
 ```sh
-ceph-fuse --id cephfs-nginx /mnt/cephfs
+ceph-fuse --id nginx /mnt/cephfs
 df -h
 ```
 
