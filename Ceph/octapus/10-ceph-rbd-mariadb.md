@@ -13,6 +13,7 @@ Before we can create a block device (RBD), we need a storage pool in the Ceph cl
 
 Let’s create a pool named mariadb-pool and initialize it for RBD usage:
 
+!(scenario)[https://github.com/hojat-gazestani/openstack/blob/main/Ceph/octapus/PICs/ceph-mariadb.png]
 
 ```sh
 ceph osd pool create mariadb-pool 
