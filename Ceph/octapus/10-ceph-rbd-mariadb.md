@@ -30,8 +30,8 @@ Let’s create a 10 GB RBD volume named mariadb-volume:
 ```sh
 rbd create --size 10G --pool mariadb-pool mariadb-volume  
 rbd ls --pool mariadb-pool -l  
-rbd ls -l
-rbd info mariadb-pool
+ceph osd pool get mariadb-pool all
+ceph osd pool get mariadb-pool all --format json-pretty
 rbd info mariadb-pool/mariadb-volume
 ```
 
