@@ -6,6 +6,8 @@ The foundational steps for setting up a Ceph RADOS Gateway (RGW). The deployment
 
 The initial setup and deployment of a RADOS Gateway (RGW) instance within a Ceph storage cluster using the Ceph Orchestrator
 
+![basic](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/octapus/PICs/basic-aws.png)
+
 - Deploy a basic RADOS Gateway (RGW) instance using Ceph Orchestrator.
 
 ```sh
