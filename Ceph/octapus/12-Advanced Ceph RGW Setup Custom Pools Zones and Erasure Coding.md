@@ -2,6 +2,7 @@
 
 Advanced approach to configuring Ceph's RADOS Gateway (RGW). It begins with customization of zone configurations. A key aspect covered is the creation of erasure coding profiles for data protection. The guide also touches upon user creation within the gateway and utilizing the AWS S3 CLI for interacting with the Ceph object storage. Finally, briefly simulating failures, suggesting a focus on resilience and testing.
 
+![basic](https://github.com/hojat-gazestani/openstack/blob/main/Ceph/octapus/PICs/16-ceph-aws-cli-rgw.png)
 
 
 ## Deploy New RGW Service
